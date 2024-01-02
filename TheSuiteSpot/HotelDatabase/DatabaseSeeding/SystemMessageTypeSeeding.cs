@@ -4,7 +4,7 @@ using TheSuiteSpot.Interfaces;
 
 namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
 {
-    public class NewsletterSeeding(HotelContext dbContext) : IDataSeeding
+    public class SystemMessageTypeSeeding(HotelContext dbContext) : IDataSeeding
     {
         public HotelContext DbContext { get; set; } = dbContext;
 

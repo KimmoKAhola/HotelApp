@@ -25,6 +25,7 @@ namespace TheSuiteSpot.HotelDatabase.Models
         public HotelContext DbContext { get; set; }
         public int Id { get; set; }
 
+
         public List<SystemMessage> Messages { get; set; } = new List<SystemMessage>();
 
 
@@ -74,19 +75,19 @@ namespace TheSuiteSpot.HotelDatabase.Models
         //    //receiver.UserInbox.Add(messageToUser);
         //    //ctx.SaveChanges();
         //}
-        //public static void SendNewsLetterWithVoucher(User receiver, HotelContext ctx, SystemMessage newsletter)
-        //{
-        //    var messageToUser = new UserInbox
-        //    {
-        //        Topic = newsletter.Topic,
-        //        Sender = ctx.User.Where(u => u.UserName == UserRoles.System.ToString()).First().UserName,
-        //        //Receiver = receiver,
-        //        MessageText = $"{newsletter.Content}\nVoucher: {newsletter.Voucher.VoucherCode}"
-        //    };
+        public static void SendMessageWithVoucher(User receiver, HotelContext ctx, SystemMessage newsletter)
+        {
+            var messageToUser = new SystemMessage
+            {
+                Topic = newsletter.Topic,
+                Sender = ctx.User.Where(u => u.UserName == UserRoles.System.ToString()).First().UserName,
+                //Receiver = receiver,
+                Content = $"{newsletter.Content}\nVoucher: {newsletter.Voucher.VoucherCode}"
+            };
 
-        //    //receiver.UserInbox.Add(messageToUser);
-        //    //ctx.SaveChanges();
-        //}
+            //receiver.UserInbox.Add(messageToUser);
+            //ctx.SaveChanges();
+        }
         //public static void SendDeletedUserConfirmation(User deletedUser)
         //{
         //    //using (var ctx = new HotelContext())

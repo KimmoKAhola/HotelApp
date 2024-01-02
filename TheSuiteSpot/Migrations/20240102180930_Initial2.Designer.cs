@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
 
@@ -11,9 +12,11 @@ using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
 namespace TheSuiteSpot.Migrations
 {
     [DbContext(typeof(HotelContext))]
-    partial class HotelContextModelSnapshot : ModelSnapshot
+    [Migration("20240102180930_Initial2")]
+    partial class Initial2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -212,11 +215,8 @@ namespace TheSuiteSpot.Migrations
                         .HasMaxLength(5000)
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DateSent")
+                    b.Property<DateTime>("DateIssued")
                         .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("bit");
 
                     b.Property<int>("MessageTypeId")
                         .HasColumnType("int");
@@ -341,7 +341,7 @@ namespace TheSuiteSpot.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserInbox");
+                    b.ToTable("Inbox");
                 });
 
             modelBuilder.Entity("TheSuiteSpot.HotelDatabase.Models.UserRole", b =>

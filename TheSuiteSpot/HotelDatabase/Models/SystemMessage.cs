@@ -16,10 +16,16 @@ namespace TheSuiteSpot.HotelDatabase.Models
         [MaxLength(50)]
         public string Topic { get; set; } = null!;
 
+        [Required]
+        public string Sender { get; set; } = null!;
+
         [MaxLength(5000)]
         public string Content { get; set; } = null!;
-        public DateTime DateIssued { get; set; } = DateTime.Now;
+        public DateTime DateSent { get; set; } = DateTime.Now;
         public Voucher? Voucher { get; set; }
+
+        public bool IsRead { get; set; } = false;
+
         public SystemMessageType MessageType { get; set; } = null!;
         public static void GenerateNewsLetterWithReward(HotelContext ctx, decimal discountPercentage, User user)
         {
@@ -42,7 +48,7 @@ namespace TheSuiteSpot.HotelDatabase.Models
             rewardIssue.Voucher = voucher;
             ctx.Add(rewardIssue);
             ctx.SaveChanges();
-            //UserInbox.SendNewsLetterWithVoucher(chosenUser, ctx, rewardIssue);
+            UserInbox.SendMessageWithVoucher(chosenUser, ctx, rewardIssue);
         }
         public static void GenerateNewsletterAboutATopic(HotelContext ctx, User user, string topic, string content)
         {

@@ -140,40 +140,6 @@ namespace TheSuiteSpot.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Message",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Topic = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(max)", maxLength: 5000, nullable: false),
-                    DateIssued = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    VoucherId = table.Column<int>(type: "int", nullable: true),
-                    MessageTypeId = table.Column<int>(type: "int", nullable: false),
-                    UserInboxId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Message", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Message_Inbox_UserInboxId",
-                        column: x => x.UserInboxId,
-                        principalTable: "Inbox",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Message_MessageType_MessageTypeId",
-                        column: x => x.MessageTypeId,
-                        principalTable: "MessageType",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Message_Voucher_VoucherId",
-                        column: x => x.VoucherId,
-                        principalTable: "Voucher",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Review",
                 columns: table => new
                 {
@@ -229,6 +195,48 @@ namespace TheSuiteSpot.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Message",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Topic = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Sender = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReceiverId = table.Column<int>(type: "int", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", maxLength: 5000, nullable: false),
+                    DateIssued = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    VoucherId = table.Column<int>(type: "int", nullable: true),
+                    MessageTypeId = table.Column<int>(type: "int", nullable: false),
+                    UserInboxId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Message", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Message_Inbox_UserInboxId",
+                        column: x => x.UserInboxId,
+                        principalTable: "Inbox",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Message_MessageType_MessageTypeId",
+                        column: x => x.MessageTypeId,
+                        principalTable: "MessageType",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Message_User_ReceiverId",
+                        column: x => x.ReceiverId,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Message_Voucher_VoucherId",
+                        column: x => x.VoucherId,
+                        principalTable: "Voucher",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Invoice",
                 columns: table => new
                 {
@@ -272,6 +280,11 @@ namespace TheSuiteSpot.Migrations
                 name: "IX_Message_MessageTypeId",
                 table: "Message",
                 column: "MessageTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Message_ReceiverId",
+                table: "Message",
+                column: "ReceiverId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Message_UserInboxId",

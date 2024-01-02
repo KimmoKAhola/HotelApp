@@ -27,7 +27,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseConfiguration
         public DbSet<Room> Room { get; set; }
         public DbSet<RoomType> RoomType { get; set; }
         public DbSet<User> User { get; set; }
-        public DbSet<UserInbox> Inbox { get; set; }
+        public DbSet<UserInbox> UserInbox { get; set; }
         public DbSet<UserRole> UserRole { get; set; }
         public DbSet<Voucher> Voucher { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)

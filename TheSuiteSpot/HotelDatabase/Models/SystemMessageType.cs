@@ -11,9 +11,11 @@ namespace TheSuiteSpot.HotelDatabase.Models
 {
     public enum SystemMessageTypes
     {
-        Subscription,
         System,
-        Reward
+        Subscription,
+        Reward,
+        UserToUser,
+        Other
     }
     public class SystemMessageType : IEntity
     {

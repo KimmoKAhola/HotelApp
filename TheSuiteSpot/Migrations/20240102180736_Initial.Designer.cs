@@ -12,7 +12,7 @@ using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
 namespace TheSuiteSpot.Migrations
 {
     [DbContext(typeof(HotelContext))]
-    [Migration("20240102180039_Initial")]
+    [Migration("20240102180736_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -221,6 +221,13 @@ namespace TheSuiteSpot.Migrations
                     b.Property<int>("MessageTypeId")
                         .HasColumnType("int");
 
+                    b.Property<int>("ReceiverId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Sender")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Topic")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -235,6 +242,8 @@ namespace TheSuiteSpot.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("MessageTypeId");
+
+                    b.HasIndex("ReceiverId");
 
                     b.HasIndex("UserInboxId");
 
@@ -445,6 +454,12 @@ namespace TheSuiteSpot.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("TheSuiteSpot.HotelDatabase.Models.User", "Receiver")
+                        .WithMany()
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("TheSuiteSpot.HotelDatabase.Models.UserInbox", null)
                         .WithMany("Messages")
                         .HasForeignKey("UserInboxId");
@@ -454,6 +469,8 @@ namespace TheSuiteSpot.Migrations
                         .HasForeignKey("VoucherId");
 
                     b.Navigation("MessageType");
+
+                    b.Navigation("Receiver");
 
                     b.Navigation("Voucher");
                 });

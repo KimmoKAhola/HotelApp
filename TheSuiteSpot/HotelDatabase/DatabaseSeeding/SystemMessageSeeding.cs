@@ -10,7 +10,7 @@ using TheSuiteSpot.Interfaces;
 
 namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
 {
-    public class NewsletterIssueSeeding(HotelContext dbContext) : IDataSeeding
+    public class SystemMessageSeeding(HotelContext dbContext) : IDataSeeding
     {
         public HotelContext DbContext { get; set; } = dbContext;
 
@@ -20,22 +20,24 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
             {
                 var subscriptionNewsletter = DbContext.MessageType.Where(n => n.Name == SystemMessageTypes.Subscription.ToString()).First();
                 var systemNewsletter = DbContext.MessageType.Where(n => n.Name == SystemMessageTypes.System.ToString()).First();
-                var allSubscribers = DbContext.User.Where(u => u.IsSubscriber && !u.IsAdmin);
+                var allSubscribers = DbContext.User.Include(u => u.UserInbox).Where(u => u.IsSubscriber && !u.IsAdmin);
                 foreach (var subscriber in allSubscribers)
                 {
                     var userTerms = new SystemMessage
                     {
                         Topic = "Terms of agreement",
+                        Sender = DbContext.UserRole.Where(u => u.RoleName == UserRoles.System.ToString()).First().RoleName,
                         Content = "Welcome to The Suite Spot! By booking a stay with us, you agree to indulge in luxury and comfort.\n" +
                         "Please take a moment to familiarize yourself with our terms of agreement, ensuring a delightful experience for both you and our team.\n" +
                         "Your relaxation journey begins with us at The Suite Spot.",
                         MessageType = systemNewsletter,
                     };
                     DbContext.Message.Add(userTerms);
+                    subscriber.UserInbox.Messages.Add(userTerms);
                     DbContext.SaveChanges();
                 }
 
-                allSubscribers = DbContext.User.Where(u => u.IsSubscriber && u.IsActive && !u.IsAdmin);
+                allSubscribers = DbContext.User.Include(u => u.UserInbox).Where(u => u.IsSubscriber && u.IsActive && !u.IsAdmin);
                 foreach (var subscriber in allSubscribers)
                 {
                     var voucher = Voucher.GenerateVoucherCode(20m);
@@ -43,11 +45,13 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                     var subscriptionLetter = new SystemMessage
                     {
                         Topic = "Voucher to our subscriber",
+                        Sender = DbContext.UserRole.Where(u => u.RoleName == UserRoles.System.ToString()).First().RoleName,
                         Content = "Welcome to the suite spot. We offer a free voucher to our subscribers as a thank you for trusting us.",
                         MessageType = subscriptionNewsletter,
                         Voucher = voucher
                     };
                     DbContext.Message.Add(subscriptionLetter);
+                    subscriber.UserInbox.Messages.Add(subscriptionLetter);
                 }
                 DbContext.SaveChanges();
                 var allIssues = DbContext.Message.Where(v => v.Voucher != null);
