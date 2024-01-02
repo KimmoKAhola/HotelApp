@@ -72,8 +72,8 @@ namespace TheSuiteSpot.HotelDatabase.Menus
 
         public void ShowSentMessages(User loggedInUser)
         {
+            PrintErrorMessage("FIX MY FORMATTING PLEASE!!!");
             var filter = FilterByTopic();
-            //List<T> allSentMessages;
             if (filter != null)
             {
                 var allSentMessages = DbContext.User
@@ -95,15 +95,22 @@ namespace TheSuiteSpot.HotelDatabase.Menus
             else
             {
                 var allSentMessages = DbContext.User
-                    .Where(u => u.UserName == loggedInUser.UserName)
                     .Include(u => u.UserInbox)
                     .ThenInclude(m => m.Messages
-                    .Where(m => m.Topic == filter));
+                    .Where(m => m.Sender == loggedInUser.UserName && m.Topic.ToLower() == filter.ToLower()))
+                    .Select(c => new
+                    {
+                        messages = c.UserInbox.Messages.Where(m => m.Sender == loggedInUser.UserName).ToList()
+                    }).Where(c => c.messages.Count > 0).ToList();
+                foreach (var item in allSentMessages)
+                {
+                    foreach (var message in item.messages)
+                    {
+                        Console.WriteLine(message.Content);
+                    }
+                }
             }
-            //foreach (var item in allSentMessages)
-            //{
-            //    Console.WriteLine(item);
-            //}
+
             PressAnyKeyToContinue();
         }
         public void ShowUnreadMessages()
