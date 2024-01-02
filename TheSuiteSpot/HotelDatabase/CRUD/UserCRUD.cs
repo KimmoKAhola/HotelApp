@@ -1,0 +1,288 @@
+﻿using Azure.Identity;
+using Bogus;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
+using TheSuiteSpot.HotelDatabase.InputHelpers;
+using TheSuiteSpot.HotelDatabase.Menus;
+using TheSuiteSpot.HotelDatabase.Models;
+using TheSuiteSpot.Interfaces;
+using static TheSuiteSpot.HotelDatabase.InputHelpers.PrintMessages;
+
+namespace TheSuiteSpot.HotelDatabase.CRUD
+{
+    public class UserCRUD(HotelContext dbContext) : ICRUD
+    {
+        public HotelContext DbContext { get; set; } = dbContext;
+        private readonly int _maxSearchResult = 10;
+        private Dictionary<int, string> _modelProperties = new Dictionary<int, string>()
+        {
+            {1, "First name."},
+            {2, "Last name."},
+            {3, "Email."},
+            {4, "Password."},
+            {5, $"Subscription status."},
+        };
+        public void Create(HotelContext ctx)
+        {
+            Console.Clear();
+            var firstName = ErrorHandling.AskForValidName("first name", 2, 30);
+            if (firstName == null) { return; }
+            var lastName = ErrorHandling.AskForValidName("last name", 2, 30);
+            if (lastName == null) { return; }
+            var username = ErrorHandling.AskForValidUsername("username", 6, 30, ctx);
+            if (username == null) { return; }
+            var password = ErrorHandling.AskForValidPassword("password", 6, 30);
+            if (password == null) { return; }
+            var email = ErrorHandling.AskForValidEmail("email", 6, 100, ctx);
+            if (email == null) { return; }
+            var user = new User
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                UserName = username,
+                Password = password,
+                Email = email,
+                UserRole = DbContext.UserRole.Where(r => r.RoleName.Contains("Guest")).First()
+            };
+            DbContext.User.Add(user);
+            DbContext.SaveChanges();
+            //UserInbox.SendCreatedUserMessage(user, DbContext);
+            var info = FormatUserTable(user);
+            PrintSuccessMessage($"The user was created successfully");
+            Console.WriteLine(info);
+            PressAnyKeyToContinue();
+        }
+
+        public void SoftDelete(HotelContext ctx)
+        {
+            Console.Clear();
+            Console.Write("Enter the username of the user you want to delete (admin can not be deleted): ");
+
+            var input = ErrorHandling.AskForValidInputString();
+            if (input == null) { return; }
+
+            var userToDelete = Search(input);
+            if (userToDelete != null && !userToDelete.IsAdmin)
+            {
+                if (BookingCRUD.CheckIfUserHasBookings(userToDelete, ctx))
+                {
+                    PrintErrorMessage("The user has active bookings and can not be deleted.");
+                }
+                else
+                {
+                    userToDelete.IsActive = false;
+                    PrintSuccessMessage($"The user with username {userToDelete.UserName} has been deleted.");
+                    //UserInbox.SendDeletedUserConfirmation(userToDelete);
+                }
+            }
+            else
+            {
+                PrintErrorMessage("No such user exists in the database");
+            }
+            PressAnyKeyToContinue();
+        }
+
+        public void ReadAll(HotelContext ctx)
+        {
+            Console.Clear();
+            Console.WriteLine("All active users: ");
+            var users = DbContext.User.Where(u => u.IsActive);
+
+            foreach (var user in users)
+            {
+                string info = FormatUserTable(user);
+                Console.WriteLine(info);
+            }
+            PressAnyKeyToContinue();
+        }
+
+        public static void ReadAllUserNames(HotelContext ctx)
+        {
+            Console.Clear();
+            Console.WriteLine("All active users: ");
+            var users = ctx.User.Where(u => u.IsActive);
+
+            foreach (var item in users)
+            {
+                Console.WriteLine(item.UserName);
+            }
+        }
+
+        public void ExactSearch(HotelContext ctx)
+        {
+            Console.Clear();
+            Console.Write("Enter the phrase you want to search for: ");
+            var input = ErrorHandling.AskForValidInputString();
+            if (input == null) { return; }
+            var user = ExactSearch(input);
+            if (user != null)
+            {
+                var info = FormatUserTable(user);
+                Console.WriteLine(info);
+            }
+            else
+            {
+                Console.WriteLine("No user with that phrase exists.");
+            }
+            PressAnyKeyToContinue();
+        }
+
+        public User GetUser()
+        {
+            Console.Write("Enter the exact username you want to search for: ");
+            var input = Console.ReadLine();
+            var user = ExactSearch(input);
+            if (user != null && !user.IsAdmin)
+            {
+                Console.WriteLine(user);
+            }
+            else
+            {
+                Console.WriteLine("No user with that username exists.");
+            }
+            return user;
+        }
+
+        public void GeneralSearch(HotelContext ctx)
+        {
+            Console.Clear();
+            var allUsers = DbContext.User.Where(u => u.IsActive);
+            Console.WriteLine("This search returns all users containing the chosen phrase.");
+            Console.Write("Search by entering a username, first name, last name or email: ");
+            var searchInput = ErrorHandling.AskForValidInputString();
+            if (searchInput == null) { return; }
+            var searchResult = allUsers
+                .Where(u => u.UserName.Contains(searchInput)
+                || u.Email.Contains(searchInput)
+                || u.FirstName.Contains(searchInput)
+                || u.LastName.Contains(searchInput));
+            if (searchResult.Any())
+            {
+                if (searchResult.Count() > _maxSearchResult)
+                {
+                    PrintNotification($"Your search result yielded more than {_maxSearchResult} users. Only the first {_maxSearchResult} users will be shown.");
+                    searchResult.Take(_maxSearchResult);
+                }
+                Console.WriteLine($"Result of your search: ");
+                foreach (var user in searchResult)
+                {
+                    var info = FormatUserTable(user);
+                    Console.WriteLine(info);
+                }
+            }
+            else
+            {
+                PrintErrorMessage($"Your search of {searchInput} did not produce any results.");
+            }
+            PressAnyKeyToContinue();
+        }
+
+        private User? Search(string userName)
+        {
+            var allUsers = DbContext.User.Where(u => u.IsActive);
+
+            var searchResult = allUsers
+                .Where(u => u.UserName.Contains(userName)
+                || u.Email.Contains(userName)
+                || u.FirstName.Contains(userName)
+                || u.LastName.Contains(userName)
+                && !u.IsAdmin).FirstOrDefault();
+
+            return searchResult;
+        }
+
+        private User? ExactSearch(string inputString)
+        {
+            var allUsers = DbContext.User.Where(u => u.IsActive);
+            var searchResult = allUsers
+                .Where(u => u.UserName.ToLower()
+                .Contains(inputString.ToLower()))
+                .Include(ur => ur.UserRole)
+                .Include(b => b.Bookings)
+                .ThenInclude(r => r.Room)
+                .ThenInclude(rt => rt.RoomType)
+                .ToList();
+
+            if (searchResult.Count > 1)
+            {
+                PrintNotification($"Your search of \"{inputString}\" yielded more than one result.\n" +
+                    $"Only the first result is show here. If this was the incorrect user, please refine your search string.");
+            }
+            return searchResult.FirstOrDefault();
+        }
+
+        public void Update(HotelContext ctx)
+        {
+            Console.Clear();
+            Console.Write("Enter a username you want to search for (case insensitive search): ");
+            var input = ErrorHandling.AskForValidInputString();
+            if (input == null) { return; }
+            var user = ExactSearch(input);
+
+            if (user != null && !user.IsAdmin)
+            {
+                var choice = ErrorHandling.MenuValidation(_modelProperties, "Choose an option to update: ");
+                if (choice != 5)
+                {
+                    Console.WriteLine($"You chose to update {_modelProperties[choice]}");
+                    Console.Write("Enter the new value: ");
+                }
+                string? updatedValue;
+                switch (choice)
+                {
+                    case 1:
+                        updatedValue = ErrorHandling.AskForValidName("first name", 2, 30);
+                        if (updatedValue == null) { return; }
+                        user.FirstName = updatedValue;
+                        break;
+                    case 2:
+                        updatedValue = ErrorHandling.AskForValidName("last name", 2, 30);
+                        if (updatedValue == null) { return; }
+                        user.LastName = updatedValue;
+                        break;
+                    case 3:
+                        updatedValue = ErrorHandling.AskForValidName("email name", 6, 100);
+                        if (updatedValue == null) { return; }
+                        user.Email = updatedValue;
+                        break;
+                    case 4:
+                        updatedValue = ErrorHandling.AskForValidPassword("password", 6, 30);
+                        if (updatedValue == null) { return; }
+                        user.Password = updatedValue;
+                        break;
+                        //case 5:
+                        //    Console.WriteLine($"Current subscription status is {user.IsSubscribed}");
+                        //    user.IsSubscribed = !user.IsSubscribed;
+                        //    break;
+                }
+                DbContext.SaveChanges();
+                PrintSuccessMessage("Update was successful.");
+                var userInfo = FormatUserTable(user);
+                Console.WriteLine(userInfo);
+            }
+            else
+            {
+                PrintErrorMessage($"No user with the username {input} exists.");
+            }
+            PressAnyKeyToContinue();
+        }
+
+        private static string FormatUserTable(User user)
+        {
+            var divider = new string('-', user.Email.Length + 7);
+
+            return $@"
+{divider}
+Name: {user.FirstName} {user.LastName}
+Username: {user.UserName}
+Email: {user.Email}
+{divider}";
+        }
+    }
+}
