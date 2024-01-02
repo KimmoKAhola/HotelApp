@@ -223,13 +223,21 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             if (allBookings.Count() > 10)
             {
                 PrintNotification("Too many active bookings. The result has been limited to 10.");
-                allBookings.Take(10);
+                var shortList = allBookings.Take(10).ToList();
+                foreach (var booking in shortList)
+                {
+                    var info = BookingTemplate(booking);
+                    Console.WriteLine(info);
+                }
             }
-
-            foreach (var booking in allBookings)
+            else
             {
-                var info = BookingTemplate(booking);
-                Console.WriteLine(info);
+
+                foreach (var booking in allBookings)
+                {
+                    var info = BookingTemplate(booking);
+                    Console.WriteLine(info);
+                }
             }
             PressAnyKeyToContinue();
         }
