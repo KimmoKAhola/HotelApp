@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
 
@@ -11,9 +12,11 @@ using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
 namespace TheSuiteSpot.Migrations
 {
     [DbContext(typeof(HotelContext))]
-    partial class HotelContextModelSnapshot : ModelSnapshot
+    [Migration("20240102192927_initial1235623")]
+    partial class initial1235623
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -230,7 +233,7 @@ namespace TheSuiteSpot.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("UserInboxId")
+                    b.Property<int?>("UserInboxId")
                         .HasColumnType("int");
 
                     b.Property<int?>("VoucherId")
@@ -449,19 +452,15 @@ namespace TheSuiteSpot.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TheSuiteSpot.HotelDatabase.Models.UserInbox", "UserInbox")
+                    b.HasOne("TheSuiteSpot.HotelDatabase.Models.UserInbox", null)
                         .WithMany("Messages")
-                        .HasForeignKey("UserInboxId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserInboxId");
 
                     b.HasOne("TheSuiteSpot.HotelDatabase.Models.Voucher", "Voucher")
                         .WithMany()
                         .HasForeignKey("VoucherId");
 
                     b.Navigation("MessageType");
-
-                    b.Navigation("UserInbox");
 
                     b.Navigation("Voucher");
                 });

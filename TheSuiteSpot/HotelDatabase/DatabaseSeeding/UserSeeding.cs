@@ -59,10 +59,6 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                     };
                     ctx.Add(system);
                     ctx.SaveChanges();
-                }
-
-                if (!ctx.User.Any(u => u.IsAdmin))
-                {
                     var adminRole = ctx.UserRole.Where(ur => ur.RoleName == UserRoles.Admin.ToString()).First();
                     var admin = new User
                     {
@@ -82,6 +78,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                     ctx.SaveChanges();
                     CurrentUser.SetCurrentUser(admin);
                 }
+
 
                 if (ctx.User.Count() < _numberOfSeededUsers)
                 {
@@ -119,7 +116,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                     }
                     ctx.SaveChanges();
                 }
-                CurrentUser.SetCurrentUser(DbContext.User.Where(u => u.IsAdmin).First());
+                CurrentUser.SetCurrentUser(DbContext.User.Where(u => u.IsAdmin && u.UserName == "admin").First());
             }
         }
     }

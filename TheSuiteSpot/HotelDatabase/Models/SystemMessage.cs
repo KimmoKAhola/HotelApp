@@ -19,9 +19,7 @@ namespace TheSuiteSpot.HotelDatabase.Models
         public string Content { get; set; } = null!;
         public DateTime DateSent { get; set; } = DateTime.Now;
         public Voucher? Voucher { get; set; }
-
         public bool IsRead { get; set; } = false;
-
         public SystemMessageType MessageType { get; set; } = null!;
         public static void SendRewardMessage(HotelContext ctx, decimal discountPercentage, User receiver)
         {

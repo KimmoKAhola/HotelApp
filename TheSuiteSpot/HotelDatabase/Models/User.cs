@@ -29,7 +29,8 @@ namespace TheSuiteSpot.HotelDatabase.Models
         [StringLength(30, MinimumLength = 6)]
         public string UserName { get; set; } = null!;
         public List<Booking> Bookings { get; set; } = new List<Booking>();
-        public UserInbox UserInbox { get; set; }
+        [Required]
+        public UserInbox UserInbox { get; set; } = null!;
         [Required]
         public bool IsActive { get; set; } = true;
         public DateTime LastLogin { get; set; } = DateTime.Now;
