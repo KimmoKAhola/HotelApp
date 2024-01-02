@@ -26,12 +26,22 @@ namespace TheSuiteSpot.HotelDatabase.Models
         [Required]
         public bool IsActive { get; set; } = true;
 
+        /// <summary>
+        /// Move me to a service class
+        /// </summary>
+        /// <param name="invoice"></param>
+        /// <returns></returns>
         public static decimal CalculateAdditionalCost(Invoice invoice)
         {
             invoice.Amount += invoice.Booking.NumberOfExtraBeds * (decimal)invoice.Booking.Room.PricePerExtraBed;
             return invoice.Amount;
         }
 
+        /// <summary>
+        /// Move me to a service class
+        /// </summary>
+        /// <param name="invoice"></param>
+        /// <returns></returns>
         public static string GenerateInvoice(Invoice invoice)
         {
             StringBuilder invoiceBuilder = new StringBuilder();
@@ -63,14 +73,6 @@ namespace TheSuiteSpot.HotelDatabase.Models
             invoiceBuilder.AppendLine($"For any inquiries, please contact us at {CurrentUser.Instance.User.Email}");
 
             return invoiceBuilder.ToString();
-        }
-
-
-        public override string ToString()
-        {
-            return $"Invoice was created at: {DateCreated}\n" +
-                $"\nBooking: {Booking}" +
-                $"\n{InvoiceDescription}";
         }
     }
 }

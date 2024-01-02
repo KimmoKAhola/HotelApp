@@ -13,16 +13,16 @@ namespace TheSuiteSpot.HotelDatabase.Models
 
         [MaxLength(50)]
         public string Topic { get; set; } = null!;
-
         [Required]
         public string Sender { get; set; } = null!;
-
         [MaxLength(5000)]
         public string Content { get; set; } = null!;
         public DateTime DateSent { get; set; } = DateTime.Now;
         public Voucher? Voucher { get; set; }
         public bool IsRead { get; set; } = false;
         public SystemMessageType MessageType { get; set; } = null!;
+
+        //Move all this to a service class
         public static void SendRewardMessage(HotelContext ctx, decimal discountPercentage, User receiver)
         {
             var randomString = Voucher.GenerateVoucherCode(discountPercentage);
@@ -45,7 +45,6 @@ namespace TheSuiteSpot.HotelDatabase.Models
             reward.Voucher = voucher;
             chosenUser.UserInbox.Messages.Add(reward);
             ctx.SaveChanges();
-            //UserInbox.SendMessageWithVoucher(chosenUser, ctx, reward);
         }
         public static void SendSystemMessage(HotelContext ctx, User receiver, string topic, string content)
         {

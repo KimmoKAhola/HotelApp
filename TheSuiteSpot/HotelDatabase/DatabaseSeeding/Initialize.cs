@@ -44,9 +44,8 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                     .OrderBy(i => i.DueDate)
                     .Include(b => b.Booking)
                     .ThenInclude(u => u.User)
-                    .Where(i => !i.IsPaid)
-                    .Where(i => i.DueDate < DateTime.Now.AddDays(-10))
-                ;//.Where(i => (DateTime.Today - i.DueDate).TotalDays > 10);
+                    .Where(i => !i.IsPaid && i.DueDate < DateTime.Now.AddDays(-10));
+
                 foreach (var booking in canceledBookings)
                 {
                     //Delete booking

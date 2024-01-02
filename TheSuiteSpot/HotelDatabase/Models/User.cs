@@ -37,12 +37,5 @@ namespace TheSuiteSpot.HotelDatabase.Models
         public bool IsAdmin { get; set; } = false;
         public UserRole UserRole { get; set; } = null!;
         public bool IsSubscriber { get; set; } = true;
-
-        public override string ToString()
-        {
-            return $"Name: {FirstName} {LastName}" +
-                $"\nEmail: {Email}" +
-                $"\nUsername: {UserName}";
-        }
     }
 }

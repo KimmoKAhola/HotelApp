@@ -92,7 +92,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseConfiguration
             myContainer.RegisterType<UserBookingMenu>().As<IUserMenu>().SingleInstance();
             myContainer.RegisterType<UserInvoiceMenu>().As<IUserMenu>().SingleInstance();
             myContainer.RegisterType<UserInboxMenu>().As<IUserMenu>().SingleInstance();
-            myContainer.RegisterType<UserExtraServiceMenu>().As<IUserMenu>().SingleInstance();
+            myContainer.RegisterType<UserSettingsMenu>().As<IUserMenu>().SingleInstance();
             myContainer.Register(c =>
             {
                 var menus = c.Resolve<IEnumerable<IUserMenu>>().ToList();

@@ -8,25 +8,25 @@ using TheSuiteSpot.Interfaces;
 
 namespace TheSuiteSpot.HotelDatabase.UserMenus
 {
-    public class UserExtraServiceMenu(HotelContext dbContext) : IUserMenu
+    public class UserSettingsMenu(HotelContext dbContext) : IUserMenu
     {
-        public string MenuName { get; set; } = "Extra services";
+        public string MenuName { get; set; } = "Settings menu";
         public List<IUserMenu> Menus { get; set; }
         public HotelContext DbContext { get; set; } = dbContext;
 
         public void Display()
         {
-            throw new NotImplementedException();
+            PrintOptions();
         }
 
         public void PrintOptions()
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Implement ways to change user info here.");
         }
 
         public void ReturnToMainMenu()
         {
-            throw new NotImplementedException();
+            _ = new UserMainMenu(Menus);
         }
     }
 }

@@ -28,6 +28,11 @@ namespace TheSuiteSpot.HotelDatabase.Models
 
         public bool IsDoubleRoom { get; set; } = false;
 
+        /// <summary>
+        /// Move me to a service class
+        /// </summary>
+        /// <param name="suiteName"></param>
+        /// <returns></returns>
         public static int GetMaxAmountOfExtraGuests(string suiteName)
         {
             int numberOfAdditionalGuests = 0;
@@ -49,6 +54,11 @@ namespace TheSuiteSpot.HotelDatabase.Models
             return numberOfAdditionalGuests;
         }
 
+        /// <summary>
+        /// Do I even need this?
+        /// </summary>
+        /// <param name="additionalGuests"></param>
+        /// <returns></returns>
         public static int GetNumberOfExtraBeds(int additionalGuests)
         {
             switch (additionalGuests)
@@ -57,11 +67,6 @@ namespace TheSuiteSpot.HotelDatabase.Models
                     return 1;
             }
             return 0;
-        }
-
-        public override string ToString()
-        {
-            return $"{SuiteName}";
         }
     }
 }

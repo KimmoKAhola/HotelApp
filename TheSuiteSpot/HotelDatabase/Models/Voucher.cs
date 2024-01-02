@@ -17,9 +17,15 @@ namespace TheSuiteSpot.HotelDatabase.Models
         [MaxLength(20)]
         public string VoucherCode { get; set; } = null!;
         public DateTime ExpiryDate { get; set; } = DateTime.Now.AddDays(30);
+        public bool IsExpired { get; set; } = false;
         [Required]
         public decimal DiscountPercentage { get; set; }
 
+        /// <summary>
+        /// Move me to a service class
+        /// </summary>
+        /// <param name="discountPercentage"></param>
+        /// <returns></returns>
         public static Voucher GenerateVoucherCode(decimal discountPercentage)
         {
             Guid guid = Guid.NewGuid();
