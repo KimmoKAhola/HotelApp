@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
 using TheSuiteSpot.Interfaces;
 
@@ -33,7 +34,7 @@ namespace TheSuiteSpot.HotelDatabase.Models
             ctx.Add(voucher);
             ctx.SaveChanges();
 
-            var chosenUser = ctx.User.Where(u => u.Id == receiver.Id).First();
+            var chosenUser = ctx.User.Include(u => u.UserInbox).Where(u => u.Id == receiver.Id).First();
             var reward = new SystemMessage
             {
                 Topic = "A reward to our most valued customer.",
@@ -42,7 +43,7 @@ namespace TheSuiteSpot.HotelDatabase.Models
                 MessageType = ctx.MessageType.Where(n => n.Name == SystemMessageTypes.Reward.ToString()).First(),
             };
             reward.Voucher = voucher;
-            receiver.UserInbox.Messages.Add(reward);
+            chosenUser.UserInbox.Messages.Add(reward);
             ctx.SaveChanges();
             //UserInbox.SendMessageWithVoucher(chosenUser, ctx, reward);
         }
