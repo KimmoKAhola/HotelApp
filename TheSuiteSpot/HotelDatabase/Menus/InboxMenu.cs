@@ -89,6 +89,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
                     foreach (var message in item.messages)
                     {
                         Console.WriteLine(message.Content);
+                        message.IsRead = true;
                     }
                 }
             }
@@ -107,6 +108,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
                     foreach (var message in item.messages)
                     {
                         Console.WriteLine(message.Content);
+                        message.IsRead = true;
                     }
                 }
             }
@@ -154,6 +156,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
                 foreach (var msg in item.msg)
                 {
                     Console.WriteLine(msg.Content);
+                    msg.IsRead = true;
                 }
                 PressAnyKeyToContinue();
             }
