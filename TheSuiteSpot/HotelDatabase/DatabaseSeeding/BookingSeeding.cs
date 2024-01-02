@@ -42,7 +42,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                         };
                         DbContext.Booking.Add(booking);
                         DbContext.SaveChanges();
-                        //UserInbox.SendCreatedBookingMessage(booking.User, DbContext);
+                        SystemMessage.SendBookingConfirmationMessage(DbContext, booking.User, booking);
                     }
                 }
             }

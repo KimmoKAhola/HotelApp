@@ -50,8 +50,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                             booking.HasActiveInvoice = true;
                             ctx.Invoice.Add(invoice);
                             ctx.SaveChanges();
-                            //UserInbox.SendCreatedInvoiceMessage(currentUser, ctx, invoice);
-                            ctx.SaveChanges();
+                            SystemMessage.SendInvoiceMessage(ctx, currentUser, invoice, booking);
                         }
                     }
                     ctx.SaveChanges();

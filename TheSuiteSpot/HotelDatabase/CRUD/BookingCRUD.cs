@@ -172,7 +172,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 ctx.Invoice.Add(invoice);
                 ctx.SaveChanges();
                 SystemMessage.SendBookingConfirmationMessage(ctx, chosenUser, booking);
-                SystemMessage.SendInvoiceMessage(ctx, chosenUser, invoice);
+                SystemMessage.SendInvoiceMessage(ctx, chosenUser, invoice, booking);
 
                 PrintSuccessMessage("A booking has been created with the following information:");
                 Console.WriteLine(booking);

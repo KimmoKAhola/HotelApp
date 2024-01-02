@@ -90,11 +90,14 @@ namespace TheSuiteSpot.HotelDatabase.Models
             ctx.SaveChanges();
         }
 
-        public static void SendInvoiceMessage(HotelContext ctx, User receiver, Invoice invoice)
+        public static void SendInvoiceMessage(HotelContext ctx, User receiver, Invoice invoice, Booking booking)
         {
             var message = new SystemMessage
             {
-
+                Topic = "Invoice",
+                Sender = ctx.User.Where(u => u.UserName == "System").First().UserName,
+                Content = InvoiceCRUD.InvoiceTemplate(invoice, receiver, booking),
+                MessageType = ctx.MessageType.Where(n => n.Name == SystemMessageTypes.System.ToString()).First(),
             };
             receiver.UserInbox.Messages.Add(message);
             ctx.SaveChanges();
