@@ -143,7 +143,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             else
             {
                 ctx.SaveChanges();
-                chosenUser = ctx.User.Where(u => u.Id == chosenUser.Id).First();
+                chosenUser = ctx.User.Where(u => u.Id == chosenUser.Id).Include(u => u.UserInbox).First();
                 var booking = new Booking
                 {
                     StartDate = newDate,
@@ -171,8 +171,9 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
 
                 ctx.Invoice.Add(invoice);
                 ctx.SaveChanges();
-                //UserInbox.SendCreatedBookingMessage(chosenUser, ctx);
-                //UserInbox.SendCreatedInvoiceMessage(chosenUser, ctx, invoice);
+                SystemMessage.SendBookingConfirmationMessage(ctx, chosenUser, booking);
+                SystemMessage.SendInvoiceMessage(ctx, chosenUser, invoice);
+
                 PrintSuccessMessage("A booking has been created with the following information:");
                 Console.WriteLine(booking);
                 Console.WriteLine(Invoice.GenerateInvoice(invoice));
@@ -274,7 +275,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             }
             PressAnyKeyToContinue();
         }
-        private static string FormatBooking(Booking booking)
+        public static string FormatBooking(Booking booking)
         {
             var header = new string('-', booking.EndDate.ToString().Length + booking.StartDate.ToString().Length + 22);
             var result = $"{header}" +
@@ -288,13 +289,13 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         }
         private static Booking ExactSearch(HotelContext ctx, int bookingId)
         {
-            var exaktBooking = ctx.Booking
+            var exactBooking = ctx.Booking
                 .Where(b => b.Id == bookingId)
                 .Include(r => r.Room)
                 .Include(u => u.User)
                 .FirstOrDefault();
 
-            return exaktBooking;
+            return exactBooking;
         }
         public void Update(HotelContext ctx)
         {

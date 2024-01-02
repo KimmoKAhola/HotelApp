@@ -73,19 +73,7 @@ namespace TheSuiteSpot.HotelDatabase.Models
         //    //receiver.UserInbox.Add(messageToUser);
         //    //ctx.SaveChanges();
         //}
-        public static void SendMessageWithVoucher(User receiver, HotelContext ctx, SystemMessage newsletter)
-        {
-            var messageToUser = new SystemMessage
-            {
-                Topic = newsletter.Topic,
-                Sender = ctx.User.Where(u => u.UserName == UserRoles.System.ToString()).First().UserName,
-                //Receiver = receiver,
-                Content = $"{newsletter.Content}\nVoucher: {newsletter.Voucher.VoucherCode}"
-            };
 
-            //receiver.UserInbox.Add(messageToUser);
-            //ctx.SaveChanges();
-        }
         //public static void SendDeletedUserConfirmation(User deletedUser)
         //{
         //    //using (var ctx = new HotelContext())
@@ -99,24 +87,6 @@ namespace TheSuiteSpot.HotelDatabase.Models
         //    //    ctx.UserMessage.Add(message);
         //    //    ctx.SaveChanges();
         //    //}
-        //}
-
-        //public static void SendNewsletterSystemMessage(User receiver, HotelContext ctx, SystemMessage newsletter)
-        //{
-        //    var messageToUser = new UserInbox
-        //    {
-        //        Topic = newsletter.Topic,
-        //        Sender = ctx.User.Where(u => u.UserName == UserRoles.System.ToString()).First().UserName,
-        //        //Receiver = receiver,
-        //        MessageText = newsletter.Content
-        //    };
-
-        //    //receiver.UserInbox.Add(messageToUser);
-        //    //ctx.SaveChanges();
-        //}
-        //public override string ToString()
-        //{
-        //    return $"{Topic} - Message id: {Id} - Sent by: {Sender} - {MessageTimeStamp}\n{MessageText}";
         //}
     }
 }

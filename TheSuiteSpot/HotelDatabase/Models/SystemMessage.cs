@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.Net.Sockets;
+using TheSuiteSpot.HotelDatabase.CRUD;
 using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
 using TheSuiteSpot.Interfaces;
 
@@ -70,6 +72,30 @@ namespace TheSuiteSpot.HotelDatabase.Models
                 MessageType = ctx.MessageType.Where(n => n.Name == SystemMessageTypes.UserToUser.ToString()).First(),
             };
 
+            receiver.UserInbox.Messages.Add(message);
+            ctx.SaveChanges();
+        }
+
+        public static void SendBookingConfirmationMessage(HotelContext ctx, User receiver, Booking booking)
+        {
+
+            var message = new SystemMessage
+            {
+                Topic = "Booking confirmation",
+                Sender = ctx.User.Where(u => u.UserName == "System").First().UserName,
+                Content = BookingCRUD.FormatBooking(booking),
+                MessageType = ctx.MessageType.Where(n => n.Name == SystemMessageTypes.System.ToString()).First(),
+            };
+            receiver.UserInbox.Messages.Add(message);
+            ctx.SaveChanges();
+        }
+
+        public static void SendInvoiceMessage(HotelContext ctx, User receiver, Invoice invoice)
+        {
+            var message = new SystemMessage
+            {
+
+            };
             receiver.UserInbox.Messages.Add(message);
             ctx.SaveChanges();
         }
