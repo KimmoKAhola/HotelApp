@@ -31,7 +31,7 @@ namespace TheSuiteSpot.HotelDatabase.UserMenus
                     InboxMenu.ShowSentMessages(CurrentUser.Instance.User);
                     break;
                 case 3:
-                    InboxMenu.ShowReceivedMessages();
+                    InboxMenu.ShowReceivedMessages(CurrentUser.Instance.User);
                     break;
                 case 4:
                     InboxMenu.SendMessageToUser();

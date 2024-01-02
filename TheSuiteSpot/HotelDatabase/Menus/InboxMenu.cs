@@ -26,7 +26,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
                     ShowSentMessages(CurrentUser.Instance.User);
                     break;
                 case 3:
-                    ShowReceivedMessages();
+                    ShowReceivedMessages(CurrentUser.Instance.User);
                     break;
                 case 4:
                     SendMessageToUser();
@@ -138,15 +138,25 @@ namespace TheSuiteSpot.HotelDatabase.Menus
             //Console.ReadKey();
         }
 
-        public void ShowReceivedMessages()
+        public void ShowReceivedMessages(User loggedInUser)
         {
-            //var msg = DbContext.UserMessage.Where(u => u.Receiver.UserName == CurrentUser.Instance.User.UserName).ToList();
+            var allReceivedMessages = DbContext.User
+                    .Where(u => u.Id == loggedInUser.Id)
+                    .Include(u => u.UserInbox)
+                    .ThenInclude(m => m.Messages)
+                    .Select(c => new
+                    {
+                        msg = c.UserInbox.Messages.ToList(),
+                    });
 
-            //foreach (var item in msg)
-            //{
-            //    Console.WriteLine(item);
-            //    Console.ReadKey(true);
-            //}
+            foreach (var item in allReceivedMessages)
+            {
+                foreach (var msg in item.msg)
+                {
+                    Console.WriteLine(msg.Content);
+                }
+                PressAnyKeyToContinue();
+            }
         }
     }
 }
