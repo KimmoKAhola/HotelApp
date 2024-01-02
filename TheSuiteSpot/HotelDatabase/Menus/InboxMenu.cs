@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
+using TheSuiteSpot.HotelDatabase.Models;
 using TheSuiteSpot.Interfaces;
 using static TheSuiteSpot.HotelDatabase.InputHelpers.PrintMessages;
 
@@ -22,7 +23,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
                     ShowUnreadMessages();
                     break;
                 case 2:
-                    ShowSentMessages();
+                    ShowSentMessages(CurrentUser.Instance.User);
                     break;
                 case 3:
                     ShowReceivedMessages();
@@ -48,13 +49,13 @@ namespace TheSuiteSpot.HotelDatabase.Menus
             //    .Include(u => u.UserInbox
             //    .Where(m => !m.IsRead)).First();
             //var numberOfUnreadMessages = unreadMessages.UserMessages.Count;
-            //MainMenu.PrintBanner();
-            //Console.WriteLine($"You currently have {numberOfUnreadMessages} unread messages.");
-            //Console.WriteLine("1. View unread messages.");
-            //Console.WriteLine("2. View all sent system messages.");
-            //Console.WriteLine("3. View all received messages.");
-            //Console.WriteLine("4. Send a message to a user.");
-            //Console.WriteLine("0. Return to main menu.");
+            MainMenu.PrintBanner();
+            Console.WriteLine($"You currently have unread messages."); //{numberOfUnreadMessages}
+            Console.WriteLine("1. View unread messages.");
+            Console.WriteLine("2. View all sent system messages.");
+            Console.WriteLine("3. View all received messages.");
+            Console.WriteLine("4. Send a message to a user.");
+            Console.WriteLine("0. Return to main menu.");
         }
 
         public void ReturnToMainMenu()
@@ -69,17 +70,35 @@ namespace TheSuiteSpot.HotelDatabase.Menus
             return input;
         }
 
-        public void ShowSentMessages()
+        public void ShowSentMessages(User loggedInUser)
         {
             var filter = FilterByTopic();
-            IQueryable allSentMessages;
+            //List<T> allSentMessages;
             if (filter != null)
             {
-                //allSentMessages = DbContext.Inbox.Where(u => u.Sender.Contains(CurrentUser.Instance.User.UserName) && u.Topic.Contains(filter));
+                var allSentMessages = DbContext.User
+                    .Include(u => u.UserInbox)
+                    .ThenInclude(m => m.Messages
+                    .Where(m => m.Sender == loggedInUser.UserName))
+                    .Select(c => new
+                    {
+                        messages = c.UserInbox.Messages.Where(m => m.Sender == loggedInUser.UserName).ToList()
+                    }).Where(c => c.messages.Count > 0).ToList();
+                foreach (var item in allSentMessages)
+                {
+                    foreach (var message in item.messages)
+                    {
+                        Console.WriteLine(message.Content);
+                    }
+                }
             }
             else
             {
-                //allSentMessages = DbContext.Inbox.Where(u => u.Sender.Contains(CurrentUser.Instance.User.UserName));
+                var allSentMessages = DbContext.User
+                    .Where(u => u.UserName == loggedInUser.UserName)
+                    .Include(u => u.UserInbox)
+                    .ThenInclude(m => m.Messages
+                    .Where(m => m.Topic == filter));
             }
             //foreach (var item in allSentMessages)
             //{

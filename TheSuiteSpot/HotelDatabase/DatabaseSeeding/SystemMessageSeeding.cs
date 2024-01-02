@@ -63,7 +63,11 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
 
                 var twoUsers = DbContext.User.Include(u => u.UserInbox).Include(ur => ur.UserRole).Where(u => !u.IsAdmin).OrderBy(u => u.Id).Take(2);
 
+                for(int i = 0; i< 10; i++)
+                {
                 SystemMessage.SendMessageBetweenUsers(DbContext, twoUsers.First(), twoUsers.Last());
+
+                }
 
 
             }
