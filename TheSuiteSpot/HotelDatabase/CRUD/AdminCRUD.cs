@@ -32,6 +32,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                             .Where(i => i.IsPaid)
                             .Include(b => b.Booking)
                             .ThenInclude(u => u.User)
+                            .ThenInclude(u => u.UserInbox)
                             .GroupBy(u => u.Booking.User)
                             .Select(c => new
                             {
@@ -54,7 +55,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             {
                 foreach (var bigSpender in bigSpenders)
                 {
-                    SystemMessage.GenerateNewsLetterWithReward(DbContext, 20, bigSpender.User);
+                    SystemMessage.SendRewardMessage(DbContext, 20, bigSpender.User);
                 }
             }
             DbContext.SaveChanges();

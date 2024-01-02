@@ -22,7 +22,7 @@ namespace TheSuiteSpot.HotelDatabase.Models
         public bool IsRead { get; set; } = false;
 
         public SystemMessageType MessageType { get; set; } = null!;
-        public static void GenerateNewsLetterWithReward(HotelContext ctx, decimal discountPercentage, User user)
+        public static void SendRewardMessage(HotelContext ctx, decimal discountPercentage, User receiver)
         {
             var randomString = Voucher.GenerateVoucherCode(discountPercentage);
             var voucher = new Voucher
@@ -33,17 +33,18 @@ namespace TheSuiteSpot.HotelDatabase.Models
             ctx.Add(voucher);
             ctx.SaveChanges();
 
-            var chosenUser = ctx.User.Where(u => u.Id == user.Id).First();
-            var rewardIssue = new SystemMessage
+            var chosenUser = ctx.User.Where(u => u.Id == receiver.Id).First();
+            var reward = new SystemMessage
             {
                 Topic = "A reward to our most valued customer.",
+                Sender = ctx.User.Where(u => u.UserName == "System").First().UserName,
                 Content = "Thank you, dear customer, for your patronage. As a reward, we will award you with a voucher.",
                 MessageType = ctx.MessageType.Where(n => n.Name == SystemMessageTypes.Reward.ToString()).First(),
             };
-            rewardIssue.Voucher = voucher;
-            ctx.Add(rewardIssue);
+            reward.Voucher = voucher;
+            receiver.UserInbox.Messages.Add(reward);
             ctx.SaveChanges();
-            UserInbox.SendMessageWithVoucher(chosenUser, ctx, rewardIssue);
+            //UserInbox.SendMessageWithVoucher(chosenUser, ctx, reward);
         }
         public static void SendSystemMessage(HotelContext ctx, User receiver, string topic, string content)
         {
