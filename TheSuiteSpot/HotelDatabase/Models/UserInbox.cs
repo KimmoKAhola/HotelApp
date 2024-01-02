@@ -27,53 +27,6 @@ namespace TheSuiteSpot.HotelDatabase.Models
 
 
 
-        /// <summary>
-        /// Move to a service class later on
-        /// </summary>
-        //public static void SendCreatedUserMessage(User receiver, HotelContext ctx)
-        //{
-        //    var message = new UserInbox
-        //    {
-        //        Topic = "New account created",
-        //        Sender = ctx.User.Where(u => u.UserName == UserRoles.System.ToString()).First().UserName,
-        //        //Receiver = receiver,
-        //        MessageText = ($"Your account has been created. Welcome to The Suite Spot! \nYour account information is: " +
-        //        $"\nUsername: {receiver.UserName}" +
-        //        $"\nEmail: {receiver.Email}" +
-        //        $"\nPassword: {receiver.Password}"),
-        //    };
-        //    ctx.Inbox.Add(message);
-        //    ctx.SaveChanges();
-        //}
-        //public static void SendCreatedBookingMessage(User receiver, HotelContext ctx)
-        //{
-        //    var bookingText = Booking.GenerateBooking(receiver);
-        //    var message = new UserInbox
-        //    {
-        //        Topic = "Booking confirmation",
-        //        Sender = ctx.User.Where(u => u.UserName == UserRoles.System.ToString()).First().UserName,
-        //        //Receiver = receiver,
-        //        MessageText = bookingText
-        //    };
-        //    //receiver.UserInbox.Add(message);
-        //    //ctx.SaveChanges();
-        //    //CurrentUser.Instance.User.UserInbox.Add(message);
-        //    //ctx.SaveChanges();
-        //}
-        //public static void SendCreatedInvoiceMessage(User receiver, HotelContext ctx, Invoice invoice)
-        //{
-        //    var invoiceText = Invoice.GenerateInvoice(invoice);
-        //    var messageToUser = new UserInbox
-        //    {
-        //        Topic = "New invoice",
-        //        Sender = ctx.User.Where(u => u.UserName == UserRoles.System.ToString()).First().UserName,
-        //        //Receiver = receiver,
-        //        MessageText = invoiceText,
-        //    };
-        //    //receiver.UserInbox.Add(messageToUser);
-        //    //ctx.SaveChanges();
-        //}
-
         //public static void SendDeletedUserConfirmation(User deletedUser)
         //{
         //    //using (var ctx = new HotelContext())

@@ -102,5 +102,21 @@ namespace TheSuiteSpot.HotelDatabase.Models
             receiver.UserInbox.Messages.Add(message);
             ctx.SaveChanges();
         }
+
+        public static void SendCreatedUserMessage(User receiver, HotelContext ctx)
+        {
+            var message = new SystemMessage
+            {
+                Topic = "New account created",
+                Sender = ctx.User.Where(u => u.UserName == "System").First().UserName,
+                Content = ($"Your account has been created. Welcome to The Suite Spot! \nYour account information is: " +
+                $"\nUsername: {receiver.UserName}" +
+                $"\nEmail: {receiver.Email}" +
+                $"\nPassword: {receiver.Password}"),
+                MessageType = ctx.MessageType.Where(n => n.Name == SystemMessageTypes.System.ToString()).First(),
+            };
+            receiver.UserInbox.Messages.Add(message);
+            ctx.SaveChanges();
+        }
     }
 }

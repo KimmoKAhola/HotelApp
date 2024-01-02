@@ -111,8 +111,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                         };
                         ctx.Add(guest);
                         ctx.SaveChanges();
-                        //UserInbox.SendCreatedUserMessage(guest, ctx);
-                        ctx.SaveChanges();
+                        SystemMessage.SendCreatedUserMessage(guest, ctx);
                     }
                     ctx.SaveChanges();
                 }
