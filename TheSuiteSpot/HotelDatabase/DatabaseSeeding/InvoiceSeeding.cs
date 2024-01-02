@@ -22,7 +22,11 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
 
                 if (!ctx.Invoice.Any())
                 {
-                    var allUsersWithBookings = ctx.Booking.Include(u => u.User).Include(r => r.Room).ThenInclude(rt => rt.RoomType).ToList();
+                    var allUsersWithBookings = ctx.Booking
+                        .Include(u => u.User)
+                        .ThenInclude(u => u.UserInbox)
+                        .Include(r => r.Room)
+                        .ThenInclude(rt => rt.RoomType).ToList();
 
                     foreach (var booking in allUsersWithBookings)
                     {

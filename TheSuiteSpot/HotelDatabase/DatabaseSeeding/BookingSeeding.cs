@@ -21,7 +21,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
             {
                 DateTime pastDate = DateTime.Now.Date.AddYears(-2);
                 var rooms = DbContext.Room.ToList();
-                var allUsers = DbContext.User.Where(u => !u.IsAdmin && u.UserName != "System").ToList();
+                var allUsers = DbContext.User.Include(u => u.UserInbox).Where(u => !u.IsAdmin && u.UserName != "System").ToList();
                 var random = new Random();
                 var faker = new Faker();
                 for (int j = 0; j < 23; j++)

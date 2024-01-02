@@ -71,13 +71,13 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseConfiguration
         }
         private static void RegisterDataSeeding(ContainerBuilder myContainer)
         {
+            myContainer.RegisterType<SystemMessageTypeSeeding>().As<IDataSeeding>();
             myContainer.RegisterType<RoomTypeSeeding>().As<IDataSeeding>();
             myContainer.RegisterType<RoomSeeding>().As<IDataSeeding>();
             myContainer.RegisterType<UserSeeding>().As<IDataSeeding>();
             myContainer.RegisterType<BookingSeeding>().As<IDataSeeding>();
             myContainer.RegisterType<InvoiceSeeding>().As<IDataSeeding>();
             myContainer.RegisterType<ReviewSeeding>().As<IDataSeeding>();
-            myContainer.RegisterType<SystemMessageTypeSeeding>().As<IDataSeeding>();
             myContainer.RegisterType<SystemMessageSeeding>().As<IDataSeeding>();
 
             myContainer.Register(c =>
