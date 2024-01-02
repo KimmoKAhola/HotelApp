@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheSuiteSpot", "TheSuiteSpot\TheSuiteSpot.csproj", "{F5BA5660-9ACE-4688-9172-AC0DED2BEB1E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheSuiteSpot", "TheSuiteSpot\TheSuiteSpot.csproj", "{F5BA5660-9ACE-4688-9172-AC0DED2BEB1E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseLibrary", "DatabaseLibrary\DatabaseLibrary.csproj", "{0DCB7AC4-8DD4-4338-A66A-2B9D8AE719FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseLibrary", "DatabaseLibrary\DatabaseLibrary.csproj", "{0DCB7AC4-8DD4-4338-A66A-2B9D8AE719FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InputValidationLibrary", "InputValidationLibrary\InputValidationLibrary.csproj", "{C675EBAC-33A4-4C3A-8C58-5380022D77C4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{0DCB7AC4-8DD4-4338-A66A-2B9D8AE719FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0DCB7AC4-8DD4-4338-A66A-2B9D8AE719FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0DCB7AC4-8DD4-4338-A66A-2B9D8AE719FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C675EBAC-33A4-4C3A-8C58-5380022D77C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C675EBAC-33A4-4C3A-8C58-5380022D77C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C675EBAC-33A4-4C3A-8C58-5380022D77C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C675EBAC-33A4-4C3A-8C58-5380022D77C4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

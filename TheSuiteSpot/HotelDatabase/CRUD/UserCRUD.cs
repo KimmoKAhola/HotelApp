@@ -8,11 +8,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
-using TheSuiteSpot.HotelDatabase.InputHelpers;
 using TheSuiteSpot.HotelDatabase.Menus;
 using TheSuiteSpot.HotelDatabase.Models;
 using TheSuiteSpot.Interfaces;
-using static TheSuiteSpot.HotelDatabase.InputHelpers.PrintMessages;
+using InputValidationLibrary;
+using static InputValidationLibrary.PrintMessages;
 
 namespace TheSuiteSpot.HotelDatabase.CRUD
 {
@@ -31,15 +31,15 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         public void Create(HotelContext ctx)
         {
             Console.Clear();
-            var firstName = ErrorHandling.AskForValidName("first name", 2, 30);
+            var firstName = UserInputValidation.AskForValidName("first name", 2, 30);
             if (firstName == null) { return; }
-            var lastName = ErrorHandling.AskForValidName("last name", 2, 30);
+            var lastName = UserInputValidation.AskForValidName("last name", 2, 30);
             if (lastName == null) { return; }
-            var username = ErrorHandling.AskForValidUsername("username", 6, 30, ctx);
+            var username = UserInputValidation.AskForValidUsername("username", 6, 30);
             if (username == null) { return; }
-            var password = ErrorHandling.AskForValidPassword("password", 6, 30);
+            var password = UserInputValidation.AskForValidPassword("password", 6, 30);
             if (password == null) { return; }
-            var email = ErrorHandling.AskForValidEmail("email", 6, 100, ctx);
+            var email = UserInputValidation.AskForValidEmail("email", 6, 100);
             if (email == null) { return; }
             var user = new User
             {
@@ -64,7 +64,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             Console.Clear();
             Console.Write("Enter the username of the user you want to delete (admin can not be deleted): ");
 
-            var input = ErrorHandling.AskForValidInputString();
+            var input = UserInputValidation.AskForValidInputString();
             if (input == null) { return; }
 
             var userToDelete = Search(input);
@@ -118,7 +118,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         {
             Console.Clear();
             Console.Write("Enter the phrase you want to search for: ");
-            var input = ErrorHandling.AskForValidInputString();
+            var input = UserInputValidation.AskForValidInputString();
             if (input == null) { return; }
             var user = ExactSearch(input);
             if (user != null)
@@ -155,7 +155,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             var allUsers = DbContext.User.Where(u => u.IsActive);
             Console.WriteLine("This search returns all users containing the chosen phrase.");
             Console.Write("Search by entering a username, first name, last name or email: ");
-            var searchInput = ErrorHandling.AskForValidInputString();
+            var searchInput = UserInputValidation.AskForValidInputString();
             if (searchInput == null) { return; }
             var searchResult = allUsers
                 .Where(u => u.UserName.Contains(searchInput)
@@ -221,13 +221,13 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         {
             Console.Clear();
             Console.Write("Enter a username you want to search for (case insensitive search): ");
-            var input = ErrorHandling.AskForValidInputString();
+            var input = UserInputValidation.AskForValidInputString();
             if (input == null) { return; }
             var user = ExactSearch(input);
 
             if (user != null && !user.IsAdmin)
             {
-                var choice = ErrorHandling.MenuValidation(_modelProperties, "Choose an option to update: ");
+                var choice = UserInputValidation.MenuValidation(_modelProperties, "Choose an option to update: ");
                 if (choice != 5)
                 {
                     Console.WriteLine($"You chose to update {_modelProperties[choice]}");
@@ -237,22 +237,22 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 switch (choice)
                 {
                     case 1:
-                        updatedValue = ErrorHandling.AskForValidName("first name", 2, 30);
+                        updatedValue = UserInputValidation.AskForValidName("first name", 2, 30);
                         if (updatedValue == null) { return; }
                         user.FirstName = updatedValue;
                         break;
                     case 2:
-                        updatedValue = ErrorHandling.AskForValidName("last name", 2, 30);
+                        updatedValue = UserInputValidation.AskForValidName("last name", 2, 30);
                         if (updatedValue == null) { return; }
                         user.LastName = updatedValue;
                         break;
                     case 3:
-                        updatedValue = ErrorHandling.AskForValidName("email name", 6, 100);
+                        updatedValue = UserInputValidation.AskForValidName("email name", 6, 100);
                         if (updatedValue == null) { return; }
                         user.Email = updatedValue;
                         break;
                     case 4:
-                        updatedValue = ErrorHandling.AskForValidPassword("password", 6, 30);
+                        updatedValue = UserInputValidation.AskForValidPassword("password", 6, 30);
                         if (updatedValue == null) { return; }
                         user.Password = updatedValue;
                         break;

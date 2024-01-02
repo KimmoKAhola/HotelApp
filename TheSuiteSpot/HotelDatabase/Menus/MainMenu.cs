@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
-using TheSuiteSpot.HotelDatabase.InputHelpers;
 using TheSuiteSpot.Interfaces;
+using InputValidationLibrary;
 
 namespace TheSuiteSpot.HotelDatabase.Menus
 {

@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
-using TheSuiteSpot.HotelDatabase.InputHelpers;
 using TheSuiteSpot.HotelDatabase.Models;
 using TheSuiteSpot.Interfaces;
-using static TheSuiteSpot.HotelDatabase.InputHelpers.PrintMessages;
+using InputValidationLibrary;
+using static InputValidationLibrary.PrintMessages;
 
 namespace TheSuiteSpot.HotelDatabase.CRUD
 {
@@ -51,7 +51,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             {
                 Console.WriteLine($"{bigSpender.User} - {bigSpender.AverageSpending:C2}");
             }
-            if (ErrorHandling.PromptYesOrNo("Do you want to reward them with a voucher?"))
+            if (UserInputValidation.PromptYesOrNo("Do you want to reward them with a voucher?"))
             {
                 foreach (var bigSpender in bigSpenders)
                 {
@@ -66,8 +66,8 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         {
             Console.Clear();
             var allUsers = ctx.User.Include(u => u.UserInbox).Where(u => u.IsActive && !u.IsAdmin && u.UserName != CurrentUser.Instance.User.UserName);
-            string topic = ErrorHandling.AskForValidInputString("message topic");
-            string content = ErrorHandling.AskForValidInputString("message content");
+            string topic = UserInputValidation.AskForValidInputString("message topic");
+            string content = UserInputValidation.AskForValidInputString("message content");
             foreach (var user in allUsers)
             {
                 SystemMessage.SendSystemMessage(ctx, user, topic, content);

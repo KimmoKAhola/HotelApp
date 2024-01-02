@@ -5,12 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
-using static TheSuiteSpot.HotelDatabase.InputHelpers.PrintMessages;
 using TheSuiteSpot.HotelDatabase.Menus;
 using TheSuiteSpot.HotelDatabase.Models;
 using TheSuiteSpot.Interfaces;
-using TheSuiteSpot.HotelDatabase.InputHelpers;
 using System.Diagnostics;
+using InputValidationLibrary;
+using static InputValidationLibrary.PrintMessages;
 namespace TheSuiteSpot.HotelDatabase.CRUD
 {
     public class BookingCRUD(HotelContext dbContext) : ICRUD
@@ -38,24 +38,24 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             }
 
             Console.WriteLine("Do you want a single room?");
-            if (ErrorHandling.PromptYesOrNo("Press y to confirm, anything else to deny: "))
+            if (UserInputValidation.PromptYesOrNo("Press y to confirm, anything else to deny: "))
             {
                 var roomType = GetSuitableRoomType(ctx, 0);
                 var availableRooms = ctx.Room.Include(rt => rt.RoomType).Where(rt => rt.RoomType.Id == roomType.Id).ToList();
 
-                var choice = ErrorHandling.MenuValidation(availableRooms, "Choose: ");
+                var choice = UserInputValidation.MenuValidation(availableRooms, "Choose: ");
                 var chosenRoom = availableRooms[choice - 1];
                 Create(ctx, chosenRoom, user, 0);
             }
             else
             {
                 Console.WriteLine("You have chosen a double room. How many extra beds do you need?");
-                var numberOfExtraBeds = (int?)ErrorHandling.AskForValidNumber(0, 2, "TEST");
+                var numberOfExtraBeds = (int?)UserInputValidation.AskForValidNumber(0, 2, "TEST");
                 if (numberOfExtraBeds == null) { return; }
                 var roomType = GetSuitableRoomType(ctx, (int)numberOfExtraBeds);
                 var availableRooms = ctx.Room.Include(rt => rt.RoomType).Where(rt => rt.RoomType.Id == roomType.Id).ToList();
 
-                var choice = ErrorHandling.MenuValidation(availableRooms, "Choose: ");
+                var choice = UserInputValidation.MenuValidation(availableRooms, "Choose: ");
                 var chosenRoom = availableRooms[choice - 1];
                 Create(ctx, chosenRoom, user, (int)numberOfExtraBeds);
             }
@@ -133,7 +133,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         {
             Console.WriteLine($"The maximum amount of days you can book in a row is: {maxNumberOfDays}");
             Console.Write("Enter the amount of days you want to book: ");
-            var numberOfDays = ErrorHandling.ReturnNumberChoice(maxNumberOfDays);
+            var numberOfDays = UserInputValidation.ReturnNumberChoice(maxNumberOfDays);
             if (numberOfDays < 0)
             {
                 PrintErrorMessage("User chose to exit. Returning to main menu");
@@ -194,7 +194,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 Console.WriteLine(info);
 
                 Console.WriteLine("Do you want to delete this booking?");
-                if (ErrorHandling.PromptYesOrNo("Press y to confirm, anything else to deny: "))
+                if (UserInputValidation.PromptYesOrNo("Press y to confirm, anything else to deny: "))
                 {
                     booking.IsActive = false;
                     PrintSuccessMessage("Booking was deleted");
@@ -251,7 +251,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         {
             Console.Clear();
             Console.Write("Enter a search term to find active bookings that contain that term (try to be specific): ");
-            var userInput = ErrorHandling.AskForValidInputString();
+            var userInput = UserInputValidation.AskForValidInputString();
             if (userInput == null) { return; }
             var bookings = ctx.Booking
                 .Where(b => b.IsActive)

@@ -6,10 +6,10 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
-using TheSuiteSpot.HotelDatabase.InputHelpers;
 using TheSuiteSpot.HotelDatabase.Models;
 using TheSuiteSpot.Interfaces;
-using static TheSuiteSpot.HotelDatabase.InputHelpers.PrintMessages;
+using InputValidationLibrary;
+using static InputValidationLibrary.PrintMessages;
 
 namespace TheSuiteSpot.HotelDatabase.CRUD
 {
@@ -36,12 +36,12 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             Console.Clear();
             Console.WriteLine("Create a new hotel room.");
             var roomTypes = ctx.RoomType.ToList();
-            var input = ErrorHandling.MenuValidation(roomTypes, "Choose a suite type: ");
+            var input = UserInputValidation.MenuValidation(roomTypes, "Choose a suite type: ");
             Console.Write("Enter a unique room number: ");
-            var roomNumber = ErrorHandling.AskForValidRoomNumber(ctx, "room number", 4, 6);
+            var roomNumber = UserInputValidation.AskForValidRoomNumber("room number", 4, 6);
             if (roomNumber == null) { return; }
             Console.Write("Enter a room size: ");
-            var roomSize = (int?)ErrorHandling.AskForValidNumber(20, 200, "Enter a number between 1 and {maximumInput}, or press 'e' to exit: ");
+            var roomSize = (int?)UserInputValidation.AskForValidNumber(20, 200, "Enter a number between 1 and {maximumInput}, or press 'e' to exit: ");
             if (roomSize == null) { return; }
             var room = new Room
             {
@@ -51,7 +51,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 RoomSize = (int)roomSize
             };
             Console.Write("Enter a price per day for the room: ");
-            var pricePerDay = ErrorHandling.AskForValidNumber(1000, 20000, "temp");
+            var pricePerDay = UserInputValidation.AskForValidNumber(1000, 20000, "temp");
             if (pricePerDay == null) { return; }
             room.PricePerDay = (decimal)pricePerDay;
             ctx.Add(room);
@@ -66,7 +66,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             Console.Clear();
             var allRooms = ctx.Room;
             Console.Write("Enter a room number to search for: ");
-            var input = ErrorHandling.AskForValidInputString();
+            var input = UserInputValidation.AskForValidInputString();
 
             var searchResult = ctx.Room.Include(rt => rt.RoomType).Where(r => r.RoomNumber.Equals(input)).FirstOrDefault();
             if (searchResult == null)
@@ -97,7 +97,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 Console.WriteLine($"Room {room.RoomNumber} - {room.RoomType}");
             }
             Console.Write("Enter a room number to update that room: ");
-            var roomNumber = ErrorHandling.AskForValidInputString();
+            var roomNumber = UserInputValidation.AskForValidInputString();
             if (roomNumber == null) { return; }
             var chosenRoom = GetRoom(roomNumber, ctx);
             if (chosenRoom != null)
@@ -105,7 +105,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 Console.Clear();
                 Console.WriteLine($"You wish to update this room: {chosenRoom}\n");
                 Console.WriteLine("These are the properties you can change: ");
-                ErrorHandling.MenuValidation(_modelProperties, "Choose an option: ");
+                UserInputValidation.MenuValidation(_modelProperties, "Choose an option: ");
             }
             else
             {
@@ -125,7 +125,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             PrintNotification("Be advised that this is a highly discouraged action.\nJust because you can, does not mean you should!");
             PrintNotification("Any changes here will only affect future bookings");
             PrintNotification("These are the available properties you can change: ");
-            var choice = ErrorHandling.MenuValidation(_roomTypeProperties, "Choose an option: ");
+            var choice = UserInputValidation.MenuValidation(_roomTypeProperties, "Choose an option: ");
             if (choice == -1) { return; }
             else
             {
@@ -140,12 +140,12 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 switch (choice)
                 {
                     case 1:
-                        updatedValue = ErrorHandling.AskForValidName("suite name", 10, 30);
+                        updatedValue = UserInputValidation.AskForValidName("suite name", 10, 30);
                         if (updatedValue == null) { return; }
                         roomType.SuiteName = updatedValue;
                         break;
                     case 2:
-                        updatedBedValue = (int?)ErrorHandling.AskForValidNumber(0, 2, "test");
+                        updatedBedValue = (int?)UserInputValidation.AskForValidNumber(0, 2, "test");
                         if (updatedBedValue == null) { return; }
                         roomType.NumberOfExtraBeds = (int)updatedBedValue;
                         break;
@@ -194,7 +194,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             {
                 Console.WriteLine(room);
                 Console.WriteLine("Would you like to (soft) delete it?");
-                if (ErrorHandling.PromptYesOrNo("Press y to confirm, anything else to deny: "))
+                if (UserInputValidation.PromptYesOrNo("Press y to confirm, anything else to deny: "))
                 {
                     room.IsActive = !room.IsActive;
                 }
@@ -207,7 +207,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         {
             Console.Clear();
             Console.Write("Enter your room number: ");
-            var roomNumber = ErrorHandling.AskForValidInputString();
+            var roomNumber = UserInputValidation.AskForValidInputString();
             if (roomNumber == null)
             {
                 PrintErrorMessage("No such room exists");

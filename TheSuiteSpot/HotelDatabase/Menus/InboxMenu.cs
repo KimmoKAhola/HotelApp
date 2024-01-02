@@ -2,7 +2,8 @@
 using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
 using TheSuiteSpot.HotelDatabase.Models;
 using TheSuiteSpot.Interfaces;
-using static TheSuiteSpot.HotelDatabase.InputHelpers.PrintMessages;
+using InputValidationLibrary;
+using static InputValidationLibrary.PrintMessages;
 
 namespace TheSuiteSpot.HotelDatabase.Menus
 {

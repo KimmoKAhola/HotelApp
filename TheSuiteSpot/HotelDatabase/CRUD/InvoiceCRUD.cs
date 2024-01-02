@@ -5,10 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
-using TheSuiteSpot.HotelDatabase.InputHelpers;
+//using TheSuiteSpot.HotelDatabase.InputHelpers;
 using TheSuiteSpot.HotelDatabase.Models;
 using TheSuiteSpot.Interfaces;
-using static TheSuiteSpot.HotelDatabase.InputHelpers.PrintMessages;
+//using static TheSuiteSpot.HotelDatabase.InputHelpers.PrintMessages;
+using InputValidationLibrary;
+using static InputValidationLibrary.PrintMessages;
 
 namespace TheSuiteSpot.HotelDatabase.CRUD
 {
@@ -40,7 +42,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         {
             Console.Clear();
             List<Invoice> invoices;
-            if (ErrorHandling.PromptOneOrTwo("Press 1 to view paid invoices, anything else to view unpaid invoices: "))
+            if (UserInputValidation.PromptOneOrTwo("Press 1 to view paid invoices, anything else to view unpaid invoices: "))
             {
                 invoices = invoices = ctx.Invoice
                     .Where(i => i.IsPaid)
@@ -67,12 +69,12 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 var info = InvoiceTemplate(invoice, invoice.Booking.User, invoice.Booking);
                 Console.WriteLine(info);
                 if (!invoice.IsPaid)
-                    if (ErrorHandling.PromptYesOrNo("Click y to change this invoice status to paid: "))
+                    if (UserInputValidation.PromptYesOrNo("Click y to change this invoice status to paid: "))
                     {
                         invoice.IsPaid = true;
                         PrintNotification("Status has been changed to paid.");
                     }
-                if (!ErrorHandling.PromptYesOrNo("Press y to view another, anything else to exit: "))
+                if (!UserInputValidation.PromptYesOrNo("Press y to view another, anything else to exit: "))
                 {
                     break;
                 }
@@ -84,7 +86,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         private static Invoice GetInvoice(HotelContext ctx)
         {
             List<Invoice> invoices;
-            if (ErrorHandling.PromptOneOrTwo("Press 1 to view paid invoices, anything else to view unpaid invoices: "))
+            if (UserInputValidation.PromptOneOrTwo("Press 1 to view paid invoices, anything else to view unpaid invoices: "))
             {
                 invoices = ctx.Invoice.Where(i => i.IsPaid).ToList();
             }
