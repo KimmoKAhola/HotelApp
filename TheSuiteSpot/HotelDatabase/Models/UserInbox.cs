@@ -17,16 +17,14 @@ namespace TheSuiteSpot.HotelDatabase.Models
         {
 
         }
-
         public UserInbox(HotelContext dbContext)
         {
             DbContext = dbContext;
         }
         public HotelContext DbContext { get; set; }
         public int Id { get; set; }
-
-
         public List<SystemMessage> Messages { get; set; } = new List<SystemMessage>();
+
 
 
         /// <summary>

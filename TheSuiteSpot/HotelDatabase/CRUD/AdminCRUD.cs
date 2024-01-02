@@ -64,12 +64,12 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         public void CreateSystemMessage(HotelContext ctx)
         {
             Console.Clear();
-            var allUsers = ctx.User.Where(u => u.IsActive);
+            var allUsers = ctx.User.Include(u => u.UserInbox).Where(u => u.IsActive && !u.IsAdmin && u.UserName != CurrentUser.Instance.User.UserName);
             string topic = ErrorHandling.AskForValidInputString("message topic");
             string content = ErrorHandling.AskForValidInputString("message content");
             foreach (var user in allUsers)
             {
-                SystemMessage.GenerateNewsletterAboutATopic(ctx, user, topic, content);
+                SystemMessage.SendSystemMessage(ctx, user, topic, content);
             }
             DbContext.SaveChanges();
             PrintNotification("A system message has been sent to all users.");

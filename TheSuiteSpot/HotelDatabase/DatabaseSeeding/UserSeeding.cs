@@ -50,6 +50,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                         UserName = "System",
                         Password = "System",
                         Email = "System@TheSuiteSpot.net",
+                        IsAdmin = true,
                         UserRole = systemRole,
                         UserInbox = new UserInbox
                         {

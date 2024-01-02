@@ -60,6 +60,12 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                     //UserInbox.SendNewsLetterWithVoucher(issue.User, DbContext, issue);
                 }
                 DbContext.SaveChanges();
+
+                var twoUsers = DbContext.User.Include(u => u.UserInbox).Include(ur => ur.UserRole).Where(u => !u.IsAdmin).OrderBy(u => u.Id).Take(2);
+
+                SystemMessage.SendMessageBetweenUsers(DbContext, twoUsers.First(), twoUsers.Last());
+
+
             }
         }
     }

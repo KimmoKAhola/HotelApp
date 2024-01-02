@@ -27,9 +27,21 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                     Name = SystemMessageTypes.Reward.ToString(),
                 };
 
+                var type4 = new SystemMessageType
+                {
+                    Name = SystemMessageTypes.UserToUser.ToString(),
+                };
+
+                var type5 = new SystemMessageType
+                {
+                    Name = SystemMessageTypes.Other.ToString(),
+                };
+
                 DbContext.Add(type);
                 DbContext.Add(type2);
                 DbContext.Add(type3);
+                DbContext.Add(type4);
+                DbContext.Add(type5);
                 DbContext.SaveChanges();
             }
         }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
 using TheSuiteSpot.Interfaces;
 
@@ -50,21 +45,33 @@ namespace TheSuiteSpot.HotelDatabase.Models
             ctx.SaveChanges();
             UserInbox.SendMessageWithVoucher(chosenUser, ctx, rewardIssue);
         }
-        public static void GenerateNewsletterAboutATopic(HotelContext ctx, User user, string topic, string content)
+        public static void SendSystemMessage(HotelContext ctx, User receiver, string topic, string content)
         {
-            var chosenUser = ctx.User.Where(u => u.Id == user.Id).First();
+            var chosenUser = ctx.User.Where(u => u.Id == receiver.Id).First();
             var newsletter = new SystemMessage
             {
                 Topic = topic,
+                Sender = receiver.UserName,
                 Content = content,
                 MessageType = ctx.MessageType.Where(n => n.Name == SystemMessageTypes.System.ToString()).First(),
             };
 
-            ctx.Add(newsletter);
+            receiver.UserInbox.Messages.Add(newsletter);
             ctx.SaveChanges();
+        }
 
-            //UserInbox.SendNewsletterSystemMessage(user, ctx, newsletter);
+        public static void SendMessageBetweenUsers(HotelContext ctx, User sender, User receiver)
+        {
+            var message = new SystemMessage
+            {
+                Topic = "SEX ME",
+                Sender = sender.UserName,
+                Content = "U WANT SEX ME",
+                MessageType = ctx.MessageType.Where(n => n.Name == SystemMessageTypes.UserToUser.ToString()).First(),
+            };
 
+            receiver.UserInbox.Messages.Add(message);
+            ctx.SaveChanges();
         }
     }
 }
