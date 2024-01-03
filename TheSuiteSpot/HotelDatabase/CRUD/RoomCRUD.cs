@@ -183,13 +183,13 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             foreach (var category in roomsByCategory)
             {
                 var header = new string('-', category.HeaderLength);
-                Console.WriteLine(header);
-                PrintSuccessMessage($"All of our available {category.SuiteName}s");
+                PrintSuccessMessage($"All of our available {category.SuiteName.SuiteName}s");
                 foreach (var room in category.NumberOfRooms)
                 {
-                    Console.WriteLine(room);
+                    var info = RoomTemplate(room, header);
+                    Console.WriteLine(info);
                 }
-                Console.WriteLine();
+                Console.WriteLine(header);
             }
         }
         public void SoftDelete(HotelContext ctx)
@@ -256,17 +256,15 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             .FirstOrDefault();
             return chosenRoom;
         }
-        private static string RoomTemplate(HotelContext ctx)
+        public static string RoomTemplate(Room room, string header)
         {
-            var allRooms = ctx.Room;
-            return $@"
-Junior suite (size min-max)
-Description: .....
+            return $@"{header}
+{room.Description}
 
-Units available: 2
-Price range: min-max
-Room sizes: min-max
-Sleeping spots: min-max
+Room number : {room.RoomNumber} - size: {room.RoomSize} m²
+Price per day: {room.PricePerDay:C2}
+Number of extra beds: {room.RoomType.NumberOfExtraBeds}
+Price per extra bed: {room.PricePerExtraBed:C2} per day 
 ";
         }
         public static void Sort(HotelContext ctx)

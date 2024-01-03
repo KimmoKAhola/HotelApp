@@ -22,8 +22,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                 var roomTypes = DbContext.RoomType.ToList();
                 var room11 = new Room
                 {
-                    Description = "A cozy and comfortable suite, perfect for travelers seeking a little extra space with basic amenities.\n" +
-                    "For a single person only.",
+                    Description = "A cozy and comfortable suite. For a single person only.",
                     PricePerDay = 2000,
                     RoomNumber = "1001",
                     RoomSize = 24,
@@ -32,8 +31,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
 
                 var room12 = new Room
                 {
-                    Description = "A cozy and comfortable suite, perfect for travelers seeking a little extra space with basic amenities.\n" +
-                    "For a single person only.",
+                    Description = "A cozy and comfortable suite. For a single person only.",
                     PricePerDay = 2000,
                     RoomNumber = "1002",
                     RoomSize = 22,
@@ -42,8 +40,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
 
                 var room21 = new Room
                 {
-                    Description = "Designed for business travelers or those desiring a stylish retreat, the Executive Suite offers added sophistication.\n" +
-                    "For up to 2 visitors.",
+                    Description = "Designed for business travelers or those desiring a stylish retreat. A double room for up to 2 visitors.",
                     PricePerDay = 3500,
                     RoomNumber = "2001",
                     RoomSize = 37,
@@ -53,8 +50,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
 
                 var room22 = new Room
                 {
-                    Description = "Designed for business travelers or those desiring a stylish retreat, the Executive Suite offers added sophistication.\n" +
-                    "For up to 2 visitors.",
+                    Description = "Designed for business travelers or those desiring a stylish retreat. A double room for up to 2 visitors.",
                     PricePerDay = 3800,
                     RoomNumber = "2002",
                     RoomSize = 42,
@@ -64,8 +60,8 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
 
                 var room31 = new Room
                 {
-                    Description = "The Deluxe Suite, ideal for guests seeking enhanced comfort and a touch of indulgence.\n" +
-                    "A double room for up to 4 visitors.",
+                    Description = "The Deluxe Suite, ideal for guests seeking a touch of indulgence." +
+                    " A double room for up to 4 visitors.",
                     PricePerDay = 4300,
                     RoomNumber = "3001",
                     RoomSize = 55,
@@ -75,8 +71,8 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
 
                 var room32 = new Room
                 {
-                    Description = "The Deluxe Suite, ideal for guests seeking enhanced comfort and a touch of indulgence.\n" +
-                    "A double room for up to 4 visitors.",
+                    Description = "The Deluxe Suite, ideal for guests seeking a touch of indulgence." +
+                    " A double room for up to 4 visitors.",
                     PricePerDay = 4500,
                     RoomNumber = "3002",
                     RoomSize = 60,
@@ -86,7 +82,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
 
                 var room41 = new Room
                 {
-                    Description = "The epitome of opulence. The Royal Suite. For a maximum of 6 visitors.",
+                    Description = "The epitome of abundance. The Royal Suite. For a maximum of 6 visitors.",
                     PricePerDay = 9000,
                     RoomNumber = "4001",
                     RoomSize = 100,
@@ -96,7 +92,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
 
                 var room42 = new Room
                 {
-                    Description = "The epitome of opulence. The Royal Suite. For a maximum of 6 visitors.",
+                    Description = "The epitome of abundance. The Royal Suite. For a maximum of 6 visitors.",
                     PricePerDay = 9200,
                     RoomNumber = "4002",
                     RoomSize = 110,
