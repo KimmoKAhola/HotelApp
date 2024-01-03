@@ -52,7 +52,7 @@ namespace TheSuiteSpot.HotelDatabase.Models
             var newsletter = new SystemMessage
             {
                 Topic = topic,
-                Sender = receiver.UserName,
+                Sender = ctx.User.Where(u => u.UserName == "System").First().UserName,
                 Content = content,
                 MessageType = ctx.MessageType.Where(n => n.Name == SystemMessageTypes.System.ToString()).First(),
             };

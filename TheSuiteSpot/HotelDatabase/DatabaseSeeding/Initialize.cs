@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
+using TheSuiteSpot.HotelDatabase.Models;
 using TheSuiteSpot.Interfaces;
 
 namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
@@ -18,7 +19,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
 
         public void Seed()
         {
-            //DbContext.Database.EnsureDeleted();
+            DbContext.Database.EnsureDeleted();
 
             if (!(DbContext.Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator).Exists())
             {
@@ -41,18 +42,31 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                         seeding.SeedData();
                     }
                 }
-                var canceledBookings = DbContext.Invoice
-                    .OrderBy(i => i.DueDate)
-                    .Include(b => b.Booking)
-                    .ThenInclude(u => u.User)
-                    .Where(i => !i.IsPaid && i.DueDate < DateTime.Now.AddDays(-10));
-
-                foreach (var booking in canceledBookings)
-                {
-                    //Delete booking
-                }
                 Console.WriteLine("No seeding done!!");
                 Console.ReadKey();
+            }
+            var canceledBookings = DbContext.Invoice
+                .OrderBy(i => i.DueDate)
+                .Include(b => b.Booking)
+                .ThenInclude(u => u.User)
+                .ThenInclude(u => u.UserInbox)
+                .Where(i => !i.IsPaid && i.DueDate < DateTime.Now.AddDays(-10));
+
+            foreach (var invoice in canceledBookings)
+            {
+                if (invoice.Booking.User.UserName != "Richard")
+                {
+                    invoice.IsActive = false;
+                    invoice.IsPaid = false;
+                    invoice.Booking.IsActive = false;
+                    var content = "Dear sir/mam, since we have not yet received payment before the due date your booking has been canceled.";
+                    SystemMessage.SendSystemMessage(DbContext, invoice.Booking.User, "Your booking has been canceled", content);
+                }
+                else
+                {
+                    var content = "Dear sir. We have not yet received payments for your bookings. Due to your status we have made exceptions but this is your last chance.";
+                    SystemMessage.SendSystemMessage(DbContext, invoice.Booking.User, "System warning", content);
+                }
             }
         }
     }
