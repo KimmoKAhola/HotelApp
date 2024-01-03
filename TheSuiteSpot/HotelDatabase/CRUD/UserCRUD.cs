@@ -14,6 +14,7 @@ using TheSuiteSpot.Interfaces;
 using InputValidationLibrary;
 using static InputValidationLibrary.PrintMessages;
 using System.Reflection.Metadata;
+using System.ComponentModel.DataAnnotations;
 
 namespace TheSuiteSpot.HotelDatabase.CRUD
 {
@@ -76,7 +77,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             SystemMessage.SendCreatedUserMessage(user, ctx);
             var info = FormatUserTable(user, header);
             Console.Clear();
-            PrintSuccessMessage($"The user was created successfully");
+            PrintSuccessMessage($"The user below was created successfully and has been added to the system.");
             Console.WriteLine(info);
             Console.WriteLine(header);
             PressAnyKeyToContinue();
@@ -99,8 +100,17 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 }
                 else
                 {
-                    userToDelete.IsActive = false;
-                    PrintSuccessMessage($"The user with username {userToDelete.UserName} has been deleted.");
+                    PrintSuccessMessage("Your search result yielded this user: ");
+                    string header = new string('-', userToDelete.Email.Length + 7);
+                    var info = FormatUserTable(userToDelete, header);
+                    Console.WriteLine(info);
+                    Console.WriteLine(header);
+                    if (UserInputValidation.PromptYesOrNo("Press y to delete this user, any other key to decline: "))
+                    {
+                        userToDelete.IsActive = false;
+                        PrintSuccessMessage($"The user with username {userToDelete.UserName} has been deleted.");
+                        DbContext.SaveChanges();
+                    }
                 }
             }
             else
@@ -267,11 +277,15 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             var input = UserInputValidation.AskForValidInputString();
             if (input == null) { return; }
             var user = ExactSearch(input);
-
             if (user != null && !user.IsAdmin)
             {
-                var choice = UserInputValidation.MenuValidation(_modelProperties, "Choose an option to update: ");
-                if (choice != 5)
+                PrintNotification("Your result yielded this user:");
+                var header = new string('-', user.Email.Length + 7);
+                var info = FormatUserTable(user, header);
+                Console.Write(info);
+                Console.WriteLine("\n" + header + "\n");
+                var choice = UserInputValidation.MenuValidation(_modelProperties, "Choose an option to update. ");
+                if (choice != _modelProperties.Count)
                 {
                     Console.WriteLine($"You chose to update {_modelProperties[choice]}");
                     Console.Write("Enter the new value: ");
@@ -290,7 +304,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                         user.LastName = updatedValue;
                         break;
                     case 3:
-                        updatedValue = UserInputValidation.AskForValidName("email name", 6, 100);
+                        updatedValue = UserInputValidation.AskForValidEmail("email name", 6, 100);
                         if (updatedValue == null) { return; }
                         user.Email = updatedValue;
                         break;
@@ -304,9 +318,10 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                         //    user.IsSubscribed = !user.IsSubscribed;
                         //    break;
                 }
-                ctx.SaveChanges();
+                DbContext.SaveChanges();
+                Console.Clear();
                 PrintSuccessMessage("Update was successful.");
-                string header = new string('-', user.Email.Length + 7);
+                header = new string('-', user.Email.Length + 7);
                 var userInfo = FormatUserTable(user, header);
                 Console.Write(userInfo);
                 Console.WriteLine("\n" + header);
