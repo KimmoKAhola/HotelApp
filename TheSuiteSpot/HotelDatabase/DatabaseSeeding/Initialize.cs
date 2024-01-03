@@ -19,7 +19,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
 
         public void Seed()
         {
-            DbContext.Database.EnsureDeleted();
+            //DbContext.Database.EnsureDeleted();
 
             if (!(DbContext.Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator).Exists())
             {
@@ -64,8 +64,8 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                 }
                 else
                 {
-                    var content = "Dear sir. We have not yet received payments for your bookings. Due to your status we have made exceptions but this is your last chance.";
-                    SystemMessage.SendSystemMessage(DbContext, invoice.Booking.User, "System warning", content);
+                    var content = "Dear sir. We have not yet received payments for your booking. Due to your status as a big spender we have made exceptions, but please pay as soon as possible.";
+                    SystemMessage.SendSystemMessage(DbContext, invoice.Booking.User, "Unpaid invoice", content);
                 }
             }
         }

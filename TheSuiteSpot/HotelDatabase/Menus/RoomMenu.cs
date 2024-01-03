@@ -47,9 +47,6 @@ namespace TheSuiteSpot.HotelDatabase.Menus
                 case 7:
                     room.GeneralSearch(DbContext);
                     break;
-                case 8:
-                    RoomCRUD.Sort(DbContext);
-                    break;
                 case 0:
                     ReturnToMainMenu();
                     break;
@@ -65,7 +62,6 @@ namespace TheSuiteSpot.HotelDatabase.Menus
             Console.WriteLine("5. Update a room type.");
             Console.WriteLine("6. Delete a room.");
             Console.WriteLine("7. Search for a room.");
-            Console.WriteLine("8. Sort rooms by reviews.");
             Console.WriteLine("0. Return to main menu.");
             Console.Write("Choose: ");
         }

@@ -295,24 +295,5 @@ Number of extra beds: {room.RoomType.NumberOfExtraBeds}
 Price per extra bed: {room.PricePerExtraBed:C2} per day 
 ";
         }
-        public static void Sort(HotelContext ctx)
-        {
-            var query = ctx.Review
-                .Include(rv => rv.Room)
-                .GroupBy(rv => rv.Room.RoomNumber)
-                .Select(c => new
-                {
-                    RoomNumber = c.Key,
-                    SumOfStars = Math.Round(c.Average(rv => rv.StarsGiven) / 10, 1)
-                }).OrderByDescending(r => r.SumOfStars);
-
-            foreach (var result in query)
-            {
-                string info = $"|{result.RoomNumber}|{result.SumOfStars}|";
-                Console.WriteLine(info);
-                //Console.WriteLine($"RoomNumber: {result.RoomNumber}, SumOfStars: {result.SumOfStars}");
-            }
-            PressAnyKeyToContinue();
-        }
     }
 }

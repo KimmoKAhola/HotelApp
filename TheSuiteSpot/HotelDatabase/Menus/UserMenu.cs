@@ -62,7 +62,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
         public void PrintOptions()
         {
             Console.WriteLine("1. Create a new user.");
-            Console.WriteLine("2. Read a single user.");
+            Console.WriteLine("2. Search for username.");
             Console.WriteLine("3. Read all users.");
             Console.WriteLine("4. Update a user.");
             Console.WriteLine("5. Delete a user.");

@@ -157,7 +157,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         public void ExactSearch(HotelContext ctx)
         {
             Console.Clear();
-            Console.Write("Enter the phrase you want to search for: ");
+            Console.Write("Enter the username you want to search for: ");
             var input = UserInputValidation.AskForValidInputString();
             if (input == null) { return; }
             var user = ExactSearch(input);
