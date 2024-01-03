@@ -60,6 +60,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                     .ThenInclude(r => r.Room)
                     .Include(b => b.Booking)
                     .ThenInclude(u => u.User)
+                    .ThenInclude(u => u.UserInbox)
                     .ToList();
             }
 
@@ -73,7 +74,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                     {
                         invoice.IsPaid = true;
                         ctx.SaveChanges();
-                        var content = "Dear sir/mam, we have received your payment. Thank you for your patronage";
+                        var content = $"Dear sir/mam, we have received your payment of {invoice.Amount:C2}. Thank you for your patronage.";
                         SystemMessage.SendSystemMessage(ctx, invoice.Booking.User, "Payment confirmed", content);
                         PrintNotification("Status has been changed to paid.");
                     }
@@ -118,12 +119,27 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
 
         public void GeneralSearch(HotelContext ctx)
         {
-            throw new NotImplementedException();
+            Console.Clear();
+            PrintNotification("You can pick a search term and receive all invoices where the user contains that search term.\nTry to be specific.");
+            var searchInput = UserInputValidation.AskForValidInputString("Enter a search term: ");
+            var searchResult = ctx.Invoice
+                .Include(b => b.Booking)
+                .ThenInclude(u => u.User)
+                .Where(i => i.Booking.User.UserName.Contains(searchInput)
+                || i.Booking.User.Email.Contains(searchInput)
+                || i.Booking.User.FirstName.Contains(searchInput)
+                || i.Booking.User.LastName.Contains(searchInput));
+
+            foreach (var item in searchResult)
+            {
+
+            }
         }
 
         public void Update(HotelContext ctx)
         {
-            Console.WriteLine("You will now update an invoice of your choice.");
+            Console.Clear();
+
             var invoice = GetInvoice(ctx);
 
             Console.Clear();

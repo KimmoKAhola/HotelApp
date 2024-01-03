@@ -321,8 +321,6 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         public void Update(HotelContext ctx)
         {
             Console.Clear();
-            //Console.WriteLine("These are the properties you can change for a booking: ");
-            //ErrorHandling.MenuValidation(_modelProperties, "Choose an option: ");
             Console.WriteLine("Things to update: dates, room, numberofextrabeds, isactive (this should disable invoice if invoice is in the future, refund the customer if so.");
             Console.Write("Enter start date: ");
             DateTime startDate = DateTime.Parse(Console.ReadLine());
