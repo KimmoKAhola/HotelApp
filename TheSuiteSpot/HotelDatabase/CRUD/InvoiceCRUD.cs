@@ -72,10 +72,18 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                     if (UserInputValidation.PromptYesOrNo("Click y to change this invoice status to paid: "))
                     {
                         invoice.IsPaid = true;
+                        ctx.SaveChanges();
+                        var content = "Dear sir/mam, we have received your payment. Thank you for your patronage";
+                        SystemMessage.SendSystemMessage(ctx, invoice.Booking.User, "Payment confirmed", content);
                         PrintNotification("Status has been changed to paid.");
+                    }
+                    else
+                    {
+                        PrintNotification("You chose no");
                     }
                 if (!UserInputValidation.PromptYesOrNo("Press y to view another, anything else to exit: "))
                 {
+                    PrintNotification("You chose to exit");
                     break;
                 }
             }
