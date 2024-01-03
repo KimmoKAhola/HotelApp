@@ -31,15 +31,33 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         public void Create(HotelContext ctx)
         {
             Console.Clear();
+            string? username;
+            string? email;
             var firstName = UserInputValidation.AskForValidName("first name", 2, 30);
             if (firstName == null) { return; }
             var lastName = UserInputValidation.AskForValidName("last name", 2, 30);
             if (lastName == null) { return; }
-            var username = UserInputValidation.AskForValidUsername("username", 6, 30);
+            while (true)
+            {
+                username = UserInputValidation.AskForValidUsername("username", 6, 30);
+                if (!ctx.User.Any(u => u.UserName == username))
+                {
+                    break;
+                }
+                PrintErrorMessage("That username is already taken.");
+            }
             if (username == null) { return; }
             var password = UserInputValidation.AskForValidPassword("password", 6, 30);
             if (password == null) { return; }
-            var email = UserInputValidation.AskForValidEmail("email", 6, 100);
+            while (true)
+            {
+                email = UserInputValidation.AskForValidEmail("email", 6, 100);
+                if (!ctx.User.Any(u => u.Email == email))
+                {
+                    break;
+                }
+                PrintErrorMessage("That email is already taken.");
+            }
             if (email == null) { return; }
             var user = new User
             {
