@@ -353,7 +353,8 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             var test = ctx.User.Where(u => u.UserName == user.UserName)
                 .Include(u => u.UserInbox)
                 .ThenInclude(m => m.Messages)
-                .ThenInclude(v => v.Voucher).ToList();
+                .ThenInclude(v => v.Voucher)
+                .ToList();
             return true;
         }
         public static bool CheckForValidDates(DateTime startDate, DateTime endDate, Booking booking, HotelContext ctx)
