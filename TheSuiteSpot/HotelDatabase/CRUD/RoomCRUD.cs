@@ -34,10 +34,10 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         public void Create(HotelContext ctx)
         {
             Console.Clear();
-            Console.WriteLine("Create a new hotel room.");
+            Console.WriteLine("Create a new hotel room. These are our available room types:\n");
             var roomTypes = ctx.RoomType.ToList();
             var input = UserInputValidation.MenuValidation(roomTypes, "Choose a suite type: ");
-            Console.Write("Enter a unique room number: ");
+            PrintNotification($"You chose: {input}\n");
             string? roomNumber;
             while (true)
             {
@@ -49,8 +49,8 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 PrintErrorMessage("Room number is already taken.");
             }
             if (roomNumber == null) { return; }
-            Console.Write("Enter a room size: ");
-            var roomSize = (int?)UserInputValidation.AskForValidNumber(20, 200, "Enter a number between 1 and {maximumInput}, or press 'e' to exit: ");
+            PrintNotification($"You chose room number: {roomNumber}\n");
+            var roomSize = (int?)UserInputValidation.AskForValidNumber(20, 200, "Enter a value (m²) for the room size");
             if (roomSize == null) { return; }
             var room = new Room
             {
@@ -59,15 +59,17 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 RoomNumber = roomNumber,
                 RoomSize = (int)roomSize
             };
-            Console.Write("Enter a price per day for the room: ");
-            var pricePerDay = UserInputValidation.AskForValidNumber(1000, 20000, "temp");
+            Console.WriteLine();
+            var pricePerDay = UserInputValidation.AskForValidNumber(1000, 20000, "Enter a price per day for the room in SEK");
             if (pricePerDay == null) { return; }
             room.PricePerDay = (decimal)pricePerDay;
             ctx.Add(room);
             ctx.SaveChanges();
 
             PrintSuccessMessage("Room has been added successfully.");
-            Console.WriteLine(room);
+            var header = new string('-', 10);
+            var info = RoomTemplate(room, header);
+            Console.WriteLine(info);
             PressAnyKeyToContinue();
         }
         public void ExactSearch(HotelContext ctx)
@@ -85,7 +87,14 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             else
             {
                 PrintSuccessMessage("Room found:");
-                Console.WriteLine(searchResult);
+                var header = new string('-', 40);
+                if (searchResult.Description.Length > 40)
+                {
+                    header = new string('-', searchResult.Description.Length);
+                }
+                var info = RoomTemplate(searchResult, header);
+                Console.WriteLine(info);
+                Console.WriteLine(header);
             }
             PressAnyKeyToContinue();
         }
@@ -103,7 +112,14 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             Console.WriteLine("These are the available rooms in the hotel: ");
             foreach (var room in allRooms)
             {
-                Console.WriteLine($"Room {room.RoomNumber} - {room.RoomType}");
+                var header = new string('-', 40);
+
+                if (room.Description.Length > 40)
+                {
+                    header = new string('-', room.Description.Length);
+                }
+                var info = RoomTemplate(room, header);
+                Console.WriteLine(info);
             }
             Console.Write("Enter a room number to update that room: ");
             var roomNumber = UserInputValidation.AskForValidInputString();
@@ -196,12 +212,18 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         {
             Console.Clear();
             PrintNotification("You can only delete rooms without any future bookings.");
-            Console.Write("These are the current rooms without any future bookings: ");
-            var roomsWithoutFutureBookings = ctx.Room.Where(b => b.Bookings.All(b => b.EndDate <= DateTime.Today));
-
+            var roomsWithoutFutureBookings = ctx.Room
+                .Include(rt => rt.RoomType)
+                .Include(b => b.Bookings)
+                .Where(b => b.Bookings.All(b => b.EndDate <= DateTime.Today) || !b.Bookings.Any());
+            PrintNotification($"Your result yielded {roomsWithoutFutureBookings.Count()} results. One result will be shown at a time");
+            Console.Write("These are the current rooms without any future bookings: \n");
             foreach (var room in roomsWithoutFutureBookings)
             {
-                Console.WriteLine(room);
+                var header = new string('-', 40);
+                var info = RoomTemplate(room, header);
+                Console.WriteLine(info);
+                Console.WriteLine(header);
                 Console.WriteLine("Would you like to (soft) delete it?");
                 if (UserInputValidation.PromptYesOrNo("Press y to confirm, anything else to deny: "))
                 {
@@ -215,7 +237,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         public void GeneralSearch(HotelContext ctx)
         {
             Console.Clear();
-            Console.Write("Enter your room number: ");
+            Console.Write("Enter a room number sequence to search for: ");
             var roomNumber = UserInputValidation.AskForValidInputString();
             if (roomNumber == null)
             {
@@ -223,6 +245,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             }
             else
             {
+                Console.Clear();
                 var allRooms = ctx.Room
                     .Where(r => r.RoomNumber.Contains(roomNumber))
                     .Include(rt => rt.RoomType)
@@ -232,14 +255,19 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                         c.Key.SuiteName,
                         NumberOfRooms = c.ToList(),
                     });
-                Console.Clear();
                 Console.WriteLine($"These are all the rooms that contains the room number sequence \"{roomNumber}\"");
                 foreach (var item in allRooms)
                 {
                     PrintNotification($"Suite type - {item.SuiteName}");
                     foreach (var room in item.NumberOfRooms)
                     {
-                        Console.WriteLine(room);
+                        var header = new string('-', 40);
+                        if (room.Description.Length > 40)
+                        {
+                            header = new string('-', room.Description.Length);
+                        }
+                        var info = RoomTemplate(room, header);
+                        Console.WriteLine(info);
                     }
                     Console.WriteLine();
                 }

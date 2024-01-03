@@ -86,6 +86,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         public void SoftDelete(HotelContext ctx)
         {
             Console.Clear();
+            PrintErrorMessage("Warning! If you delete a customer it can not be reverted!");
             Console.Write("Enter the username of the user you want to delete (admin can not be deleted): ");
 
             var input = UserInputValidation.AskForValidInputString();
@@ -194,7 +195,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         {
             Console.Clear();
             var allUsers = DbContext.User.Where(u => u.IsActive);
-            Console.WriteLine("This search returns all users containing the chosen phrase.");
+            Console.WriteLine("This search returns all active users containing the chosen phrase.");
             Console.Write("Search by entering a username, first name, last name or email: ");
             var searchInput = UserInputValidation.AskForValidInputString();
             if (searchInput == null) { return; }

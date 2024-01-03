@@ -54,19 +54,10 @@ namespace TheSuiteSpot.HotelDatabase.Models
             return numberOfAdditionalGuests;
         }
 
-        /// <summary>
-        /// Do I even need this?
-        /// </summary>
-        /// <param name="additionalGuests"></param>
-        /// <returns></returns>
-        public static int GetNumberOfExtraBeds(int additionalGuests)
+        public override string ToString()
         {
-            switch (additionalGuests)
-            {
-                case 1:
-                    return 1;
-            }
-            return 0;
+            return $"\nType of room: {SuiteName}\nIs it a double room: {IsDoubleRoom}" +
+                $"\nNumber of extra beds available: {NumberOfExtraBeds}\n";
         }
     }
 }

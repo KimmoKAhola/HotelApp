@@ -216,7 +216,7 @@ namespace InputValidationLibrary
             while (true)
             {
                 Console.Write($"Enter a unique value for {data},\nat least {minimumLength} characters and at most {maxiMumLength} without whitespace\n" +
-                    $"Current naming convention is to only use numbers for the rooms, but strings are allowed (type e to exit to main menu): ");
+                    $"Current naming convention is to only use numbers for the rooms,\nbut strings are allowed (type e to exit to main menu): ");
                 value = Console.ReadLine();
 
                 if (value.ToLower() == "e")
@@ -234,6 +234,7 @@ namespace InputValidationLibrary
             decimal choice;
             while (true)
             {
+                Console.WriteLine(promptMessage);
                 Console.Write($"Enter a number between {minimumInput} and {maximumInput}, or press 'e' to exit: ");
                 string? input = Console.ReadLine();
                 if (input?.ToLower() == "e" || input == null)
