@@ -108,17 +108,8 @@ namespace InputValidationLibrary
                 }
                 else if (value.Length >= minimumLength && !value.Any(char.IsWhiteSpace))
                 {
-                    //var isUsernameTaken = ctx.User.Any(user => user.UserName.ToLower().Equals(value.ToLower()));
-
-                    //if (isUsernameTaken)
-                    //{
-                    //    PrintMessages.PrintErrorMessage($"That {data} is already taken by another user.");
-                    //}
-                    //else
-                    //{
                     Console.WriteLine();
                     return value;
-                    //}
                 }
             }
         }
@@ -130,12 +121,12 @@ namespace InputValidationLibrary
         /// <param name="maximumLength"></param>
         /// <param name="ctx"></param>
         /// <returns></returns>
-        public static string? AskForValidEmail(string data, int minimumLength, int maximumLength) // , HotelContext ctx
+        public static string? AskForValidEmail(string data, int minimumLength, int maximumLength)
         {
             var value = "";
             while (true)
             {
-                Console.Write($"Enter a unique value for {data},\nat least {minimumLength} and at most {maximumLength} characters without whitespace\n(type e to exit to the main menu): ");
+                Console.Write($"Enter a unique value for {data},\nat least {minimumLength} and at most {maximumLength} characters without whitespace\nYour email needs to contain @\n(type e to exit to the main menu): ");
                 value = Console.ReadLine();
 
                 if (value.Contains("admin", StringComparison.CurrentCultureIgnoreCase))
@@ -146,19 +137,10 @@ namespace InputValidationLibrary
                 {
                     return null;
                 }
-                else if (value.Length >= minimumLength && !value.Any(char.IsWhiteSpace))
+                else if (value.Length >= minimumLength && !value.Any(char.IsWhiteSpace) && value.Contains('@'))
                 {
-                    //var isEmailTaken = ctx.User.Any(user => user.Email.ToLower().Equals(value.ToLower()));
-
-                    //if (isEmailTaken)
-                    //{
-                    //    PrintMessages.PrintErrorMessage($"That {data} is already taken by another user.");
-                    //}
-                    //else
-                    //{
                     Console.WriteLine();
                     return value;
-                    //}
                 }
             }
         }
@@ -228,34 +210,24 @@ namespace InputValidationLibrary
             }
             return value;
         }
-        public static string? AskForValidRoomNumber(string data, int minimumLength, int maxiMumLength) // HotelContext ctx, 
+        public static string? AskForValidRoomNumber(string data, int minimumLength, int maxiMumLength)
         {
-            //var value = "";
-            //var allRooms = ctx.Room;
-            //while (true)
-            //{
-            //    Console.Write($"Enter a unique value for {data},\nat least {minimumLength} characters and at most {maxiMumLength} without whitespace\n" +
-            //        $"Current naming convention is to only use numbers for the rooms, but strings are allowed (type e to exit to main menu): ");
-            //    value = Console.ReadLine();
+            var value = "";
+            while (true)
+            {
+                Console.Write($"Enter a unique value for {data},\nat least {minimumLength} characters and at most {maxiMumLength} without whitespace\n" +
+                    $"Current naming convention is to only use numbers for the rooms, but strings are allowed (type e to exit to main menu): ");
+                value = Console.ReadLine();
 
-            //    foreach (var room in allRooms)
-            //    {
-            //        if (room.RoomNumber.Equals(value, StringComparison.CurrentCultureIgnoreCase))
-            //        {
-            //            PrintMessages.PrintErrorMessage($"That {data} is already taken.");
-            //            value = "";
-            //        }
-            //    }
-            //    if (value.ToLower() == "e")
-            //    {
-            //        return null;
-            //    }
-            //    else if (value.Length >= minimumLength && value.Length <= maxiMumLength && !value.Any(char.IsWhiteSpace))
-            //    {
-            //        return value;
-            //    }
-            //}
-            return "";
+                if (value.ToLower() == "e")
+                {
+                    return null;
+                }
+                else if (value.Length >= minimumLength && value.Length <= maxiMumLength && !value.Any(char.IsWhiteSpace))
+                {
+                    return value;
+                }
+            }
         }
         public static decimal? AskForValidNumber(decimal minimumInput, decimal maximumInput, string promptMessage)
         {

@@ -38,7 +38,16 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             var roomTypes = ctx.RoomType.ToList();
             var input = UserInputValidation.MenuValidation(roomTypes, "Choose a suite type: ");
             Console.Write("Enter a unique room number: ");
-            var roomNumber = UserInputValidation.AskForValidRoomNumber("room number", 4, 6);
+            string? roomNumber;
+            while (true)
+            {
+                roomNumber = UserInputValidation.AskForValidRoomNumber("room number", 4, 6);
+                if (!ctx.Room.Any(r => r.RoomNumber == roomNumber))
+                {
+                    break;
+                }
+                PrintErrorMessage("Room number is already taken.");
+            }
             if (roomNumber == null) { return; }
             Console.Write("Enter a room size: ");
             var roomSize = (int?)UserInputValidation.AskForValidNumber(20, 200, "Enter a number between 1 and {maximumInput}, or press 'e' to exit: ");

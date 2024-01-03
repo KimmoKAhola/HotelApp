@@ -66,12 +66,14 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 UserName = username,
                 Password = password,
                 Email = email,
-                UserRole = DbContext.UserRole.Where(r => r.RoleName.Contains("Guest")).First()
+                UserRole = ctx.UserRole.Where(r => r.RoleName.Contains("Guest")).First(),
+                UserInbox = new UserInbox { },
             };
-            DbContext.User.Add(user);
-            DbContext.SaveChanges();
-            //UserInbox.SendCreatedUserMessage(user, DbContext);
+            ctx.User.Add(user);
+            ctx.SaveChanges();
+            SystemMessage.SendCreatedUserMessage(user, ctx);
             var info = FormatUserTable(user);
+            Console.Clear();
             PrintSuccessMessage($"The user was created successfully");
             Console.WriteLine(info);
             PressAnyKeyToContinue();
@@ -96,7 +98,6 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 {
                     userToDelete.IsActive = false;
                     PrintSuccessMessage($"The user with username {userToDelete.UserName} has been deleted.");
-                    //UserInbox.SendDeletedUserConfirmation(userToDelete);
                 }
             }
             else
@@ -110,7 +111,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         {
             Console.Clear();
             Console.WriteLine("All active users: ");
-            var users = DbContext.User.Where(u => u.IsActive);
+            var users = ctx.User.Where(u => u.IsActive);
 
             foreach (var user in users)
             {
@@ -279,7 +280,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                         //    user.IsSubscribed = !user.IsSubscribed;
                         //    break;
                 }
-                DbContext.SaveChanges();
+                ctx.SaveChanges();
                 PrintSuccessMessage("Update was successful.");
                 var userInfo = FormatUserTable(user);
                 Console.WriteLine(userInfo);
