@@ -47,10 +47,6 @@ namespace TheSuiteSpot.HotelDatabase.Menus
             Console.WriteLine("2. Send a system-wide message to all users.");
             Console.WriteLine("3. View our most popular rooms.");
             Console.WriteLine("4. View our highest spenders");
-            Console.WriteLine("1. ");
-            Console.WriteLine("1. ");
-            Console.WriteLine("1. ");
-            Console.WriteLine("1. ");
         }
 
         public void ReturnToMainMenu()
@@ -59,32 +55,3 @@ namespace TheSuiteSpot.HotelDatabase.Menus
         }
     }
 }
-
-
-
-//var userAverageSpending = ctx.Invoice
-//               .Where(i => !i.IsPaid)
-//               .GroupBy(i => i.Booking.User.Id)
-//               .Select(c => new
-//               {
-//                   UserId = c.Key,
-//                   AverageSpending = c.Average(i => i.Amount)
-//               }).Average(u => u.AverageSpending);
-
-//var bigSpenders = ctx.Invoice
-//                .Where(i => !i.IsPaid || i.IsPaid)
-//                .Include(b => b.Booking)
-//                .ThenInclude(u => u.User)
-//                .GroupBy(u => u.Booking.User)
-//                .Select(c => new
-//                {
-//                    User = c.Key,
-//                    AverageSpending = c.Average(i => i.Amount)
-//                })
-//                .Where(user => user.AverageSpending >=
-//                    ctx.Invoice
-//                        .Where(i => !i.IsPaid)
-//                        .GroupBy(i => i.Booking.User)
-//                        .Select(c => c.Average(i => i.Amount))
-//                        .Average())
-//                .ToList();

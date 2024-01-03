@@ -13,7 +13,6 @@ namespace TheSuiteSpot.HotelDatabase.Menus
 
         public void Display()
         {
-            //var booking = new BookingCRUD(DbContext);
             MainMenu.PrintBanner();
             PrintOptions();
             var input = Convert.ToInt32(Console.ReadLine());

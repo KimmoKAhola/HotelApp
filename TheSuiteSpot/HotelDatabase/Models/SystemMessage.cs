@@ -61,13 +61,13 @@ namespace TheSuiteSpot.HotelDatabase.Models
             ctx.SaveChanges();
         }
 
-        public static void SendMessageBetweenUsers(HotelContext ctx, User sender, User receiver)
+        public static void SendMessageBetweenUsers(HotelContext ctx, User sender, User receiver, string topic, string content)
         {
             var message = new SystemMessage
             {
-                Topic = "SEX ME",
+                Topic = topic,
                 Sender = sender.UserName,
-                Content = "U WANT SEX ME",
+                Content = content,
                 MessageType = ctx.MessageType.Where(n => n.Name == SystemMessageTypes.UserToUser.ToString()).First(),
             };
 

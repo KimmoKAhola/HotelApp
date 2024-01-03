@@ -91,22 +91,22 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
 
         public void GeneralSearch(HotelContext ctx)
         {
-            throw new NotImplementedException();
+
         }
 
         public void ReadAll(HotelContext ctx)
         {
-            throw new NotImplementedException();
+
         }
 
         public void SoftDelete(HotelContext ctx)
         {
-            throw new NotImplementedException();
+
         }
 
         public void Update(HotelContext ctx)
         {
-            throw new NotImplementedException();
+
         }
 
         public void ViewMostPopularRooms(HotelContext ctx)

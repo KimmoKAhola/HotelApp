@@ -40,18 +40,34 @@ namespace TheSuiteSpot.HotelDatabase.Menus
 
         public void SendMessageToUser()
         {
-            throw new NotImplementedException();
+            var username = UserInputValidation.AskForValidInputString("username");
+            if (username == null) { return; }
+            if (DbContext.User.Any(u => u.UserName == username))
+            {
+                var receiver = DbContext.User
+                    .Where(u => u.UserName == username)
+                    .Include(u => u.UserInbox).First();
+
+                var topic = UserInputValidation.AskForValidInputString("message topic");
+                if (topic == null) { return; }
+                var content = UserInputValidation.AskForValidInputString("message content");
+                if (content == null) { return; }
+
+                SystemMessage.SendMessageBetweenUsers(DbContext, CurrentUser.Instance.User, receiver, topic, content);
+                PrintSuccessMessage("Message has been sent.");
+            }
+            PressAnyKeyToContinue();
         }
 
         public void PrintOptions()
         {
-            //var unreadMessages = DbContext.User
-            //    .Where(u => u.Id == CurrentUser.Instance.User.Id)
-            //    .Include(u => u.UserInbox
-            //    .Where(m => !m.IsRead)).First();
-            //var numberOfUnreadMessages = unreadMessages.UserMessages.Count;
+            var unreadMessages = DbContext.User
+                .Where(u => u.UserName == CurrentUser.Instance.User.UserName)
+                .Include(u => u.UserInbox)
+                .ThenInclude(m => m.Messages.Where(x => !x.IsRead));
+
             MainMenu.PrintBanner();
-            Console.WriteLine($"You currently have unread messages."); //{numberOfUnreadMessages}
+            Console.WriteLine($"You currently have {unreadMessages.Count()} unread messages."); //{numberOfUnreadMessages}
             Console.WriteLine("1. View unread messages.");
             Console.WriteLine("2. View all sent system messages.");
             Console.WriteLine("3. View all received messages.");
@@ -118,27 +134,23 @@ namespace TheSuiteSpot.HotelDatabase.Menus
         }
         public void ShowUnreadMessages()
         {
-            //Console.Clear();
-            //var unreadMessages = DbContext.User
-            //    .Where(u => u.Id == CurrentUser.Instance.User.Id)
-            //    .Include(u => u.UserInbox
-            //    .Where(m => !m.IsRead)).First();
-            //foreach (var unreadMessage in unreadMessages.UserMessages)
-            //{
-            //    Console.WriteLine($"Sent by: {unreadMessage.Sender}");
-            //    Console.WriteLine($"time stamp: {unreadMessage.MessageTimeStamp}");
-            //    var receiver = DbContext.User.FirstOrDefault(u => u.Id == unreadMessage.Receiver.Id);
-            //    Console.WriteLine($"Message text: {unreadMessage.MessageText}");
-            //    Console.WriteLine($"Sent to: {receiver.UserName}");
-            //    Console.WriteLine();
-            //    unreadMessage.IsRead = true;
-            //    DbContext.SaveChanges();
-            //    Console.WriteLine("Press any key to continue to the next unread message.");
-            //    Console.ReadKey();
-            //    Console.Clear();
-            //}
-            //Console.WriteLine("Press any key to continue.");
-            //Console.ReadKey();
+            var unreadMessages = DbContext.User
+                .Where(u => u.UserName == CurrentUser.Instance.User.UserName)
+                .Include(u => u.UserInbox)
+                .ThenInclude(m => m.Messages.Where(m => !m.IsRead))
+                .Select(c => new
+                {
+                    msg = c.UserInbox.Messages.ToList(),
+                });
+
+            foreach (var message in unreadMessages)
+            {
+                foreach (var msg in message.msg)
+                {
+                    Console.WriteLine(msg.Content);
+                    PressAnyKeyToContinue();
+                }
+            }
         }
 
         public void ShowReceivedMessages(User loggedInUser)
