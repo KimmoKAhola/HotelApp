@@ -13,6 +13,7 @@ using TheSuiteSpot.HotelDatabase.Models;
 using TheSuiteSpot.Interfaces;
 using InputValidationLibrary;
 using static InputValidationLibrary.PrintMessages;
+using System.Reflection.Metadata;
 
 namespace TheSuiteSpot.HotelDatabase.CRUD
 {
@@ -111,12 +112,19 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         {
             Console.Clear();
             Console.WriteLine("All active users: ");
-            var users = ctx.User.Where(u => u.IsActive);
-
+            var users = ctx.User
+                .Include(ur => ur.UserRole)
+                .Where(u => u.IsActive && u.UserRole.RoleName != UserRoles.System.ToString())
+                .OrderBy(u => u.Id);
+            var maxStringLength = new string('-', users.Max(c => c.Email.Length) + 7);
             foreach (var user in users)
             {
-                string info = FormatUserTable(user);
-                Console.WriteLine(info);
+                string info = FormatUserTable(user, maxStringLength);
+                Console.Write(info);
+                if (user == users.Last())
+                {
+                    Console.WriteLine("\n" + maxStringLength);
+                }
             }
             PressAnyKeyToContinue();
         }
@@ -292,16 +300,31 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             PressAnyKeyToContinue();
         }
 
-        private static string FormatUserTable(User user)
+        private static string FormatUserTable(User user, string header)
         {
-            var divider = new string('-', user.Email.Length + 7);
 
-            return $@"
-{divider}
+            string info = $@"
+{header}
 Name: {user.FirstName} {user.LastName}
 Username: {user.UserName}
-Email: {user.Email}
-{divider}";
+Email: {user.Email}";
+            return info;
+        }
+
+        private static string FormatUserTable(User user)
+        {
+
+            //            string info = $@"
+            //{header}
+            //Name: {user.FirstName} {user.LastName}
+            //Username: {user.UserName}
+            //Email: {user.Email}
+            //{header}";
+
+            //            return string.Join(Environment.NewLine,
+            //    info.Split(Environment.NewLine)
+            //           .Select(line => line.PadRight(header.Length)));
+            return "";
         }
     }
 }
