@@ -94,7 +94,7 @@ namespace TheSuiteSpot
             }
             else
             {
-                CurrentUser.SetCurrentUser(DbContext.User.Where(u => u.IsAdmin).First());
+                CurrentUser.SetCurrentUser(DbContext.User.Where(u => u.IsAdmin && u.UserName == "admin").First());
                 return false;
             }
         }

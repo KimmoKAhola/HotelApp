@@ -115,8 +115,8 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                     }
                     ctx.SaveChanges();
                 }
-                CurrentUser.SetCurrentUser(DbContext.User.Where(u => u.IsAdmin && u.UserName == "admin").First());
             }
+            CurrentUser.SetCurrentUser(DbContext.User.Where(u => u.IsAdmin && u.UserName == "admin").First());
         }
     }
 }

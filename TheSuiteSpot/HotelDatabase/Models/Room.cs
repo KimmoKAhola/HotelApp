@@ -30,13 +30,5 @@ namespace TheSuiteSpot.HotelDatabase.Models
         public RoomType RoomType { get; set; } = null!;
         [Required]
         public bool IsActive { get; set; } = true;
-        // Create a room template method that looks better than this shit
-        //public override string ToString()
-        //{
-        //    return $"\nRoom number: {RoomNumber} - Room size: {RoomSize} m²" +
-        //        $"\nPrice per day: {PricePerDay:C2}" +
-        //        $"\nDescription: {Description}" +
-        //        $"\nCan it be booked: {IsActive}";
-        //}
     }
 }

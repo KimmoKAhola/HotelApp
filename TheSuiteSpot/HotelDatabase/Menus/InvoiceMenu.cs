@@ -18,21 +18,15 @@ namespace TheSuiteSpot.HotelDatabase.Menus
             switch (input)
             {
                 case 1:
-
-                    break;
-                case 2:
-                    invoice.ExactSearch(DbContext);
-                    break;
-                case 3:
                     invoice.ReadAll(DbContext);
                     break;
-                case 4:
+                case 2:
                     invoice.Update(DbContext);
                     break;
-                case 5:
+                case 3:
                     invoice.SoftDelete(DbContext);
                     break;
-                case 6:
+                case 4:
                     invoice.GeneralSearch(DbContext);
                     break;
                 case 0:
@@ -44,23 +38,13 @@ namespace TheSuiteSpot.HotelDatabase.Menus
 
         public void PrintOptions()
         {
-            Console.WriteLine("1. Create a new invoice. ------- Remove this");
-            Console.WriteLine("2. Exact search for invoice.");
-            Console.WriteLine("3. Read all invoices.");
-            Console.WriteLine("4. Update an invoice.");
-            Console.WriteLine("5. Delete an invoice.");
-            Console.WriteLine("6. Search for an invoice by general phrase.");
+            Console.WriteLine("1. Read all paid/unpaid invoices.");
+            Console.WriteLine("2. Update an invoice.");
+            Console.WriteLine("3. Delete an invoice.");
+            Console.WriteLine("4. Search for an invoice by general phrase.");
             Console.WriteLine("0. Return to main menu.");
 
         }
-
-        //Console.WriteLine("1. Create booking.");
-        //    Console.WriteLine("2. Read a single booking.");
-        //    Console.WriteLine("3. Read all bookings.");
-        //    Console.WriteLine("4. Update a booking.");
-        //    Console.WriteLine("5. Delete a booking.");
-        //    Console.WriteLine("6. Search for a booking.");
-        //    Console.WriteLine("7. Return to main menu.");
         public void ReturnToMainMenu()
         {
             _ = new MainMenu(Menus);
