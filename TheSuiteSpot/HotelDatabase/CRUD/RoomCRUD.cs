@@ -54,14 +54,21 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             if (roomSize == null) { return; }
             var room = new Room
             {
-                Description = "Test",
                 RoomType = roomTypes[input - 1],
                 RoomNumber = roomNumber,
                 RoomSize = (int)roomSize
             };
+            var roomDescription = UserInputValidation.AskForValidInputString("description (optional) ");
+            if (roomDescription == null) { return; }
+            room.Description = roomDescription;
             Console.WriteLine();
             var pricePerDay = UserInputValidation.AskForValidNumber(1000, 20000, "Enter a price per day for the room in SEK");
             if (pricePerDay == null) { return; }
+            if (room.RoomType.SuiteName == "Deluxe" || room.RoomType.SuiteName == "Royal")
+            {
+                var pricePerExtraBed = UserInputValidation.AskForValidNumber(200, 3000, "Enter a price per day per each extra bed. ");
+                room.PricePerExtraBed = pricePerExtraBed;
+            }
             room.PricePerDay = (decimal)pricePerDay;
             ctx.Add(room);
             ctx.SaveChanges();
