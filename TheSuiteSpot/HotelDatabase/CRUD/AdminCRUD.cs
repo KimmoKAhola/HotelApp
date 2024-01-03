@@ -45,21 +45,34 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                                     .GroupBy(i => i.Booking.User)
                                     .Select(c => c.Average(i => i.Amount))
                                     .Average())
-                            .ToList();
+                            .ToList()
+                            .OrderByDescending(x => x.AverageSpending);
             PrintNotification($"Here are our customer that has spent more than the average {userAverageSpending:C2}");
             foreach (var bigSpender in bigSpenders)
             {
-                Console.WriteLine($"{bigSpender.User} - {bigSpender.AverageSpending:C2}");
-            }
-            if (UserInputValidation.PromptYesOrNo("Do you want to reward them with a voucher?"))
-            {
-                foreach (var bigSpender in bigSpenders)
+                var divider = new string('-', 40);
+                Console.WriteLine(divider);
+                Console.WriteLine($"Name: {bigSpender.User.FirstName} {bigSpender.User.LastName}");
+                Console.WriteLine($"Username {bigSpender.User.UserName}");
+                Console.WriteLine($"Has spent: {bigSpender.AverageSpending:C2}");
+                if (bigSpender == bigSpenders.Last())
                 {
-                    SystemMessage.SendRewardMessage(DbContext, 20, bigSpender.User);
+                    Console.WriteLine(divider);
+                    Console.WriteLine();
                 }
             }
+            if (UserInputValidation.PromptYesOrNo("Do you want to reward them with a voucher?\nPress y to confirm, anything else to exit: "))
+            {
+                PrintNotification("You chose yes\n");
+                var discount = UserInputValidation.AskForValidNumber(1, 99, "Choose a discount percentage. ");
+                if (discount == null) { return; }
+                foreach (var bigSpender in bigSpenders)
+                {
+                    SystemMessage.SendRewardMessage(DbContext, (decimal)discount, bigSpender.User);
+                }
+                PrintSuccessMessage("Vouchers have been sent.");
+            }
             DbContext.SaveChanges();
-            PressAnyKeyToContinue();
         }
 
         public void CreateSystemMessage(HotelContext ctx)

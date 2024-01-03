@@ -63,6 +63,24 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                     DbContext.SaveChanges();
                     SystemMessage.SendBookingConfirmationMessage(DbContext, booking.User, booking);
                 }
+                for (int i = 0; i < 2; i++)
+                {
+                    var randomUser = random.Next(0, allUsers.Count);
+                    var randomRoom = random.Next(0, rooms.Count);
+                    var randomDuration = random.Next(1, 10);
+                    var startDate = DateTime.Today.Date.AddDays(-11);
+                    var booking = new Booking
+                    {
+                        StartDate = startDate + new TimeSpan(8, 0, 0),
+                        EndDate = startDate.AddDays(randomDuration).Date + new TimeSpan(16, 0, 0),
+                        User = allUsers[randomUser],
+                        Room = rooms[randomRoom],
+                        NumberOfExtraBeds = 0
+                    };
+                    DbContext.Booking.Add(booking);
+                    DbContext.SaveChanges();
+                    SystemMessage.SendBookingConfirmationMessage(DbContext, booking.User, booking);
+                }
             }
         }
     }

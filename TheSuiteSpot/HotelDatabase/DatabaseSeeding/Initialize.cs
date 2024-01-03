@@ -50,7 +50,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                 .Include(b => b.Booking)
                 .ThenInclude(u => u.User)
                 .ThenInclude(u => u.UserInbox)
-                .Where(i => !i.IsPaid && i.DueDate < DateTime.Now.AddDays(-10));
+                .Where(i => !i.IsPaid && i.DueDate < DateTime.Now);
 
             foreach (var invoice in canceledBookings)
             {
