@@ -175,7 +175,7 @@ namespace InputValidationLibrary
 
             while (true)
             {
-                Console.Write($"Enter a unique value for {data},\nat least {minimumLength} and at most {maximumLength} characters without whitespace\n(type e to exit to main menu): ");
+                Console.Write($"Enter a value for {data},\nat least {minimumLength} and at most {maximumLength} characters without whitespace\n(type e to exit to main menu): ");
                 value = Console.ReadLine();
                 if (value.ToLower() == "e")
                 {
