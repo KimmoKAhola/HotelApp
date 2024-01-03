@@ -72,11 +72,13 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             };
             ctx.User.Add(user);
             ctx.SaveChanges();
+            string header = new string('-', user.Email.Length + 7);
             SystemMessage.SendCreatedUserMessage(user, ctx);
-            var info = FormatUserTable(user);
+            var info = FormatUserTable(user, header);
             Console.Clear();
             PrintSuccessMessage($"The user was created successfully");
             Console.WriteLine(info);
+            Console.WriteLine(header);
             PressAnyKeyToContinue();
         }
 
@@ -150,8 +152,10 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             var user = ExactSearch(input);
             if (user != null)
             {
-                var info = FormatUserTable(user);
+                string header = new string('-', user.Email.Length + 7);
+                var info = FormatUserTable(user, header);
                 Console.WriteLine(info);
+                Console.WriteLine(header);
             }
             else
             {
@@ -184,23 +188,35 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             Console.Write("Search by entering a username, first name, last name or email: ");
             var searchInput = UserInputValidation.AskForValidInputString();
             if (searchInput == null) { return; }
-            var searchResult = allUsers
+            var searchQuery = allUsers
                 .Where(u => u.UserName.Contains(searchInput)
                 || u.Email.Contains(searchInput)
                 || u.FirstName.Contains(searchInput)
-                || u.LastName.Contains(searchInput));
-            if (searchResult.Any())
+                || u.LastName.Contains(searchInput))
+                .OrderBy(u => u.Id);
+            Console.Clear();
+            if (searchQuery.Any())
             {
-                if (searchResult.Count() > _maxSearchResult)
+                List<User> searchResult;
+                if (searchQuery.Count() > _maxSearchResult)
                 {
                     PrintNotification($"Your search result yielded more than {_maxSearchResult} users. Only the first {_maxSearchResult} users will be shown.");
-                    searchResult.Take(_maxSearchResult);
+                    searchResult = searchQuery.Take(_maxSearchResult).ToList();
+                }
+                else
+                {
+                    searchResult = searchQuery.ToList();
                 }
                 Console.WriteLine($"Result of your search: ");
+                string header = new string('-', searchQuery.Max(u => u.Email.Length) + 7);
                 foreach (var user in searchResult)
                 {
-                    var info = FormatUserTable(user);
-                    Console.WriteLine(info);
+                    var info = FormatUserTable(user, header);
+                    Console.Write(info);
+                    if (user == searchResult.Last())
+                    {
+                        Console.WriteLine("\n" + header);
+                    }
                 }
             }
             else
@@ -290,8 +306,10 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 }
                 ctx.SaveChanges();
                 PrintSuccessMessage("Update was successful.");
-                var userInfo = FormatUserTable(user);
-                Console.WriteLine(userInfo);
+                string header = new string('-', user.Email.Length + 7);
+                var userInfo = FormatUserTable(user, header);
+                Console.Write(userInfo);
+                Console.WriteLine("\n" + header);
             }
             else
             {
@@ -307,24 +325,26 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
 {header}
 Name: {user.FirstName} {user.LastName}
 Username: {user.UserName}
-Email: {user.Email}";
+Email: {user.Email}
+Password: {user.Password}
+Subscribed: {user.IsSubscriber}";
             return info;
         }
 
-        private static string FormatUserTable(User user)
-        {
+        //private static string FormatUserTable(User user)
+        //{
 
-            //            string info = $@"
-            //{header}
-            //Name: {user.FirstName} {user.LastName}
-            //Username: {user.UserName}
-            //Email: {user.Email}
-            //{header}";
+        //    //            string info = $@"
+        //    //{header}
+        //    //Name: {user.FirstName} {user.LastName}
+        //    //Username: {user.UserName}
+        //    //Email: {user.Email}
+        //    //{header}";
 
-            //            return string.Join(Environment.NewLine,
-            //    info.Split(Environment.NewLine)
-            //           .Select(line => line.PadRight(header.Length)));
-            return "";
-        }
+        //    //            return string.Join(Environment.NewLine,
+        //    //    info.Split(Environment.NewLine)
+        //    //           .Select(line => line.PadRight(header.Length)));
+        //    return "";
+        //}
     }
 }
