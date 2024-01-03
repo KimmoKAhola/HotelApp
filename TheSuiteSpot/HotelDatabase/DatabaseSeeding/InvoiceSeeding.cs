@@ -32,33 +32,30 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                     {
                         var currentUser = booking.User;
                         var admin = ctx.User.Where(u => u.IsAdmin).First();
-                        if (!booking.HasActiveInvoice)
-                        {
-                            var numberOfDays = (int)(booking.EndDate - booking.StartDate).TotalDays;
 
-                            var pricePerDay = booking.Room.PricePerDay;
-                            var totalAmount = pricePerDay * numberOfDays;
-                            var invoice = new Invoice
-                            {
-                                DateCreated = booking.StartDate,
-                                DueDate = booking.StartDate.AddDays(10),
-                                Amount = totalAmount,
-                                Booking = booking,
-                            };
-                            if (invoice.DueDate < DateTime.Today.AddDays(10) && invoice.Booking.User.Id != 3)
-                            {
-                                invoice.IsPaid = true;
-                            }
-                            var invoiceDescription = InvoiceCRUD.InvoiceTemplate(invoice, currentUser, booking);
-                            invoice.InvoiceDescription = invoiceDescription;
-                            booking.HasActiveInvoice = true;
-                            ctx.Invoice.Add(invoice);
-                            ctx.SaveChanges();
-                            SystemMessage.SendInvoiceMessage(ctx, currentUser, invoice, booking);
+                        var numberOfDays = (int)(booking.EndDate - booking.StartDate).TotalDays;
+
+                        var pricePerDay = booking.Room.PricePerDay;
+                        var totalAmount = pricePerDay * numberOfDays;
+                        var invoice = new Invoice
+                        {
+                            DateCreated = booking.StartDate,
+                            DueDate = booking.StartDate.AddDays(10),
+                            Amount = totalAmount,
+                            Booking = booking,
+                        };
+                        if (invoice.DueDate < DateTime.Today.AddDays(10) && invoice.Booking.User.Id != 3)
+                        {
+                            invoice.IsPaid = true;
                         }
+                        var invoiceDescription = InvoiceCRUD.InvoiceTemplate(invoice, currentUser, booking);
+                        invoice.InvoiceDescription = invoiceDescription;
+                        ctx.Invoice.Add(invoice);
+                        ctx.SaveChanges();
+                        SystemMessage.SendInvoiceMessage(ctx, currentUser, invoice, booking);
                     }
-                    ctx.SaveChanges();
                 }
+                ctx.SaveChanges();
             }
         }
     }

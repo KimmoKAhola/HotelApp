@@ -15,7 +15,6 @@ namespace TheSuiteSpot.HotelDatabase.Models
         public DateTime EndDate { get; set; }
         public User User { get; set; } = null!;
         public Room Room { get; set; } = null!;
-        public bool HasActiveInvoice { get; set; } = false;
         [Required]
         public bool IsActive { get; set; } = true;
         public int NumberOfExtraBeds { get; set; }

@@ -168,7 +168,6 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 {
                     invoice.Amount = Invoice.CalculateAdditionalCost(invoice);
                 }
-                booking.HasActiveInvoice = true;
 
                 ctx.Invoice.Add(invoice);
                 ctx.SaveChanges();
@@ -184,30 +183,51 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         public void SoftDelete(HotelContext ctx)
         {
             Console.Clear();
-            Console.Write("Search for a booking by its booking id: ");
-            var input = Convert.ToInt32(Console.ReadLine());
-            var booking = ExactSearch(ctx, input);
 
-            if (booking != null)
+            var futureBookings = ctx.Booking
+                .OrderBy(b => b.StartDate)
+                .Where(b => b.StartDate > DateTime.Now && b.IsActive)
+                .Include(r => r.Room)
+                .Join(ctx.Invoice, b => b.Id, i => i.Id, (b, i) => new { Booking = b, Invoice = i })
+                .Join(ctx.User, b => b.Booking.User.Id, u => u.Id, (b, u) => new { Booking = b, User = u })
+                .Join(ctx.UserInbox, u => u.User.UserInbox.Id, ui => ui.Id, (u, ui) => new { User = u, UserInbox = ui })
+                .ToList();
+            if (futureBookings.Count == 0)
             {
-                PrintSuccessMessage("The result of your search is: ");
-                var info = BookingTemplate(booking);
-                Console.WriteLine(info);
-
-                Console.WriteLine("Do you want to delete this booking?");
-                if (UserInputValidation.PromptYesOrNo("Press y to confirm, anything else to deny: "))
-                {
-                    booking.IsActive = false;
-                    PrintSuccessMessage("Booking was deleted");
-                }
-                else
-                {
-                    PrintErrorMessage("Booking was not deleted.");
-                }
+                PrintNotification("There are no future bookings");
             }
             else
             {
-                PrintErrorMessage("No booking with that id could be found.");
+                List<int> bookingIds = new List<int>();
+                foreach (var booking in futureBookings)
+                {
+                    bookingIds.Add(booking.User.Booking.Booking.Id);
+                    var info = BookingTemplate(booking.User.Booking.Booking);
+                    Console.WriteLine(info);
+                }
+                var choice = UserInputValidation.MenuValidation(bookingIds, "\nPick one of the available booking Ids to delete it.\n");
+                if (choice == -1) { return; }
+                var chosenId = bookingIds[choice - 1];
+                var chosenBooking = futureBookings.Where(b => b.User.Booking.Booking.Id == chosenId).First();
+                PrintNotification($"You chose option {choice} with booking Id {bookingIds[choice - 1]}");
+                if (UserInputValidation.PromptYesOrNo("Press y to delete it, anything else to skip: "))
+                {
+                    PrintNotification("You chose to delete the booking");
+                    chosenBooking.User.Booking.Booking.IsActive = false;
+                    chosenBooking.User.Booking.Invoice.IsActive = false;
+                    ctx.SaveChanges();
+                    if (chosenBooking.User.Booking.Invoice.IsPaid)
+                    {
+                        var content = "Dear sir/mam. Your booking has been canceled and your payment has been fully refunded.";
+                        SystemMessage.SendSystemMessage(ctx, chosenBooking.User.User, "Refund", content);
+                    }
+                    else
+                    {
+                        var content = "Dear sir/mam. Your booking has been canceled.";
+                        SystemMessage.SendSystemMessage(ctx, chosenBooking.User.User, "Cancellation confirmed", content);
+                    }
+                }
+                PrintSuccessMessage("\nThe booking has been canceled and the customer has been notified.\nAny related invoice has been canceled.");
             }
             PressAnyKeyToContinue();
         }
@@ -353,6 +373,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
 
             return $@"
 {divider}
+Booking Id: {booking.Id}
 Booking for {booking.User.FirstName} {booking.User.LastName}
 Start date: {booking.StartDate}
 End date: {booking.EndDate}

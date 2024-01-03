@@ -50,10 +50,11 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                     var randomUser = random.Next(0, allUsers.Count);
                     var randomRoom = random.Next(0, rooms.Count);
                     var randomDuration = random.Next(1, 10);
+                    var startDate = DateTime.Today.Date.AddDays(randomDuration);
                     var booking = new Booking
                     {
-                        StartDate = DateTime.Today.Date + new TimeSpan(8, 0, 0),
-                        EndDate = DateTime.Today.AddDays(randomDuration).Date + new TimeSpan(16, 0, 0),
+                        StartDate = startDate + new TimeSpan(8, 0, 0),
+                        EndDate = startDate.AddDays(randomDuration).Date + new TimeSpan(16, 0, 0),
                         User = allUsers[randomUser],
                         Room = rooms[randomRoom],
                         NumberOfExtraBeds = 0
