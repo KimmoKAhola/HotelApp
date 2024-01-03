@@ -45,7 +45,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                         SystemMessage.SendBookingConfirmationMessage(DbContext, booking.User, booking);
                     }
                 }
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < 20; i++)
                 {
                     var randomUser = random.Next(0, allUsers.Count);
                     var randomRoom = random.Next(0, rooms.Count);
