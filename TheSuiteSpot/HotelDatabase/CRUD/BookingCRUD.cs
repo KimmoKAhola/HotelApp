@@ -347,6 +347,15 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 return false;
             }
         }
+
+        public static bool CheckIfUserHasVoucher(User user, HotelContext ctx)
+        {
+            var test = ctx.User.Where(u => u.UserName == user.UserName)
+                .Include(u => u.UserInbox)
+                .ThenInclude(m => m.Messages)
+                .ThenInclude(v => v.Voucher).ToList();
+            return true;
+        }
         public static bool CheckForValidDates(DateTime startDate, DateTime endDate, Booking booking, HotelContext ctx)
         {
             var conflictingBookings = ctx.Booking
