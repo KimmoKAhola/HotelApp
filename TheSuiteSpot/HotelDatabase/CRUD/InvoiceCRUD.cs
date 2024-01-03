@@ -5,10 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
-//using TheSuiteSpot.HotelDatabase.InputHelpers;
 using TheSuiteSpot.HotelDatabase.Models;
 using TheSuiteSpot.Interfaces;
-//using static TheSuiteSpot.HotelDatabase.InputHelpers.PrintMessages;
 using InputValidationLibrary;
 using static InputValidationLibrary.PrintMessages;
 
@@ -22,9 +20,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         {
             {1, "Due Date"},
             {2, "Amount"},
-            {3, "Invoice Description"},
-            {4, "Payment received"},
-            {5, "Delete invoice"},
+            {3, "Payment status"},
         };
 
         public void Create(HotelContext ctx)
@@ -114,48 +110,106 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
 
         public void ExactSearch(HotelContext ctx)
         {
-            throw new NotImplementedException();
+            //Is it needed?
         }
 
         public void GeneralSearch(HotelContext ctx)
         {
             Console.Clear();
             PrintNotification("You can pick a search term and receive all invoices where the user contains that search term.\nTry to be specific.");
-            var searchInput = UserInputValidation.AskForValidInputString("Enter a search term: ");
+            var searchInput = UserInputValidation.AskForValidInputString("");
             var searchResult = ctx.Invoice
+                .Where(i => i.IsActive)
+                .OrderBy(i => i.Id)
                 .Include(b => b.Booking)
-                .ThenInclude(u => u.User)
+                .ThenInclude(r => r.Room)
+                .Include(u => u.Booking.User)
                 .Where(i => i.Booking.User.UserName.Contains(searchInput)
                 || i.Booking.User.Email.Contains(searchInput)
                 || i.Booking.User.FirstName.Contains(searchInput)
                 || i.Booking.User.LastName.Contains(searchInput));
 
-            foreach (var item in searchResult)
+            foreach (var invoice in searchResult)
             {
-
+                var stringLength = invoice.Booking.StartDate.ToString().Length;
+                var divider = new string('-', (int)(stringLength * 2.5));
+                Console.WriteLine(divider);
+                Console.WriteLine($"Invoice with id: {invoice.Id} with due date: {invoice.DueDate}");
+                Console.WriteLine($"Room booked: {invoice.Booking.Room.RoomNumber}");
+                Console.WriteLine($"Booking dates: [{invoice.Booking.StartDate}] - [{invoice.Booking.EndDate}]");
+                Console.WriteLine($"Username: {invoice.Booking.User.UserName}");
+                Console.WriteLine($"Name: {invoice.Booking.User.FirstName} {invoice.Booking.User.LastName}");
+                Console.WriteLine($"Email: {invoice.Booking.User.Email}");
+                Console.WriteLine($"Invoice amount: {invoice.Amount:C2}");
+                Console.WriteLine($"Has been paid: {invoice.IsPaid}");
+                if (invoice == searchResult.Last())
+                {
+                    Console.WriteLine(divider);
+                }
             }
+            PressAnyKeyToContinue();
         }
 
         public void Update(HotelContext ctx)
         {
             Console.Clear();
+            PrintNotification("You can only update invoices that have not yet been paid.");
 
-            var invoice = GetInvoice(ctx);
-
-            Console.Clear();
-            Console.WriteLine($"Your chosen invoice is:\n{invoice}");
-            ChangeInvoiceProperty();
+            var unpaidInvoices = ctx.Invoice
+                .Where(i => !i.IsPaid)
+                .OrderBy(i => i.Id).ToList();
+            if (unpaidInvoices.Any())
+            {
+                PrintNotification("These are your unpaid invoices: ");
+                List<int> invoiceId = new List<int>();
+                foreach (var invoice in unpaidInvoices)
+                {
+                    invoiceId.Add(invoice.Id);
+                    var stringLength = invoice.DueDate.ToString().Length;
+                    var divider = new string('-', (int)(stringLength * 2.5));
+                    Console.WriteLine(divider);
+                    Console.WriteLine($"Invoice with id: {invoice.Id}");
+                    Console.WriteLine($"Invoice due date: {invoice.DueDate}");
+                    Console.WriteLine($"Amount: {invoice.Amount:C2}");
+                    if (invoice == unpaidInvoices.Last())
+                    {
+                        Console.WriteLine(divider);
+                    }
+                }
+                PrintNotification("\nHere are the invoice Ids that you can change.");
+                var choice = UserInputValidation.MenuValidation(invoiceId, "Choose an invoice id. ");
+                var chosenInvoice = unpaidInvoices[choice - 1];
+                PrintNotification($"You chose the invoice with id {unpaidInvoices[choice - 1].Id}");
+                ChangeInvoiceProperty(chosenInvoice, ctx);
+            }
             PressAnyKeyToContinue();
         }
 
-        private void ChangeInvoiceProperty()
+        private void ChangeInvoiceProperty(Invoice invoice, HotelContext ctx)
         {
-            foreach (var item in _modelProperties)
+            var choice = UserInputValidation.MenuValidation(_modelProperties, "Choose which property you want to change. ");
+
+            switch (choice)
             {
-                Console.WriteLine($"{item.Key}. {item.Value}");
+                case 1:
+                    int? days = (int?)UserInputValidation.AskForValidNumber(1, 30, "You can add additional payment days to the invoice.");
+                    if (days == null) { return; }
+                    invoice.DueDate = invoice.DueDate.AddDays((double)days);
+                    break;
+                case 2:
+                    decimal? amount = UserInputValidation.AskForValidNumber(0, Convert.ToDecimal(1E9), "You can change the invoice amount.");
+                    if (amount == null) { return; }
+                    invoice.Amount = (decimal)amount;
+                    break;
+                case 3:
+                    if (UserInputValidation.PromptYesOrNo("Press y to flip the payment status, anything else to skip: "))
+                    {
+                        invoice.IsPaid = true;
+                        PrintSuccessMessage("Invoice is now paid.");
+                    }
+                    break;
             }
-            Console.Write("Pick a property you wish to change: ");
-            PressAnyKeyToContinue();
+            ctx.SaveChanges();
         }
 
         public static string InvoiceTemplate(Invoice invoice, User user, Booking booking)
@@ -182,25 +236,6 @@ Total Amount: {invoice.Amount:C2}
 Thank you for choosing The Suite Spot! We appreciate your business.
 For any inquiries, please contact us at {CurrentUser.Instance.User.Email}.
 {header}";
-        }
-
-        public static string InvoicePenaltyFeeTemplate(Invoice invoice, User user, string message)
-        {
-            return $@"
-[The Suite spot] - {invoice.DateCreated} - PenaltyFee
-
-Invoice Due Date: {invoice.DueDate}
-
-Bill To:
-{user.FirstName} {user.LastName}
-
-Description:
-{message}
-
-Total Amount: {invoice.Amount:C2}
-
-For any inquiries, please contact us at {CurrentUser.Instance.User.Email}.
-";
         }
     }
 }

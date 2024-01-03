@@ -12,8 +12,8 @@ using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
 namespace TheSuiteSpot.Migrations
 {
     [DbContext(typeof(HotelContext))]
-    [Migration("20240102193804_initial12356211414")]
-    partial class initial12356211414
+    [Migration("20240103182150_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -35,9 +35,6 @@ namespace TheSuiteSpot.Migrations
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<bool>("HasActiveInvoice")
-                        .HasColumnType("bit");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -233,7 +230,7 @@ namespace TheSuiteSpot.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("UserInboxId")
+                    b.Property<int?>("UserInboxId")
                         .HasColumnType("int");
 
                     b.Property<int?>("VoucherId")
@@ -382,6 +379,9 @@ namespace TheSuiteSpot.Migrations
                     b.Property<DateTime>("ExpiryDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsExpired")
+                        .HasColumnType("bit");
+
                     b.Property<string>("VoucherCode")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -452,19 +452,15 @@ namespace TheSuiteSpot.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TheSuiteSpot.HotelDatabase.Models.UserInbox", "UserInbox")
+                    b.HasOne("TheSuiteSpot.HotelDatabase.Models.UserInbox", null)
                         .WithMany("Messages")
-                        .HasForeignKey("UserInboxId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserInboxId");
 
                     b.HasOne("TheSuiteSpot.HotelDatabase.Models.Voucher", "Voucher")
                         .WithMany()
                         .HasForeignKey("VoucherId");
 
                     b.Navigation("MessageType");
-
-                    b.Navigation("UserInbox");
 
                     b.Navigation("Voucher");
                 });
