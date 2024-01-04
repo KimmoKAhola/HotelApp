@@ -12,6 +12,7 @@ using System.Diagnostics;
 using InputValidationLibrary;
 using static InputValidationLibrary.PrintMessages;
 using TheSuiteSpot.HotelDatabase.Services;
+using TheSuiteSpot.HotelDatabase.Services.CRUD;
 
 namespace TheSuiteSpot.HotelDatabase.Services.CRUD
 {
@@ -142,6 +143,73 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
                             if (chosenDate != originalDate)
                             {
                                 PrintNotification($"Your chosen date was not available. The first available time is at {chosenDate}");
+                            }
+                            CreateBooking((DateTime)chosenDate, chosenRoom, user, _maximumBookingDuration, numberOfExtraBeds, ctx);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void Create(HotelContext ctx, DateTime startDate, Room chosenRoom, User user, int numberOfExtraBeds)
+        {
+            PrintNotification($"You chose {numberOfExtraBeds} extra beds.\n");
+            var chosenDate = startDate;
+            if (chosenDate == null) { return; }
+            else
+            {
+                chosenDate = (DateTime)chosenDate;
+                Console.Clear();
+                var allBookingsForRoom = ctx.Booking
+                                            .Where(b => b.Room.Id == chosenRoom.Id)
+                                            .Where(b => b.EndDate >= chosenDate)
+                                            .OrderBy(b => b.StartDate)
+                                            .ToList();
+                if (allBookingsForRoom.Count == 0)
+                {
+                    CreateBooking((DateTime)chosenDate, chosenRoom, user, _maximumBookingDuration, numberOfExtraBeds, ctx);
+                }
+                else
+                {
+                    for (int i = 0; i < allBookingsForRoom.Count; i++)
+                    {
+                        var originalDate = chosenDate;
+                        var booking = allBookingsForRoom[i];
+
+                        if (chosenDate >= booking.StartDate && chosenDate <= booking.EndDate)
+                        {
+                            chosenDate = booking.EndDate.Date.AddDays(1) + _bookingStart;
+                        }
+                        else if (!(chosenDate >= booking.StartDate && chosenDate <= booking.EndDate))
+                        {
+                            PrintNotification($"\nThe first available booking is at {chosenDate}\n");
+                            var availableDates = _maximumBookingDuration;
+                            if (i != allBookingsForRoom.Count)
+                            {
+                                var nextBookingDate = allBookingsForRoom[i].StartDate;
+                                availableDates = (nextBookingDate - (DateTime)chosenDate).Days;
+                            }
+                            if (availableDates > 10)
+                            {
+                                availableDates = _maximumBookingDuration;
+                            }
+                            if (UserInputValidation.PromptYesOrNo($"You can book for a maximum of {availableDates} days. Y/N?"))
+                            {
+                                CreateBooking((DateTime)chosenDate, chosenRoom, user, availableDates, numberOfExtraBeds, ctx);
+                                break;
+                            }
+                            else
+                            {
+                                PrintNotification($"You declined this booking");
+                                break;
+                            }
+                        }
+                        if (i == allBookingsForRoom.Count - 1)
+                        {
+                            if (chosenDate != originalDate)
+                            {
+                                PrintNotification($"The first available time is at {chosenDate}");
                             }
                             CreateBooking((DateTime)chosenDate, chosenRoom, user, _maximumBookingDuration, numberOfExtraBeds, ctx);
                             break;
@@ -502,14 +570,55 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
             if (propertyToUpdate == 2)
             {
                 PrintNotification("Choose another room");
-                var test = GetSuitableRoomType(DbContext, chosenBooking.NumberOfExtraBeds);
-                Console.WriteLine(test);
-                Console.WriteLine(chosenBooking.Room.RoomType.ToString());
-                Console.WriteLine(chosenBooking.NumberOfExtraBeds);
-            }
+                var listOfRooms = DbContext.Room.ToList();
+                while (true)
+                {
+                    var chosenRoomIndex = UserInputValidation.MenuValidation(listOfRooms, "BAJS BAJS\n");
+                    if (chosenBooking.Room.Id != listOfRooms[chosenRoomIndex - 1].Id)
+                    {
+                        chosenBooking.Room = listOfRooms[chosenRoomIndex - 1];
+                        if (CheckForValidDates(chosenBooking.StartDate, chosenBooking.EndDate, chosenBooking, DbContext))
+                        {
+                            Console.Clear();
+                            var header = new string('-', listOfRooms[chosenRoomIndex - 1].Description.Length);
+                            var info = RoomCRUD.RoomTemplate(listOfRooms[chosenRoomIndex - 1], header);
+                            PrintNotification($"Your chosen room is available at your previous booking dates {chosenBooking.StartDate} - {chosenBooking.EndDate}");
+                            PrintNotification($"\nPlease note that your invoice will be changed if you change to another room.");
+                            Console.WriteLine(info);
+                            if (UserInputValidation.PromptYesOrNo("Press y to confirm the room change, anything else to decline: "))
+                            {
+                                PrintSuccessMessage("Your booking has changed.");
+                                DbContext.SaveChanges();
+                            }
+                            else
+                            {
+                                PrintErrorMessage("You declined a room change. Exiting...");
+                            }
+                        }
+                        else
+                        {
+                            Console.Clear();
+                            PrintNotification("Your chosen room is taken at that date, would you like to auto-search for the closest available date?");
+                            if (UserInputValidation.PromptYesOrNo("Press y to confirm, anything else to decline: "))
+                            {
+                                Create(DbContext, chosenBooking.StartDate, chosenBooking.Room, chosenBooking.User, chosenBooking.NumberOfExtraBeds);
+                            }
+                        }
 
+                    }
+                    else
+                    {
+                        Console.Clear();
+                        PrintErrorMessage("You can not choose the same room as you had before.");
+                        PressAnyKeyToContinue();
+                    }
+                }
+
+            }
             PressAnyKeyToContinue();
         }
+
+
         public static bool CheckIfUserHasBookings(User user, HotelContext ctx)
         {
             var userResult = ctx.User
