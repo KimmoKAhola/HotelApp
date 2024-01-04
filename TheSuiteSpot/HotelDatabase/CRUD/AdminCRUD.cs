@@ -9,6 +9,7 @@ using TheSuiteSpot.HotelDatabase.Models;
 using TheSuiteSpot.Interfaces;
 using InputValidationLibrary;
 using static InputValidationLibrary.PrintMessages;
+using TheSuiteSpot.HotelDatabase.Services;
 
 namespace TheSuiteSpot.HotelDatabase.CRUD
 {
@@ -68,7 +69,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 if (discount == null) { return; }
                 foreach (var bigSpender in bigSpenders)
                 {
-                    SystemMessage.SendRewardMessage(DbContext, (decimal)discount, bigSpender.User);
+                    SystemMessageServices.SendRewardMessage(DbContext, (decimal)discount, bigSpender.User);
                 }
                 PrintSuccessMessage("Vouchers have been sent.");
             }
@@ -83,7 +84,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             string content = UserInputValidation.AskForValidInputString("message content");
             foreach (var user in allUsers)
             {
-                SystemMessage.SendSystemMessage(ctx, user, topic, content);
+                SystemMessageServices.SendSystemMessage(ctx, user, topic, content);
             }
             DbContext.SaveChanges();
             PrintNotification("A system message has been sent to all users.");

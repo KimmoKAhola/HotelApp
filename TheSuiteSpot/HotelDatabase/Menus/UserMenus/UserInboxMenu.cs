@@ -3,37 +3,39 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TheSuiteSpot.HotelDatabase.CRUD;
 using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
 using TheSuiteSpot.HotelDatabase.Menus;
+using TheSuiteSpot.HotelDatabase.Services;
 using TheSuiteSpot.Interfaces;
 
-namespace TheSuiteSpot.HotelDatabase.UserMenus
+namespace TheSuiteSpot.HotelDatabase.Menus.UserMenus
 {
-    public class UserBookingMenu(HotelContext dbContext, BookingCRUD booking) : IUserMenu
+    public class UserInboxMenu(HotelContext dbContext, InboxMenu inboxMenu) : IUserMenu
     {
-        public string MenuName { get; set; } = "Bookings";
+        public string MenuName { get; set; } = "View inbox";
         public List<IUserMenu> Menus { get; set; }
         public HotelContext DbContext { get; set; } = dbContext;
+
+        public InboxMenu InboxMenu { get; set; } = inboxMenu;
 
         public void Display()
         {
             MainMenu.PrintBanner();
             PrintOptions();
-            var input = Convert.ToInt32(Console.ReadLine());
-            switch (input)
+            var choice = Convert.ToInt32(Console.ReadLine());
+            switch (choice)
             {
                 case 1:
-                    booking.Create(DbContext);
+                    InboxMenu.ShowUnreadMessages();
                     break;
                 case 2:
-                    booking.Update(DbContext);
+                    InboxMenu.ShowSentMessages(CurrentUser.Instance.User);
                     break;
                 case 3:
-                    booking.Update(DbContext);
+                    InboxMenu.ShowReceivedMessages(CurrentUser.Instance.User);
                     break;
                 case 4:
-                    booking.ReadAll(DbContext);
+                    InboxMenu.SendMessageToUser();
                     break;
                 case 0:
                     ReturnToMainMenu();
@@ -43,11 +45,10 @@ namespace TheSuiteSpot.HotelDatabase.UserMenus
 
         public void PrintOptions()
         {
-            Console.WriteLine("1. Create a new booking.");
-            Console.WriteLine("2. Update a booking.");
-            Console.WriteLine("3. Cancel a future booking.");
-            Console.WriteLine("4. View your bookings.");
-            Console.WriteLine("0. Return to the main menu.");
+            Console.WriteLine("1. View unread messages.");
+            Console.WriteLine("2. View sent messages.");
+            Console.WriteLine("3. View received messages.");
+            Console.WriteLine("4. Send message to another user.");
         }
 
         public void ReturnToMainMenu()

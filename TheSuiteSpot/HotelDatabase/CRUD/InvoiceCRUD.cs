@@ -9,6 +9,7 @@ using TheSuiteSpot.HotelDatabase.Models;
 using TheSuiteSpot.Interfaces;
 using InputValidationLibrary;
 using static InputValidationLibrary.PrintMessages;
+using TheSuiteSpot.HotelDatabase.Services;
 
 namespace TheSuiteSpot.HotelDatabase.CRUD
 {
@@ -124,7 +125,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                             invoice.IsPaid = true;
                             ctx.SaveChanges();
                             var content = $"Dear sir/mam, we have received your payment of {invoice.Amount:C2}. Thank you for your patronage.";
-                            SystemMessage.SendSystemMessage(ctx, invoice.Booking.User, "Payment confirmed", content);
+                            SystemMessageServices.SendSystemMessage(ctx, invoice.Booking.User, "Payment confirmed", content);
                             PrintNotification("Status has been changed to paid.");
                         }
                         else
@@ -287,7 +288,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 ctx.SaveChanges();
                 PrintSuccessMessage("Your changes has been applied.");
                 string content = "Dear sir/mam, your invoice has been changed. Please review the changes made\n";
-                SystemMessage.SendSystemMessage(ctx, invoice.Booking.User, "Changes to your invoice", content + info);
+                SystemMessageServices.SendSystemMessage(ctx, invoice.Booking.User, "Changes to your invoice", content + info);
             }
             else
             {

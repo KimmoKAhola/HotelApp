@@ -4,6 +4,7 @@ using TheSuiteSpot.HotelDatabase.Models;
 using TheSuiteSpot.Interfaces;
 using InputValidationLibrary;
 using static InputValidationLibrary.PrintMessages;
+using TheSuiteSpot.HotelDatabase.Services;
 
 namespace TheSuiteSpot.HotelDatabase.Menus
 {
@@ -53,7 +54,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
                 var content = UserInputValidation.AskForValidInputString("message content");
                 if (content == null) { return; }
 
-                SystemMessage.SendMessageBetweenUsers(DbContext, CurrentUser.Instance.User, receiver, topic, content);
+                SystemMessageServices.SendMessageBetweenUsers(DbContext, CurrentUser.Instance.User, receiver, topic, content);
                 PrintSuccessMessage("Message has been sent.");
             }
             PressAnyKeyToContinue();

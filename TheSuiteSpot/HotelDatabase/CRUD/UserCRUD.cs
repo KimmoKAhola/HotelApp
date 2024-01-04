@@ -15,6 +15,7 @@ using InputValidationLibrary;
 using static InputValidationLibrary.PrintMessages;
 using System.Reflection.Metadata;
 using System.ComponentModel.DataAnnotations;
+using TheSuiteSpot.HotelDatabase.Services;
 
 namespace TheSuiteSpot.HotelDatabase.CRUD
 {
@@ -80,7 +81,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             {
                 ctx.User.Add(user);
                 ctx.SaveChanges();
-                SystemMessage.SendCreatedUserMessage(user, ctx);
+                SystemMessageServices.SendCreatedUserMessage(user, ctx);
                 Console.Clear();
                 PrintSuccessMessage($"The user has been added to the system.");
             }

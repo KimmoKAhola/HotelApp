@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TheSuiteSpot.HotelDatabase.Models;
 
-namespace TheSuiteSpot
+namespace TheSuiteSpot.HotelDatabase.Services
 {
     public class CurrentUser
     {

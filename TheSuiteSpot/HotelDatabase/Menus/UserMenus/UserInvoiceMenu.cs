@@ -8,7 +8,7 @@ using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
 using TheSuiteSpot.HotelDatabase.Menus;
 using TheSuiteSpot.Interfaces;
 
-namespace TheSuiteSpot.HotelDatabase.UserMenus
+namespace TheSuiteSpot.HotelDatabase.Menus.UserMenus
 {
     public class UserInvoiceMenu(HotelContext dbContext, InvoiceCRUD invoice) : IUserMenu
     {

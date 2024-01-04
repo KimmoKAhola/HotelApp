@@ -1,6 +1,6 @@
 ﻿using Autofac;
 
-namespace TheSuiteSpot
+namespace TheSuiteSpot.Interfaces
 {
     public interface IApplication
     {

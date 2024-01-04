@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
 using TheSuiteSpot.HotelDatabase.Models;
+using TheSuiteSpot.HotelDatabase.Services;
 using TheSuiteSpot.Interfaces;
 
 namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
@@ -111,7 +112,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                         };
                         ctx.Add(guest);
                         ctx.SaveChanges();
-                        SystemMessage.SendCreatedUserMessage(guest, ctx);
+                        SystemMessageServices.SendCreatedUserMessage(guest, ctx);
                     }
                     ctx.SaveChanges();
                 }

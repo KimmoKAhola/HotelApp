@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
 using TheSuiteSpot.Interfaces;
 using InputValidationLibrary;
+using TheSuiteSpot.HotelDatabase.Services;
 
 namespace TheSuiteSpot.HotelDatabase.Menus
 {

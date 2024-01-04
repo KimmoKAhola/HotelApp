@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
 using TheSuiteSpot.HotelDatabase.Models;
+using TheSuiteSpot.HotelDatabase.Services;
 using TheSuiteSpot.Interfaces;
 
 namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
@@ -42,7 +43,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                         };
                         DbContext.Booking.Add(booking);
                         DbContext.SaveChanges();
-                        SystemMessage.SendBookingConfirmationMessage(DbContext, booking.User, booking);
+                        SystemMessageServices.SendBookingConfirmationMessage(DbContext, booking.User, booking);
                     }
                 }
                 for (int i = 0; i < DbContext.Room.Count(); i++)
@@ -60,7 +61,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                     };
                     DbContext.Booking.Add(booking);
                     DbContext.SaveChanges();
-                    SystemMessage.SendBookingConfirmationMessage(DbContext, booking.User, booking);
+                    SystemMessageServices.SendBookingConfirmationMessage(DbContext, booking.User, booking);
                 }
             }
         }

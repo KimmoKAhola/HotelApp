@@ -4,10 +4,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TheSuiteSpot.HotelDatabase.Services;
-using TheSuiteSpot.Interfaces;
+using DatabaseLibrary.Interfaces;
 
-namespace TheSuiteSpot.HotelDatabase.Models
+namespace DatabaseLibrary.HotelDatabase.Models
 {
     public class Invoice : IEntity
     {

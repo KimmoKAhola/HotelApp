@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using TheSuiteSpot.HotelDatabase.CRUD;
 using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
 using TheSuiteSpot.HotelDatabase.Models;
+using TheSuiteSpot.HotelDatabase.Services;
 using TheSuiteSpot.Interfaces;
 
 namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
@@ -52,7 +53,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                         invoice.InvoiceDescription = invoiceDescription;
                         ctx.Invoice.Add(invoice);
                         ctx.SaveChanges();
-                        SystemMessage.SendInvoiceMessage(ctx, currentUser, invoice, booking);
+                        SystemMessageServices.SendInvoiceMessage(ctx, currentUser, invoice, booking);
                     }
                 }
                 ctx.SaveChanges();

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TheSuiteSpot.HotelDatabase.Menus;
 using TheSuiteSpot.Interfaces;
 
-namespace TheSuiteSpot.HotelDatabase.UserMenus
+namespace TheSuiteSpot.HotelDatabase.Menus.UserMenus
 {
     public class UserMainMenu(List<IUserMenu> menus)
     {

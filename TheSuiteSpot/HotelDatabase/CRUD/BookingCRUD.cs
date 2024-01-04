@@ -11,6 +11,7 @@ using TheSuiteSpot.Interfaces;
 using System.Diagnostics;
 using InputValidationLibrary;
 using static InputValidationLibrary.PrintMessages;
+using TheSuiteSpot.HotelDatabase.Services;
 namespace TheSuiteSpot.HotelDatabase.CRUD
 {
     public class BookingCRUD(HotelContext dbContext) : ICRUD
@@ -221,8 +222,8 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 }
                 ctx.Invoice.Add(invoice);
                 ctx.SaveChanges();
-                SystemMessage.SendBookingConfirmationMessage(ctx, chosenUser, booking);
-                SystemMessage.SendInvoiceMessage(ctx, chosenUser, invoice, booking);
+                SystemMessageServices.SendBookingConfirmationMessage(ctx, chosenUser, booking);
+                SystemMessageServices.SendInvoiceMessage(ctx, chosenUser, invoice, booking);
                 Console.Clear();
                 PrintSuccessMessage("A booking has been created with the following information: ");
                 var info = BookingTemplate(booking);
@@ -270,12 +271,12 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                     if (chosenBooking.User.Booking.Invoice.IsPaid)
                     {
                         var content = "Dear sir/mam. Your booking has been canceled and your payment has been fully refunded.";
-                        SystemMessage.SendSystemMessage(ctx, chosenBooking.User.User, "Refund", content);
+                        SystemMessageServices.SendSystemMessage(ctx, chosenBooking.User.User, "Refund", content);
                     }
                     else
                     {
                         var content = "Dear sir/mam. Your booking has been canceled.";
-                        SystemMessage.SendSystemMessage(ctx, chosenBooking.User.User, "Cancellation confirmed", content);
+                        SystemMessageServices.SendSystemMessage(ctx, chosenBooking.User.User, "Cancellation confirmed", content);
                     }
                 }
                 PrintSuccessMessage("\nThe booking has been canceled and the customer has been notified.\nAny related invoice has been canceled.");
