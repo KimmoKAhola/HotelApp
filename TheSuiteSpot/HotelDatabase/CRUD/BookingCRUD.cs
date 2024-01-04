@@ -306,6 +306,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                    .Include(r => r.Room)
                    .ToList();
             }
+
             if (allBookings.Count() > 10)
             {
                 PrintNotification("Too many active bookings. The result has been limited to 10.");
