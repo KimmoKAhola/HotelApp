@@ -265,8 +265,14 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         }
         public void ExactSearch(HotelContext ctx)
         {
-            Console.Clear();
-            Console.WriteLine("Enter a booking id: (NOT IMPLEMENTED)");
+
+        }
+
+        public void CreateManually()
+        {
+            var chosenDate = UserInputValidation.AskForValidDate();
+            if (chosenDate == null) { return; }
+            PressAnyKeyToContinue();
         }
         public void GeneralSearch(HotelContext ctx)
         {

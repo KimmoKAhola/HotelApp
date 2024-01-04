@@ -22,7 +22,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
                     booking.Create(DbContext);
                     break;
                 case 2:
-                    booking.ExactSearch(DbContext);
+                    booking.CreateManually();
                     break;
                 case 3:
                     booking.ReadAll(DbContext);
@@ -47,8 +47,8 @@ namespace TheSuiteSpot.HotelDatabase.Menus
 
         public void PrintOptions()
         {
-            Console.WriteLine("1. Create booking.");
-            Console.WriteLine("2. Read a single booking.");
+            Console.WriteLine("1. Create booking (auto-booking).");
+            Console.WriteLine("2. Create a booking (manually).");
             Console.WriteLine("3. Read all bookings.");
             Console.WriteLine("4. Update a booking.");
             Console.WriteLine("5. Delete a booking.");

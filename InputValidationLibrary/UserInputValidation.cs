@@ -258,6 +258,28 @@ namespace InputValidationLibrary
                 }
             }
         }
+        public static DateTime? AskForValidDate()
+        {
+            while (true)
+            {
+                Console.Write("Enter a date (yyyy-mm-dd), or press e to exit: ");
+                var input = Console.ReadLine();
+                if (input.ToLower() == "e")
+                {
+                    return null;
+                }
+
+                if (DateTime.TryParse(input, out var date))
+                {
+                    PrintMessages.PrintNotification($"You chose {date}.");
+                    return date;
+                }
+                else
+                {
+                    PrintMessages.PrintErrorMessage("Please enter a date on the correct format (yyyy-mm-dd).");
+                }
+            }
+        }
         public static int MenuValidation(Dictionary<int, string> choices, string promptMessage)
         {
             var maxValue = choices.Count;
