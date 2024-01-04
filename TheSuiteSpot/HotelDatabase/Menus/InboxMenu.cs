@@ -179,7 +179,6 @@ namespace TheSuiteSpot.HotelDatabase.Menus
                 }
             }
             DbContext.SaveChanges();
-            PrintNotification("\nAll unread messages have been read");
             PressAnyKeyToContinue();
         }
 
@@ -190,7 +189,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
             formattedMessage += $"\nTopic: {msg.Topic}\n";
             formattedMessage += $"Date Sent: {msg.DateSent}\n";
             formattedMessage += $"Sender: {msg.Sender}\n\n";
-            formattedMessage += $"Content: {msg.Content}";
+            formattedMessage += $"Content: {msg.Content}\n";
             if (msg.Voucher != null)
             {
                 formattedMessage += $"{msg.Voucher}";
