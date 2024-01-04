@@ -81,6 +81,12 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             }
             PressAnyKeyToContinue();
         }
+        private bool CheckForVoucher(User user)
+        {
+
+
+            return true;
+        }
         private static RoomType GetSuitableRoomType(HotelContext ctx, int numberOfExtraBeds)
         {
             return ctx.RoomType.Where(rt => rt.NumberOfExtraBeds == numberOfExtraBeds).First();
