@@ -30,7 +30,53 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
 
         public void SoftDelete(HotelContext ctx)
         {
+            Console.Clear();
+            PrintNotification("You can only delete invoices that have not been paid.\n");
 
+            var unpaidInvoices = ctx.Invoice
+                .Where(i => !i.IsPaid)
+                .Include(b => b.Booking)
+                .ThenInclude(u => u.User)
+                .ThenInclude(u => u.UserInbox)
+                .Include(r => r.Booking.Room)
+                .ToList();
+            List<int> invoiceIds = new List<int>();
+            foreach (var invoice in unpaidInvoices)
+            {
+                invoiceIds.Add(invoice.Id);
+                var info = InvoiceTemplate(invoice, invoice.Booking.User, invoice.Booking);
+                Console.WriteLine($"Invoice Id: {invoice.Id} for the invoice below the dashed line", Console.ForegroundColor = ConsoleColor.Yellow);
+                Console.ResetColor();
+                Console.WriteLine(info);
+            }
+            Console.WriteLine();
+            var choice = UserInputValidation.MenuValidation(invoiceIds, "\nChoose an invoice id to delete it.\n");
+            if (choice != -1)
+            {
+                Console.Clear();
+                PrintSuccessMessage("You have chosen this invoice: ");
+                var chosenInvoice = unpaidInvoices[choice - 1];
+                var info = InvoiceTemplate(chosenInvoice, chosenInvoice.Booking.User, chosenInvoice.Booking);
+                Console.WriteLine(info);
+
+                if (UserInputValidation.PromptYesOrNo("Press y to delete it: "))
+                {
+                    chosenInvoice.IsActive = false;
+                    PrintNotification("Do you also wish to delete the associated booking?\nChoosing no here means that the customer will receive the booking for free. ");
+                    if (UserInputValidation.PromptYesOrNo("\nPress y to delete the booking, anything else to decline: "))
+                    {
+                        PrintNotification("You chose to delete the booking.");
+                        chosenInvoice.Booking.IsActive = false;
+                    }
+                }
+                if (UserInputValidation.PromptYesOrNo("\nPress y to confirm your changes, anything else to discard them: "))
+                {
+                    ctx.SaveChanges();
+                    PrintSuccessMessage("Changes has been saved.");
+                }
+            }
+
+            PressAnyKeyToContinue();
         }
 
 
@@ -109,10 +155,9 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         public void GeneralSearch(HotelContext ctx)
         {
             Console.Clear();
-            PrintNotification("You can pick a search term and receive all invoices where the user contains that search term.\nTry to be specific.");
-            var searchInput = UserInputValidation.AskForValidInputString("");
+            PrintNotification("You can pick a search term and receive all invoices, active and inactive, where the user contains that search term.\nTry to be specific.");
+            var searchInput = UserInputValidation.AskForValidInputString("user search query");
             var searchResult = ctx.Invoice
-                .Where(i => i.IsActive)
                 .OrderBy(i => i.Id)
                 .Include(b => b.Booking)
                 .ThenInclude(r => r.Room)
@@ -176,7 +221,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 PrintNotification("\nHere are the invoice Ids that you can change.");
                 var choice = UserInputValidation.MenuValidation(invoiceId, "Choose an invoice id. ");
                 var chosenInvoice = unpaidInvoices[choice - 1];
-                PrintNotification($"You chose the invoice with id {unpaidInvoices[choice - 1].Id}");
+                PrintNotification($"\nYou chose the invoice with id {unpaidInvoices[choice - 1].Id}");
                 ChangeInvoiceProperty(chosenInvoice, ctx);
             }
             else
@@ -191,25 +236,25 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             bool isRunning = true;
             while (isRunning)
             {
-                var choice = UserInputValidation.MenuValidation(_modelProperties, "Choose which property you want to change. ");
+                var choice = UserInputValidation.MenuValidation(_modelProperties, "\nChoose which property you want to change. ");
 
                 switch (choice)
                 {
                     case 1:
-                        int? days = (int?)UserInputValidation.AskForValidNumber(1, 30, "You can add additional payment days to the invoice.");
+                        int? days = (int?)UserInputValidation.AskForValidNumber(1, 30, "\nYou can add additional payment days to the invoice.");
                         if (days == null) { return; }
                         invoice.DueDate = invoice.DueDate.AddDays((double)days);
                         break;
                     case 2:
-                        decimal? amount = UserInputValidation.AskForValidNumber(1, Convert.ToDecimal(1E9), "You can change the invoice amount.");
+                        decimal? amount = UserInputValidation.AskForValidNumber(1, Convert.ToDecimal(1E9), "\nYou can change the invoice amount.");
                         if (amount == null) { return; }
                         invoice.Amount = (decimal)amount;
                         break;
                     case 3:
-                        if (UserInputValidation.PromptYesOrNo("Press y to flip the payment status, anything else to skip: "))
+                        if (UserInputValidation.PromptYesOrNo("\nPress y to change payment status to paid, anything else to skip: "))
                         {
                             invoice.IsPaid = true;
-                            PrintSuccessMessage("Invoice is now paid.");
+                            PrintSuccessMessage("Invoice status changed to paid.");
                         }
                         break;
                 }
