@@ -149,9 +149,12 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             PrintNotification("You can only update invoices that have not yet been paid.");
 
             var unpaidInvoices = ctx.Invoice
+                .Include(b => b.Booking)
+                .ThenInclude(u => u.User)
+                .Include(r => r.Booking.Room)
                 .Where(i => !i.IsPaid)
                 .OrderBy(i => i.Id).ToList();
-            if (unpaidInvoices.Any())
+            if (unpaidInvoices.Count > 0)
             {
                 PrintNotification("These are your unpaid invoices: ");
                 List<int> invoiceId = new List<int>();
@@ -174,6 +177,10 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 var chosenInvoice = unpaidInvoices[choice - 1];
                 PrintNotification($"You chose the invoice with id {unpaidInvoices[choice - 1].Id}");
                 ChangeInvoiceProperty(chosenInvoice, ctx);
+            }
+            else
+            {
+                PrintNotification("There are no unpaid invoices.");
             }
             PressAnyKeyToContinue();
         }
@@ -202,7 +209,17 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                     }
                     break;
             }
-            ctx.SaveChanges();
+            var info = InvoiceTemplate(invoice, invoice.Booking.User, invoice.Booking);
+            Console.WriteLine(info);
+            if (UserInputValidation.PromptYesOrNo("Press y to confirm the changes, anything else to discard: "))
+            {
+                ctx.SaveChanges();
+                PrintSuccessMessage("Your changes has been applied.");
+            }
+            else
+            {
+                PrintNotification("Your changes has been discarded.");
+            }
         }
 
         public static string InvoiceTemplate(Invoice invoice, User user, Booking booking)
