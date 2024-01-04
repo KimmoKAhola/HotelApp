@@ -36,12 +36,6 @@ namespace TheSuiteSpot.HotelDatabase.UserMenus
                 case 4:
                     InboxMenu.SendMessageToUser();
                     break;
-
-
-
-
-
-
                 case 0:
                     ReturnToMainMenu();
                     break;

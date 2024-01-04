@@ -84,8 +84,21 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         {
             Console.Clear();
             List<Invoice> invoices;
-
-            invoices = ctx.Invoice
+            if (CurrentUser.Instance.User.IsAdmin)
+            {
+                invoices = ctx.Invoice
+                    .Where(i => !i.IsPaid)
+                    .OrderBy(i => i.DueDate)
+                    .Include(b => b.Booking)
+                    .ThenInclude(r => r.Room)
+                    .Include(b => b.Booking)
+                    .ThenInclude(u => u.User)
+                    .ThenInclude(u => u.UserInbox)
+                    .ToList();
+            }
+            else
+            {
+                invoices = ctx.Invoice
                 .Where(i => !i.IsPaid)
                 .OrderBy(i => i.DueDate)
                 .Include(b => b.Booking)
@@ -93,7 +106,9 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 .Include(b => b.Booking)
                 .ThenInclude(u => u.User)
                 .ThenInclude(u => u.UserInbox)
+                .Where(u => u.Booking.User.UserName == CurrentUser.Instance.User.UserName)
                 .ToList();
+            }
 
             PrintNotification($"There are currently {invoices.Count} unpaid invoices.");
             if (UserInputValidation.PromptYesOrNo("Press y to handle unpaid invoices, anything else to skip: "))
