@@ -114,6 +114,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
                         {
                             break;
                         }
+                        Console.WriteLine();
                     }
                 }
             }
@@ -132,6 +133,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
                 {
                     foreach (var message in item.messages)
                     {
+                        Console.Clear();
                         var msg = FormatInboxMessage(message);
                         Console.WriteLine(msg);
                         message.IsRead = true;
@@ -139,6 +141,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
                         {
                             break;
                         }
+                        Console.WriteLine();
                     }
                 }
             }
@@ -162,6 +165,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
             {
                 foreach (var msg in message.msg.OrderBy(x => x.DateSent))
                 {
+                    Console.Clear();
                     Console.WriteLine(FormatInboxMessage(msg));
                     msg.IsRead = true;
                     PrintNotification("Message has been marked as read.");
@@ -169,6 +173,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
                     {
                         break;
                     }
+                    Console.WriteLine();
                 }
             }
             DbContext.SaveChanges();
@@ -178,7 +183,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
 
         private static string FormatInboxMessage(SystemMessage msg)
         {
-            var header = new string('-', msg.Content.Length + 9);
+            var header = new string('-', 40);
             var formattedMessage = $"{header}";
             formattedMessage += $"\nTopic: {msg.Topic}\n";
             formattedMessage += $"Date Sent: {msg.DateSent}\n";
@@ -209,6 +214,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
             {
                 foreach (var msg in item.msg)
                 {
+                    Console.Clear();
                     Console.WriteLine(FormatInboxMessage(msg));
                     msg.IsRead = true;
                     PrintNotification("Message has been marked as read.");
@@ -216,6 +222,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
                     {
                         break;
                     }
+                    Console.WriteLine();
                 }
             }
             DbContext.SaveChanges();
