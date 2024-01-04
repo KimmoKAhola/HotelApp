@@ -38,50 +38,43 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         {
             Console.Clear();
             List<Invoice> invoices;
-            if (UserInputValidation.PromptOneOrTwo("Press 1 to view paid invoices, anything else to view unpaid invoices: "))
-            {
-                invoices = invoices = ctx.Invoice
-                    .Where(i => i.IsPaid)
-                    .Include(b => b.Booking)
-                    .ThenInclude(r => r.Room)
-                    .Include(b => b.Booking)
-                    .ThenInclude(u => u.User)
-                    .ToList();
-            }
-            else
-            {
-                invoices = invoices = ctx.Invoice
-                    .Where(i => !i.IsPaid)
-                    .Include(b => b.Booking)
-                    .ThenInclude(r => r.Room)
-                    .Include(b => b.Booking)
-                    .ThenInclude(u => u.User)
-                    .ThenInclude(u => u.UserInbox)
-                    .ToList();
-            }
 
-            foreach (var invoice in invoices)
+            invoices = ctx.Invoice
+                .Where(i => !i.IsPaid)
+                .OrderBy(i => i.DueDate)
+                .Include(b => b.Booking)
+                .ThenInclude(r => r.Room)
+                .Include(b => b.Booking)
+                .ThenInclude(u => u.User)
+                .ThenInclude(u => u.UserInbox)
+                .ToList();
+
+            PrintNotification($"There are currently {invoices.Count} unpaid invoices.");
+            if (UserInputValidation.PromptYesOrNo("Press y to handle unpaid invoices, anything else to skip: "))
             {
-                Console.Clear();
-                var info = InvoiceTemplate(invoice, invoice.Booking.User, invoice.Booking);
-                Console.WriteLine(info);
-                if (!invoice.IsPaid)
-                    if (UserInputValidation.PromptYesOrNo("Click y to change this invoice status to paid: "))
-                    {
-                        invoice.IsPaid = true;
-                        ctx.SaveChanges();
-                        var content = $"Dear sir/mam, we have received your payment of {invoice.Amount:C2}. Thank you for your patronage.";
-                        SystemMessage.SendSystemMessage(ctx, invoice.Booking.User, "Payment confirmed", content);
-                        PrintNotification("Status has been changed to paid.");
-                    }
-                    else
-                    {
-                        PrintNotification("You chose no");
-                    }
-                if (!UserInputValidation.PromptYesOrNo("Press y to view another, anything else to exit: "))
+                foreach (var invoice in invoices)
                 {
-                    PrintNotification("You chose to exit");
-                    break;
+                    Console.Clear();
+                    var info = InvoiceTemplate(invoice, invoice.Booking.User, invoice.Booking);
+                    Console.WriteLine(info);
+                    if (!invoice.IsPaid)
+                        if (UserInputValidation.PromptYesOrNo("Click y to change this invoice status to paid, anything else to continue: "))
+                        {
+                            invoice.IsPaid = true;
+                            ctx.SaveChanges();
+                            var content = $"Dear sir/mam, we have received your payment of {invoice.Amount:C2}. Thank you for your patronage.";
+                            SystemMessage.SendSystemMessage(ctx, invoice.Booking.User, "Payment confirmed", content);
+                            PrintNotification("Status has been changed to paid.");
+                        }
+                        else
+                        {
+                            PrintNotification("You chose no");
+                        }
+                    if (!UserInputValidation.PromptYesOrNo("Press y to view another, anything else to exit: "))
+                    {
+                        PrintNotification("You chose to exit");
+                        break;
+                    }
                 }
             }
             ctx.SaveChanges();
@@ -216,7 +209,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         {
             string length = "Thank you for choosing The Suite Spot! We appreciate your business.";
             var header = new string('-', length.Length);
-            if (booking.VoucherCode != null)
+            if (booking.VoucherCode == null)
             {
                 return $@"{header}
 [The Suite spot] - {invoice.DateCreated}

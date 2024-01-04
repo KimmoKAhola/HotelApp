@@ -38,7 +38,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
 
         public void PrintOptions()
         {
-            Console.WriteLine("1. Read all paid/unpaid invoices.");
+            Console.WriteLine("1. Read all unpaid invoices.");
             Console.WriteLine("2. Update an invoice.");
             Console.WriteLine("3. Delete an invoice.");
             Console.WriteLine("4. Search for an invoice by general phrase.");
