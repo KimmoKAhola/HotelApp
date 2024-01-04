@@ -67,9 +67,8 @@ namespace TheSuiteSpot.HotelDatabase.Menus
                 .ThenInclude(m => m.Messages.Where(x => !x.IsRead));
 
             MainMenu.PrintBanner();
-            //Console.WriteLine($"You currently have {unreadMessages.Count()} unread messages."); //{numberOfUnreadMessages}
             Console.WriteLine("1. View unread messages.");
-            Console.WriteLine("2. View all sent system messages.");
+            Console.WriteLine("2. View all sent messages.");
             Console.WriteLine("3. View all received messages.");
             Console.WriteLine("4. Send a message to a user.");
             Console.WriteLine("0. Return to main menu.");
@@ -89,6 +88,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
 
         public void ShowSentMessages(User loggedInUser)
         {
+            Console.Clear();
             PrintErrorMessage("FIX MY FORMATTING PLEASE!!!");
             var filter = FilterByTopic();
             if (filter != null)
@@ -105,8 +105,13 @@ namespace TheSuiteSpot.HotelDatabase.Menus
                 {
                     foreach (var message in item.messages)
                     {
-                        Console.WriteLine(message.Content);
+                        var msg = FormatInboxMessage(message);
+                        Console.WriteLine(msg);
                         message.IsRead = true;
+                        if (!UserInputValidation.PromptYesOrNo("\nPress y to read the next message, anything else to break: "))
+                        {
+                            break;
+                        }
                     }
                 }
             }
@@ -124,12 +129,17 @@ namespace TheSuiteSpot.HotelDatabase.Menus
                 {
                     foreach (var message in item.messages)
                     {
-                        Console.WriteLine(message.Content);
+                        var msg = FormatInboxMessage(message);
+                        Console.WriteLine(msg);
                         message.IsRead = true;
+                        if (!UserInputValidation.PromptYesOrNo("\nPress y to read the next message, anything else to break: "))
+                        {
+                            break;
+                        }
                     }
                 }
             }
-
+            DbContext.SaveChanges();
             PressAnyKeyToContinue();
         }
         public void ShowUnreadMessages()
@@ -158,6 +168,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
                     }
                 }
             }
+            DbContext.SaveChanges();
             PrintNotification("\nAll unread messages have been read");
             PressAnyKeyToContinue();
         }
@@ -194,11 +205,17 @@ namespace TheSuiteSpot.HotelDatabase.Menus
             {
                 foreach (var msg in item.msg)
                 {
-                    Console.WriteLine(msg.Content);
+                    Console.WriteLine(FormatInboxMessage(msg));
                     msg.IsRead = true;
+                    PrintNotification("Message has been marked as read.");
+                    if (!UserInputValidation.PromptYesOrNo("\nPress y to read the next message, anything else to break: "))
+                    {
+                        break;
+                    }
                 }
-                PressAnyKeyToContinue();
             }
+            DbContext.SaveChanges();
+            PressAnyKeyToContinue();
         }
     }
 }
