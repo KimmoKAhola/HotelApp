@@ -29,6 +29,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         };
         public void Create(HotelContext ctx)
         {
+            Console.Clear();
             var user = CurrentUser.Instance.User;
             if (user.IsAdmin)
             {
@@ -38,23 +39,34 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 user = tempU.GetUser();
             }
 
-            Console.WriteLine("Do you want a single room?");
-            if (UserInputValidation.PromptYesOrNo("Press y to confirm, anything else to deny: "))
+            PrintNotification("Do you want a single room?");
+            if (UserInputValidation.PromptYesOrNo("Press y to confirm, anything else to pick a double room: "))
             {
+                PrintNotification("You chose a single room.");
                 var roomType = GetSuitableRoomType(ctx, 0);
-                var availableRooms = ctx.Room.Include(rt => rt.RoomType).Where(rt => rt.RoomType.Id == roomType.Id).ToList();
 
-                var choice = UserInputValidation.MenuValidation(availableRooms, "Choose: ");
+                var availableRooms = ctx.Room
+                    .Include(rt => rt.RoomType)
+                    .Where(rt => rt.RoomType.Id == roomType.Id)
+                    .ToList();
+                Console.WriteLine();
+                var choice = UserInputValidation.MenuValidation(availableRooms, "These are the available rooms\n");
                 var chosenRoom = availableRooms[choice - 1];
+                PrintNotification($"You chose this room: ");
+                Console.WriteLine(chosenRoom);
                 Create(ctx, chosenRoom, user, 0);
             }
             else
             {
-                Console.WriteLine("You have chosen a double room. How many extra beds do you need?");
-                var numberOfExtraBeds = (int?)UserInputValidation.AskForValidNumber(0, 2, "TEST");
+                PrintNotification("You chose a double room.");
+                var numberOfExtraBeds = (int?)UserInputValidation.AskForValidNumber(0, 2, "How many extra beds do you want: ");
                 if (numberOfExtraBeds == null) { return; }
                 var roomType = GetSuitableRoomType(ctx, (int)numberOfExtraBeds);
-                var availableRooms = ctx.Room.Include(rt => rt.RoomType).Where(rt => rt.RoomType.Id == roomType.Id).ToList();
+
+                var availableRooms = ctx.Room
+                    .Include(rt => rt.RoomType)
+                    .Where(rt => rt.RoomType.Id == roomType.Id)
+                    .ToList();
 
                 var choice = UserInputValidation.MenuValidation(availableRooms, "Choose: ");
                 var chosenRoom = availableRooms[choice - 1];
@@ -298,21 +310,20 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                     || (chosenStartDate <= b.StartDate && chosenEndDate >= b.EndDate))))
                     .ToList();
 
-            var availableRooms2 = DbContext.Room
-        .Where(room => !room.Bookings.Any(b =>
-            chosenStartDate < b.EndDate && chosenEndDate > b.StartDate))
-        .ToList();
-
-            if (availableRooms.Count() > 0)
+            if (availableRooms.Count > 0)
             {
                 List<int> roomIds = new List<int>();
                 PrintNotification("These are our available rooms at those given dates: ");
                 foreach (var item in availableRooms)
                 {
                     roomIds.Add(item.Id);
-                    Console.WriteLine(item.RoomNumber);
+                    Console.WriteLine($"Room id: {item.Id} - Room number: {item.RoomNumber}");
                 }
-                UserInputValidation.MenuValidation(roomIds, "These are the available rooms at your given dates");
+                UserInputValidation.MenuValidation(roomIds, "\n");
+            }
+            else
+            {
+                PrintErrorMessage("No rooms are available between your given dates.");
             }
 
             PressAnyKeyToContinue();

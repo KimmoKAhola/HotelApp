@@ -146,10 +146,15 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         {
             Console.Clear();
             Console.WriteLine("All active users: ");
-            var users = ctx.User.Where(u => u.IsActive);
+            var users = ctx.User
+                .Where(u => u.IsActive && !u.IsAdmin)
+                .OrderBy(u => u.Id);
 
+            var maxLength = users.Max(c => c.UserName.Length);
+            var divider = new string('-', maxLength);
             foreach (var item in users)
             {
+                Console.WriteLine(divider);
                 Console.WriteLine(item.UserName);
             }
         }
@@ -177,12 +182,17 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
 
         public User GetUser()
         {
-            Console.Write("Enter the exact username you want to search for: ");
+            PrintNotification("\nEnter the exact username you want to fetch: ");
             var input = Console.ReadLine();
             var user = ExactSearch(input);
+            Console.Clear();
             if (user != null && !user.IsAdmin)
             {
-                Console.WriteLine(user);
+                var header = new string('-', user.UserName.Length);
+                PrintSuccessMessage("Your search result: ");
+                var info = FormatUserTable(user, header);
+                Console.WriteLine(info);
+                Console.WriteLine(header);
             }
             else
             {

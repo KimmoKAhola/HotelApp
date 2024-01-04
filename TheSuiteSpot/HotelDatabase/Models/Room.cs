@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TheSuiteSpot.HotelDatabase.CRUD;
 using TheSuiteSpot.Interfaces;
 
 namespace TheSuiteSpot.HotelDatabase.Models
@@ -30,5 +31,10 @@ namespace TheSuiteSpot.HotelDatabase.Models
         public RoomType RoomType { get; set; } = null!;
         [Required]
         public bool IsActive { get; set; } = true;
+
+        public override string ToString()
+        {
+            return "\n" + RoomCRUD.RoomTemplate(this, new string('-', this.Description.Length));
+        }
     }
 }
