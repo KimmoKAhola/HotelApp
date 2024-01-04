@@ -27,7 +27,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                     UserId = c.Key,
                     AverageSpending = c.Average(i => i.Amount)
                 }).Average(u => u.AverageSpending);
-            //
+
             var bigSpenders = ctx.Invoice
                             .Where(i => i.IsPaid)
                             .Include(b => b.Booking)
@@ -47,7 +47,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                                     .Average())
                             .ToList()
                             .OrderByDescending(x => x.AverageSpending);
-            PrintNotification($"Here are our customer that has spent more than the average {userAverageSpending:C2}");
+            PrintNotification($"Here are our customer that has spent more than the average of {userAverageSpending:C2}");
             foreach (var bigSpender in bigSpenders)
             {
                 var divider = new string('-', 40);
@@ -110,6 +110,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         }
         public void ViewMostPopularRooms(HotelContext ctx)
         {
+            Console.Clear();
             var roomsByPopularity = ctx.Booking
                 .Include(r => r.Room)
                 .ThenInclude(r => r.Reviews)
@@ -127,10 +128,10 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 double averageScore = Math.Round(room.ReviewScore.Average(r => (double)r.StarsGiven), 1);
                 Console.WriteLine($"Number of bookings: {room.NumberOfBookings} - Room: {room.Number} - score: {averageScore}");
             }
-            PressAnyKeyToContinue();
         }
         public void ViewHighestSpenders(HotelContext ctx)
         {
+            Console.Clear();
             var usersSortedBySpending = ctx.Invoice
                 .Where(i => i.IsPaid)
                 .Include(b => b.Booking)
