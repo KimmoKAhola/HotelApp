@@ -64,7 +64,8 @@ namespace TheSuiteSpot.HotelDatabase.Menus
             var unreadMessages = DbContext.User
                 .Where(u => u.UserName == CurrentUser.Instance.User.UserName)
                 .Include(u => u.UserInbox)
-                .ThenInclude(m => m.Messages.Where(x => !x.IsRead));
+                .ThenInclude(m => m.Messages.Where(x => !x.IsRead))
+                .ThenInclude(v => v.Voucher);
 
             MainMenu.PrintBanner();
             Console.WriteLine("1. View unread messages.");
@@ -97,6 +98,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
                     .Include(u => u.UserInbox)
                     .ThenInclude(m => m.Messages
                     .Where(m => m.Sender == loggedInUser.UserName))
+                    .ThenInclude(v => v.Voucher)
                     .Select(c => new
                     {
                         messages = c.UserInbox.Messages.Where(m => m.Sender == loggedInUser.UserName).ToList()
@@ -121,6 +123,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
                     .Include(u => u.UserInbox)
                     .ThenInclude(m => m.Messages
                     .Where(m => m.Sender == loggedInUser.UserName && m.Topic.ToLower() == filter.ToLower()))
+                    .ThenInclude(v => v.Voucher)
                     .Select(c => new
                     {
                         messages = c.UserInbox.Messages.Where(m => m.Sender == loggedInUser.UserName).ToList()
@@ -196,6 +199,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
                     .Where(u => u.Id == loggedInUser.Id)
                     .Include(u => u.UserInbox)
                     .ThenInclude(m => m.Messages)
+                    .ThenInclude(v => v.Voucher)
                     .Select(c => new
                     {
                         msg = c.UserInbox.Messages.ToList(),
