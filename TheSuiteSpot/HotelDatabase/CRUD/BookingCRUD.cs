@@ -74,8 +74,8 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                     .Include(rt => rt.RoomType)
                     .Where(rt => rt.RoomType.Id == roomType.Id)
                     .ToList();
-
-                var choice = UserInputValidation.MenuValidation(availableRooms, "Choose: ");
+                PrintNotification("\n\nThese are the available rooms to choose from: ");
+                var choice = UserInputValidation.MenuValidation(availableRooms, "");
                 var chosenRoom = availableRooms[choice - 1];
                 Create(ctx, chosenRoom, user, (int)numberOfExtraBeds);
             }
@@ -87,6 +87,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         }
         private void Create(HotelContext ctx, Room chosenRoom, User user, int numberOfExtraBeds)
         {
+            PrintNotification($"You chose {numberOfExtraBeds} extra beds.\n");
             var chosenDate = UserInputValidation.AskForValidDate(DateTime.Now);
             if (chosenDate == null) { return; }
             else
@@ -205,7 +206,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 if (booking.NumberOfExtraBeds > 0)
                 {
                     invoice.Amount = Invoice.CalculateAdditionalCost(invoice);
-                    if (userVouchers != null)
+                    if (userVouchers != null && userVouchers.Count > 0)
                     {
                         var discount = (1 - userVouchers.First().DiscountPercentage / 100);
                         invoice.Amount *= discount;
