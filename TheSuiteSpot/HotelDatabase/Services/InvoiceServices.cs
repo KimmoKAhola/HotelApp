@@ -20,6 +20,12 @@ namespace TheSuiteSpot.HotelDatabase.Services
             return invoice.Amount;
         }
 
+        public static void CalculateNewInvoice(Booking oldBooking, Booking newBooking)
+        {
+
+        }
+
+
         /// <summary>
         /// Move me to a service class
         /// </summary>
