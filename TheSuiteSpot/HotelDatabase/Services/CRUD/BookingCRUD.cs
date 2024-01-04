@@ -375,24 +375,12 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
                    .ToList();
             }
 
-            if (allBookings.Count() > 10)
+            foreach (var booking in allBookings)
             {
-                PrintNotification("Too many active bookings. The result has been limited to 10.");
-                var shortList = allBookings.Take(10).ToList();
-                foreach (var booking in shortList)
-                {
-                    var info = BookingTemplate(booking);
-                    Console.WriteLine(info);
-                }
+                var info = BookingTemplate(booking);
+                Console.WriteLine(info);
             }
-            else
-            {
-                foreach (var booking in allBookings)
-                {
-                    var info = BookingTemplate(booking);
-                    Console.WriteLine(info);
-                }
-            }
+
             PressAnyKeyToContinue();
         }
         public void ExactSearch(HotelContext ctx)
@@ -501,15 +489,32 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
         {
             Console.Clear();
             PrintNotification("These are all current active bookings that can be changed: ");
-
-            var allBookings = DbContext.Booking
-                    .Where(b => b.StartDate > DateTime.Today)
-                    .OrderBy(b => b.StartDate)
-                    .Include(u => u.User)
-                    .ThenInclude(u => u.UserInbox)
-                    .Include(r => r.Room)
-                    .ThenInclude(rt => rt.RoomType)
-                    .ToList();
+            List<Booking> allBookings;
+            if (CurrentUser.Instance.User.IsAdmin)
+            {
+                allBookings = DbContext.Booking
+                        .Where(b => b.StartDate > DateTime.Today)
+                        .OrderBy(b => b.StartDate)
+                        .Include(u => u.User)
+                        .ThenInclude(u => u.UserInbox)
+                        .Include(r => r.Room)
+                        .ThenInclude(rt => rt.RoomType)
+                        .OrderBy(b => b.Id)
+                        .ToList();
+            }
+            else
+            {
+                allBookings = DbContext.Booking
+                        .Where(b => b.StartDate > DateTime.Today)
+                        .OrderBy(b => b.StartDate)
+                        .Include(u => u.User)
+                        .Where(u => u.User.UserName == CurrentUser.Instance.User.UserName)
+                        .Include(u => u.User.UserInbox)
+                        .Include(r => r.Room)
+                        .ThenInclude(rt => rt.RoomType)
+                        .OrderBy(b => b.Id)
+                        .ToList();
+            }
 
             List<int> bookingIds = new List<int>();
             foreach (var booking in allBookings)
