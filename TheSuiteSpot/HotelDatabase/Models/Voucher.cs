@@ -40,5 +40,14 @@ namespace TheSuiteSpot.HotelDatabase.Models
             };
             return voucher;
         }
+
+        public override string ToString()
+        {
+            return $"Quick voucher summary:" +
+                $"\nCode: {VoucherCode}" +
+                $"\nExpiration date: {ExpiryDate}" +
+                $"\nIs expired: {IsExpired}" +
+                $"\nDiscount percentage: {DiscountPercentage} %";
+        }
     }
 }

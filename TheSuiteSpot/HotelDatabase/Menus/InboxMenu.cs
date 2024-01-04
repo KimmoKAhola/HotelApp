@@ -67,7 +67,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
                 .ThenInclude(m => m.Messages.Where(x => !x.IsRead));
 
             MainMenu.PrintBanner();
-            Console.WriteLine($"You currently have {unreadMessages.Count()} unread messages."); //{numberOfUnreadMessages}
+            //Console.WriteLine($"You currently have {unreadMessages.Count()} unread messages."); //{numberOfUnreadMessages}
             Console.WriteLine("1. View unread messages.");
             Console.WriteLine("2. View all sent system messages.");
             Console.WriteLine("3. View all received messages.");
@@ -134,10 +134,12 @@ namespace TheSuiteSpot.HotelDatabase.Menus
         }
         public void ShowUnreadMessages()
         {
+            Console.Clear();
             var unreadMessages = DbContext.User
                 .Where(u => u.UserName == CurrentUser.Instance.User.UserName)
                 .Include(u => u.UserInbox)
                 .ThenInclude(m => m.Messages.Where(m => !m.IsRead))
+                .ThenInclude(v => v.Voucher)
                 .Select(c => new
                 {
                     msg = c.UserInbox.Messages.ToList(),
@@ -145,12 +147,36 @@ namespace TheSuiteSpot.HotelDatabase.Menus
 
             foreach (var message in unreadMessages)
             {
-                foreach (var msg in message.msg)
+                foreach (var msg in message.msg.OrderBy(x => x.DateSent))
                 {
-                    Console.WriteLine(msg.Content);
-                    PressAnyKeyToContinue();
+                    Console.WriteLine(FormatInboxMessage(msg));
+                    msg.IsRead = true;
+                    PrintNotification("Message has been marked as read.");
+                    if (!UserInputValidation.PromptYesOrNo("\nPress y to read the next message, anything else to break: "))
+                    {
+                        break;
+                    }
                 }
             }
+            PrintNotification("\nAll unread messages have been read");
+            PressAnyKeyToContinue();
+        }
+
+        private static string FormatInboxMessage(SystemMessage msg)
+        {
+            var header = new string('-', msg.Content.Length + 9);
+            var formattedMessage = $"{header}";
+            formattedMessage += $"\nTopic: {msg.Topic}\n";
+            formattedMessage += $"Date Sent: {msg.DateSent}\n";
+            formattedMessage += $"Sender: {msg.Sender}\n\n";
+            formattedMessage += $"Content: {msg.Content}";
+            if (msg.Voucher != null)
+            {
+                formattedMessage += $"{msg.Voucher}";
+            }
+            formattedMessage += $"\n{header}";
+
+            return formattedMessage;
         }
 
         public void ShowReceivedMessages(User loggedInUser)
