@@ -457,25 +457,44 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
             Console.WriteLine(bookingInfo);
 
             var propertyToUpdate = UserInputValidation.MenuValidation(_modelProperties, "CHOOSE BAJS BAJS\n\n");
+
             if (propertyToUpdate == -1) { return; }
             if (propertyToUpdate == 1)
             {
-                PrintNotification("Enter new booking dates: ");
-                var startDate = UserInputValidation.AskForValidDate(DateTime.Today);
-                if (startDate == null) { return; }
-                var endDate = UserInputValidation.AskForValidEndDate((DateTime)startDate, startDate.Value.AddDays(10));
-                if (endDate == null) { return; }
-
-                CheckForValidDates((DateTime)startDate, (DateTime)endDate, chosenBooking, DbContext);
-
-                PrintSuccessMessage("Your booking had no date conflicts for the chosen room, do you want to change the booking dates?\n");
-                if (UserInputValidation.PromptYesOrNo("Press y to confirm, anything else to decline: "))
+                bool isRunning = true;
+                while (isRunning)
                 {
-                    chosenBooking.StartDate = (DateTime)startDate;
-                    chosenBooking.EndDate = (DateTime)endDate;
 
-                    DbContext.SaveChanges();
-                    PrintSuccessMessage("Booking dates has been changed."); // This works, need to update invoice.
+                    PrintNotification("Enter new booking dates: ");
+                    var startDate = UserInputValidation.AskForValidDate(DateTime.Today);
+                    if (startDate == null) { return; }
+                    var endDate = UserInputValidation.AskForValidEndDate((DateTime)startDate, startDate.Value.AddDays(10));
+                    if (endDate == null) { return; }
+
+                    if (CheckForValidDates((DateTime)startDate, (DateTime)endDate, chosenBooking, DbContext))
+                    {
+                        PrintSuccessMessage("Your booking had no date conflicts for the chosen room, do you want to change the booking dates?\n");
+                        if (UserInputValidation.PromptYesOrNo("Press y to confirm, anything else to decline: "))
+                        {
+                            chosenBooking.StartDate = (DateTime)startDate;
+                            chosenBooking.EndDate = (DateTime)endDate;
+
+                            DbContext.SaveChanges();
+                            PrintSuccessMessage("Booking dates has been changed."); // This works, need to update invoice.
+                            isRunning = false;
+                        }
+                        else
+                        {
+                            PrintNotification("Exiting...");
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        PrintErrorMessage("There were conflicting bookings at the chosen dates, please enter new values.");
+                        PressAnyKeyToContinue();
+                        Console.Clear();
+                    }
                 }
             }
 
