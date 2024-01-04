@@ -81,30 +81,6 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             }
             PressAnyKeyToContinue();
         }
-        private List<Voucher>? CheckForVoucher(User guest)
-        {
-            var result = from message in DbContext.Message
-                         where message.Voucher != null
-                         join voucher in DbContext.Voucher on message.Voucher.Id equals voucher.Id
-                         orderby voucher.DiscountPercentage descending
-                         where !voucher.IsExpired
-                         join userInbox in DbContext.UserInbox on message.UserInbox.Id equals userInbox.Id
-                         join user in DbContext.User on userInbox.Id equals user.UserInbox.Id
-                         where user.Id == guest.Id
-                         select new
-                         {
-                             Message = message,
-                             Voucher = voucher,
-                             UserInbox = userInbox,
-                             User = user
-                         };
-            List<Voucher> vouchers = new List<Voucher>();
-            foreach (var item in result)
-            {
-                vouchers.Add(item.Voucher);
-            }
-            return vouchers;
-        }
         private static RoomType GetSuitableRoomType(HotelContext ctx, int numberOfExtraBeds)
         {
             return ctx.RoomType.Where(rt => rt.NumberOfExtraBeds == numberOfExtraBeds).First();
@@ -340,9 +316,8 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         }
         public void ExactSearch(HotelContext ctx)
         {
-
+            //Not implemented
         }
-
         public void CreateManually()
         {
             Console.Clear();
@@ -465,15 +440,29 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 return false;
             }
         }
-
-        public static bool CheckIfUserHasVoucher(User user, HotelContext ctx)
+        private List<Voucher>? CheckForVoucher(User guest)
         {
-            var test = ctx.User.Where(u => u.UserName == user.UserName)
-                .Include(u => u.UserInbox)
-                .ThenInclude(m => m.Messages)
-                .ThenInclude(v => v.Voucher)
-                .ToList();
-            return true;
+            var result = from message in DbContext.Message
+                         where message.Voucher != null
+                         join voucher in DbContext.Voucher on message.Voucher.Id equals voucher.Id
+                         orderby voucher.DiscountPercentage descending
+                         where !voucher.IsExpired
+                         join userInbox in DbContext.UserInbox on message.UserInbox.Id equals userInbox.Id
+                         join user in DbContext.User on userInbox.Id equals user.UserInbox.Id
+                         where user.Id == guest.Id
+                         select new
+                         {
+                             Message = message,
+                             Voucher = voucher,
+                             UserInbox = userInbox,
+                             User = user
+                         };
+            List<Voucher> vouchers = new List<Voucher>();
+            foreach (var item in result)
+            {
+                vouchers.Add(item.Voucher);
+            }
+            return vouchers;
         }
         public static bool CheckForValidDates(DateTime startDate, DateTime endDate, Booking booking, HotelContext ctx)
         {

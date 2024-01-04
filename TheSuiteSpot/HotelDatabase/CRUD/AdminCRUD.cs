@@ -108,7 +108,6 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         {
 
         }
-
         public void ViewMostPopularRooms(HotelContext ctx)
         {
             var roomsByPopularity = ctx.Booking
@@ -130,7 +129,6 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             }
             PressAnyKeyToContinue();
         }
-
         public void ViewHighestSpenders(HotelContext ctx)
         {
             var usersSortedBySpending = ctx.Invoice

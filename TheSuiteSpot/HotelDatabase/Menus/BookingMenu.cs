@@ -39,9 +39,6 @@ namespace TheSuiteSpot.HotelDatabase.Menus
                 case 7:
                     ReturnToMainMenu();
                     break;
-                case 8:
-                    booking.ExactSearch(DbContext);
-                    break;
                 case 0:
                     Environment.Exit(0);
                     break;

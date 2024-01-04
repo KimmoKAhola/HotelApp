@@ -25,12 +25,6 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             {5, "Room Type" },
             {6, "Room booking availability."},
         };
-        private Dictionary<int, string> _roomTypeProperties = new Dictionary<int, string>()
-        {
-            {1, "Suite name." },
-            {2, "Number of extra beds." },
-            {3, "Double or single room." },
-        };
         public void Create(HotelContext ctx)
         {
             Console.Clear();
