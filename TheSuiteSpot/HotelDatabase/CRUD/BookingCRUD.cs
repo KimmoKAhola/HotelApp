@@ -270,8 +270,48 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
 
         public void CreateManually()
         {
-            var chosenDate = UserInputValidation.AskForValidDate();
-            if (chosenDate == null) { return; }
+            Console.Clear();
+            var chosenStartDate = UserInputValidation.AskForValidDate(DateTime.Now);
+            if (chosenStartDate == null) { return; }
+            DateTime? chosenEndDate = DateTime.MinValue;
+            while (true)
+            {
+                chosenEndDate = UserInputValidation.AskForValidDate(chosenStartDate.Value.AddDays(1));
+                if (chosenEndDate < chosenStartDate.Value.AddDays(10))
+                {
+                    Console.WriteLine(chosenStartDate);
+                    Console.WriteLine(chosenEndDate);
+                    break;
+                }
+                else
+                {
+                    PrintErrorMessage($"You need to enter an end date at most 10 days after {chosenStartDate.Value.ToShortDateString()}");
+                }
+                if (chosenEndDate == null) { return; }
+            }
+
+            var availableRooms = DbContext.Room
+                    .Where(room => !room.Bookings
+                    .Any(b =>
+        ((chosenStartDate >= b.StartDate && chosenStartDate <= b.EndDate)
+                    || (chosenEndDate >= b.StartDate && chosenEndDate <= b.EndDate)
+                    || (chosenStartDate <= b.StartDate && chosenEndDate >= b.EndDate))))
+                    .ToList();
+
+            var availableRooms2 = DbContext.Room
+        .Where(room => !room.Bookings.Any(b =>
+            chosenStartDate < b.EndDate && chosenEndDate > b.StartDate))
+        .ToList();
+
+            if (availableRooms.Count() > 0)
+            {
+                PrintNotification("These are our available rooms at those given dates: ");
+                foreach (var item in availableRooms)
+                {
+                    Console.WriteLine(item.RoomNumber);
+                }
+            }
+
             PressAnyKeyToContinue();
         }
         public void GeneralSearch(HotelContext ctx)
@@ -327,13 +367,8 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         public void Update(HotelContext ctx)
         {
             Console.Clear();
-            Console.WriteLine("Things to update: dates, room, numberofextrabeds, isactive (this should disable invoice if invoice is in the future, refund the customer if so.");
-            Console.Write("Enter start date: ");
-            DateTime startDate = DateTime.Parse(Console.ReadLine());
-            Console.Write("Enter end date: ");
-            DateTime endDate = DateTime.Parse(Console.ReadLine());
-            var booking = ctx.Booking.Include(u => u.User).Include(r => r.Room).First();
-            bool test = CheckForValidDates(startDate, endDate, booking, ctx);
+            Console.WriteLine("Search for a user to update his/her future booking.");
+            Console.WriteLine("Can only update number of beds and start stop date within the time window, ie move start date forward or end date back");
 
             PressAnyKeyToContinue();
         }

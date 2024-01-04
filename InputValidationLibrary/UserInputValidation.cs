@@ -258,21 +258,25 @@ namespace InputValidationLibrary
                 }
             }
         }
-        public static DateTime? AskForValidDate()
+        public static DateTime? AskForValidDate(DateTime limit)
         {
             while (true)
             {
-                Console.Write("Enter a date (yyyy-mm-dd), or press e to exit: ");
+                Console.Write($"Enter a date (yyyy-mm-dd) later than {limit.ToShortDateString()}, or press e to exit: ");
                 var input = Console.ReadLine();
                 if (input.ToLower() == "e")
                 {
                     return null;
                 }
 
-                if (DateTime.TryParse(input, out var date))
+                if (DateTime.TryParse(input, out var date) && date > limit)
                 {
-                    PrintMessages.PrintNotification($"You chose {date}.");
-                    return date;
+                    PrintMessages.PrintNotification($"You chose {date.ToShortDateString()}.");
+                    return date + new TimeSpan(8, 0, 0);
+                }
+                else if (date < limit)
+                {
+                    PrintMessages.PrintErrorMessage($"Please choose a date after {limit.ToShortDateString()}");
                 }
                 else
                 {
