@@ -438,6 +438,7 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
                     .Where(b => b.StartDate > DateTime.Today)
                     .OrderBy(b => b.StartDate)
                     .Include(u => u.User)
+                    .ThenInclude(u => u.UserInbox)
                     .Include(r => r.Room)
                     .ToList();
 
@@ -480,7 +481,7 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
                             chosenBooking.EndDate = (DateTime)endDate;
 
                             DbContext.SaveChanges();
-                            PrintSuccessMessage("Booking dates has been changed."); // This works, need to update invoice.
+                            PrintSuccessMessage("Booking dates has been changed.");
                             isRunning = false;
                         }
                         else
@@ -496,6 +497,11 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
                         Console.Clear();
                     }
                 }
+            }
+            if (propertyToUpdate == 2)
+            {
+                PrintNotification("Choose another room");
+                var bookingsForRoom =
             }
 
             PressAnyKeyToContinue();
