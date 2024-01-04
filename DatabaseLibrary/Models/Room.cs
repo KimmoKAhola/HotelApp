@@ -1,7 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
-using DatabaseLibrary.Interfaces;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using TheSuiteSpot.Interfaces;
+using DatabaseLibrary;
 
-namespace DatabaseLibrary.HotelDatabase.Models
+namespace TheSuiteSpot.HotelDatabase.Models
 {
     public class Room : IEntity
     {
@@ -29,7 +35,8 @@ namespace DatabaseLibrary.HotelDatabase.Models
 
         public override string ToString()
         {
-            return "\n" + RoomCRUD.RoomTemplate(this, new string('-', this.Description.Length));
+            //return "\n" + RoomCRUD.RoomTemplate(this, new string('-', this.Description.Length));
+            return "";
         }
     }
 }

@@ -6,10 +6,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DatabaseLibrary.HotelDatabase.DatabaseConfiguration;
-using DatabaseLibrary.Interfaces;
+using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
+using TheSuiteSpot.Interfaces;
 
-namespace DatabaseLibrary.HotelDatabase.Models
+namespace TheSuiteSpot.HotelDatabase.Models
 {
     public class UserInbox : IEntity
     {

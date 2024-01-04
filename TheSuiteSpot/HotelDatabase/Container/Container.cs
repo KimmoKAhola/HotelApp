@@ -6,10 +6,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DatabaseLibrary;
+using TheSuiteSpot.HotelDatabase.DatabaseSeeding;
+using TheSuiteSpot.Interfaces;
+using TheSuiteSpot.HotelDatabase.Menus;
 using System.Reflection;
+using TheSuiteSpot.HotelDatabase.Menus.UserMenus;
+using TheSuiteSpot.HotelDatabase.Services.CRUD;
 using DatabaseLibrary;
-namespace DatabaseLibrary.HotelDatabase.DatabaseConfiguration
+
+namespace TheSuiteSpot.HotelDatabase.DatabaseConfiguration
 {
     public class Container
     {

@@ -4,10 +4,10 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DatabaseLibrary.HotelDatabase.DatabaseConfiguration;
-using DatabaseLibrary.Interfaces;
+using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
+using TheSuiteSpot.Interfaces;
 
-namespace DatabaseLibrary.HotelDatabase.Models
+namespace TheSuiteSpot.HotelDatabase.Models
 {
     public enum SystemMessageTypes
     {
@@ -23,6 +23,5 @@ namespace DatabaseLibrary.HotelDatabase.Models
         [Required]
         [MaxLength(50)]
         public string Name { get; set; } = null!;
-        //public List<SystemMessage>? SystemMessage { get; set; }
     }
 }
