@@ -36,13 +36,13 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseConfiguration
             myContainer.Register(c =>
             {
                 return Build.Configure();
-            }).As<DbContextOptionsBuilder<HotelContext>>().InstancePerDependency();
+            }).As<DbContextOptionsBuilder<HotelContext>>().InstancePerLifetimeScope();
 
             myContainer.Register(c =>
             {
                 var optionsBuilder = c.Resolve<DbContextOptionsBuilder<HotelContext>>();
                 return new HotelContext(optionsBuilder.Options);
-            }).AsSelf().InstancePerDependency();
+            }).AsSelf().InstancePerLifetimeScope();
         }
         private static void RegisterMenus(ContainerBuilder myContainer)
         {

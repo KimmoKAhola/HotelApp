@@ -151,6 +151,8 @@ namespace TheSuiteSpot.HotelDatabase.Menus
         public void ShowUnreadMessages()
         {
             Console.Clear();
+            PrintNotification("This will show all unread messages");
+            PressAnyKeyToContinue();
             var unreadMessages = DbContext.User
                 .Where(u => u.UserName == CurrentUser.Instance.User.UserName)
                 .Include(u => u.UserInbox)
@@ -200,6 +202,9 @@ namespace TheSuiteSpot.HotelDatabase.Menus
 
         public void ShowReceivedMessages(User loggedInUser)
         {
+            Console.Clear();
+            PrintNotification("This will show all received messages, unread and read");
+            PressAnyKeyToContinue();
             var allReceivedMessages = DbContext.User
                     .Where(u => u.Id == loggedInUser.Id)
                     .Include(u => u.UserInbox)
