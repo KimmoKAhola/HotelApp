@@ -213,7 +213,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 }
                 else
                 {
-                    if (userVouchers != null)
+                    if (userVouchers != null && userVouchers.Count > 0)
                     {
                         var discount = (1 - userVouchers.First().DiscountPercentage / 100);
                         invoice.Amount *= discount;
