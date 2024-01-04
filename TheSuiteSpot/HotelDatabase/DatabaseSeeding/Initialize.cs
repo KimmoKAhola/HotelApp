@@ -19,7 +19,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
 
         public void Seed()
         {
-            DbContext.Database.EnsureDeleted();
+            //DbContext.Database.EnsureDeleted();
 
             if (!(DbContext.Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator).Exists())
             {
