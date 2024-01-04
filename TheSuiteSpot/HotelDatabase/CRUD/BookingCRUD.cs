@@ -305,11 +305,14 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
 
             if (availableRooms.Count() > 0)
             {
+                List<int> roomIds = new List<int>();
                 PrintNotification("These are our available rooms at those given dates: ");
                 foreach (var item in availableRooms)
                 {
+                    roomIds.Add(item.Id);
                     Console.WriteLine(item.RoomNumber);
                 }
+                UserInputValidation.MenuValidation(roomIds, "These are the available rooms at your given dates");
             }
 
             PressAnyKeyToContinue();
