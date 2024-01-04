@@ -35,6 +35,9 @@ namespace TheSuiteSpot.HotelDatabase.UserMenus
                 case 4:
                     booking.ReadAll(DbContext);
                     break;
+                case 0:
+                    ReturnToMainMenu();
+                    break;
             }
         }
 
@@ -44,6 +47,7 @@ namespace TheSuiteSpot.HotelDatabase.UserMenus
             Console.WriteLine("2. Update a booking.");
             Console.WriteLine("3. Cancel a future booking.");
             Console.WriteLine("4. View your bookings.");
+            Console.WriteLine("0. Return to the main menu.");
         }
 
         public void ReturnToMainMenu()

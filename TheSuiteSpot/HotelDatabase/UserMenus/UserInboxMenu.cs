@@ -48,8 +48,6 @@ namespace TheSuiteSpot.HotelDatabase.UserMenus
             Console.WriteLine("2. View sent messages.");
             Console.WriteLine("3. View received messages.");
             Console.WriteLine("4. Send message to another user.");
-            Console.WriteLine("1. View unread messages.");
-            Console.WriteLine("1. View unread messages.");
         }
 
         public void ReturnToMainMenu()
