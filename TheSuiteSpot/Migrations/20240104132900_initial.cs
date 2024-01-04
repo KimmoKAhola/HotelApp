@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TheSuiteSpot.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -86,7 +86,7 @@ namespace TheSuiteSpot.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     RoomNumber = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     RoomSize = table.Column<int>(type: "int", nullable: false),
                     PricePerDay = table.Column<decimal>(type: "decimal(9,2)", nullable: false),
@@ -153,7 +153,7 @@ namespace TheSuiteSpot.Migrations
                     VoucherId = table.Column<int>(type: "int", nullable: true),
                     IsRead = table.Column<bool>(type: "bit", nullable: false),
                     MessageTypeId = table.Column<int>(type: "int", nullable: false),
-                    UserInboxId = table.Column<int>(type: "int", nullable: true)
+                    UserInboxId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -168,7 +168,8 @@ namespace TheSuiteSpot.Migrations
                         name: "FK_Message_UserInbox_UserInboxId",
                         column: x => x.UserInboxId,
                         principalTable: "UserInbox",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Message_Voucher_VoucherId",
                         column: x => x.VoucherId,

@@ -24,8 +24,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             {1, "Start Date"},
             {2, "End Date"},
             {3, "Room"},
-            {4, "Number of beds"},
-
+            {4, "Number of extra beds"},
         };
         public void Create(HotelContext ctx)
         {

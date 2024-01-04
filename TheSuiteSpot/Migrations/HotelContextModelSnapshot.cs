@@ -139,6 +139,7 @@ namespace TheSuiteSpot.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -227,7 +228,7 @@ namespace TheSuiteSpot.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("UserInboxId")
+                    b.Property<int>("UserInboxId")
                         .HasColumnType("int");
 
                     b.Property<int?>("VoucherId")
@@ -449,15 +450,19 @@ namespace TheSuiteSpot.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TheSuiteSpot.HotelDatabase.Models.UserInbox", null)
+                    b.HasOne("TheSuiteSpot.HotelDatabase.Models.UserInbox", "UserInbox")
                         .WithMany("Messages")
-                        .HasForeignKey("UserInboxId");
+                        .HasForeignKey("UserInboxId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("TheSuiteSpot.HotelDatabase.Models.Voucher", "Voucher")
                         .WithMany()
                         .HasForeignKey("VoucherId");
 
                     b.Navigation("MessageType");
+
+                    b.Navigation("UserInbox");
 
                     b.Navigation("Voucher");
                 });
