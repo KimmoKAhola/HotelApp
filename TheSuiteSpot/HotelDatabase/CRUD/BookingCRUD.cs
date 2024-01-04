@@ -218,7 +218,6 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                         var discount = (1 - userVouchers.First().DiscountPercentage / 100);
                         invoice.Amount *= discount;
                     }
-
                 }
                 ctx.Invoice.Add(invoice);
                 ctx.SaveChanges();

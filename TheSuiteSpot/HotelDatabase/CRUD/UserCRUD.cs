@@ -304,7 +304,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             }
             else
             {
-                user = CurrentUser.Instance.User;
+                user = DbContext.User.Where(u => u.UserName == CurrentUser.Instance.User.UserName).First();
             }
             if (user != null && !user.IsAdmin)
             {
