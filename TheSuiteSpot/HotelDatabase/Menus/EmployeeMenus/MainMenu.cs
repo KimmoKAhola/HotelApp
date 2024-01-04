@@ -7,6 +7,7 @@ using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
 using TheSuiteSpot.Interfaces;
 using InputValidationLibrary;
 using TheSuiteSpot.HotelDatabase.Services;
+using Autofac;
 
 namespace TheSuiteSpot.HotelDatabase.Menus
 {

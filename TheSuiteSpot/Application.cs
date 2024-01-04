@@ -77,7 +77,7 @@ namespace TheSuiteSpot
             }
         }
 
-        private void Login()
+        public void Login()
         {
             var allUsers = DbContext.User;
             Console.Write("Enter a username: ");
@@ -86,8 +86,8 @@ namespace TheSuiteSpot
             var password = Console.ReadLine();
             if (GetAuthority(username, password, allUsers))
             {
-                PrintMessages.PrintNotification("Login successful!");
-                PrintMessages.PressAnyKeyToContinue();
+                PrintNotification("Login successful!");
+                PressAnyKeyToContinue();
             }
         }
 
