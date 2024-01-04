@@ -25,6 +25,11 @@ namespace TheSuiteSpot
             //Console.WriteLine("I AM CHECKING THE INVOICES");
             //Console.ReadKey();
         }
+
+        public void CheckVouchers()
+        {
+            //Check all vouchers at the start of the app
+        }
         public void Run(IContainer container)
         {
             using (var scope = container.BeginLifetimeScope())

@@ -81,11 +81,13 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             }
             PressAnyKeyToContinue();
         }
-        private bool CheckForVoucher(User guest)
+        private List<Voucher>? CheckForVoucher(User guest)
         {
             var result = from message in DbContext.Message
                          where message.Voucher != null
                          join voucher in DbContext.Voucher on message.Voucher.Id equals voucher.Id
+                         orderby voucher.DiscountPercentage descending
+                         where !voucher.IsExpired
                          join userInbox in DbContext.UserInbox on message.UserInbox.Id equals userInbox.Id
                          join user in DbContext.User on userInbox.Id equals user.UserInbox.Id
                          where user.Id == guest.Id
@@ -96,10 +98,12 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                              UserInbox = userInbox,
                              User = user
                          };
-
-            var resultList = result.ToList();
-
-            return true;
+            List<Voucher> vouchers = new List<Voucher>();
+            foreach (var item in result)
+            {
+                vouchers.Add(item.Voucher);
+            }
+            return vouchers;
         }
         private static RoomType GetSuitableRoomType(HotelContext ctx, int numberOfExtraBeds)
         {
@@ -186,6 +190,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             {
                 ctx.SaveChanges();
                 chosenUser = ctx.User.Where(u => u.Id == chosenUser.Id).Include(u => u.UserInbox).First();
+                List<Voucher>? userVouchers = CheckForVoucher(chosenUser);
                 var booking = new Booking
                 {
                     StartDate = newDate,
@@ -194,6 +199,22 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                     Room = chosenRoom,
                     NumberOfExtraBeds = numberOfExtraBeds
                 };
+                if (userVouchers != null && userVouchers.Count > 0)
+                {
+                    PrintNotification("This user has an active voucher§, do you want to use it?");
+                    if (UserInputValidation.PromptYesOrNo("Y to confirm: "))
+                    {
+                        PrintNotification("You chose to use it. Using the discount with the highest discount");
+                        var maximumDiscountVoucher = userVouchers.First();
+                        booking.VoucherCode = maximumDiscountVoucher.VoucherCode;
+                        maximumDiscountVoucher.IsExpired = true;
+                        DbContext.SaveChanges();
+                    }
+                    else
+                    {
+                        PrintNotification("You chose no.");
+                    }
+                }
                 ctx.SaveChanges();
                 ctx.Booking.Add(booking);
                 var totalDays = (int)(booking.EndDate - booking.StartDate).Days;
@@ -208,8 +229,20 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 if (booking.NumberOfExtraBeds > 0)
                 {
                     invoice.Amount = Invoice.CalculateAdditionalCost(invoice);
+                    if (userVouchers != null)
+                    {
+                        var discount = (1 - userVouchers.First().DiscountPercentage / 100);
+                        invoice.Amount *= discount;
+                    }
                 }
-
+                else
+                {
+                    if (userVouchers != null)
+                    {
+                        var discount = (1 - userVouchers.First().DiscountPercentage / 100);
+                        invoice.Amount *= discount;
+                    }
+                }
                 ctx.Invoice.Add(invoice);
                 ctx.SaveChanges();
                 SystemMessage.SendBookingConfirmationMessage(ctx, chosenUser, booking);
@@ -219,7 +252,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 var info = BookingTemplate(booking);
                 Console.WriteLine(info + "\n");
                 PrintSuccessMessage("An invoice has been created and sent to the chosen guest: ");
-                Console.WriteLine(Invoice.GenerateInvoice(invoice));
+                Console.WriteLine(Invoice.GenerateInvoice(invoice, userVouchers.FirstOrDefault()));
             }
         }
         public void SoftDelete(HotelContext ctx)
@@ -307,8 +340,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         }
         public void ExactSearch(HotelContext ctx)
         {
-            var user = ctx.User.Where(u => !u.IsAdmin && u.Id == 29).First();
-            CheckForVoucher(user);
+
         }
 
         public void CreateManually()

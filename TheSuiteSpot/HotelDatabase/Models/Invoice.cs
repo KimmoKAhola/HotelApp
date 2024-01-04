@@ -42,7 +42,7 @@ namespace TheSuiteSpot.HotelDatabase.Models
         /// </summary>
         /// <param name="invoice"></param>
         /// <returns></returns>
-        public static string GenerateInvoice(Invoice invoice)
+        public static string GenerateInvoice(Invoice invoice, Voucher? voucher)
         {
             StringBuilder invoiceBuilder = new StringBuilder();
 
@@ -67,8 +67,9 @@ namespace TheSuiteSpot.HotelDatabase.Models
             }
 
             decimal totalAmount = invoice.Booking.Room.PricePerDay * (invoice.Booking.EndDate - invoice.Booking.StartDate).Days;
+            if (invoice.Booking.VoucherCode != null) { totalAmount = invoice.Amount; }
             invoiceBuilder.AppendLine($"\nTotal Amount: {totalAmount:C}");
-
+            if (invoice.Booking.VoucherCode != null) { invoiceBuilder.AppendLine($"Discount of {voucher.DiscountPercentage} % has been applied."); }
             invoiceBuilder.AppendLine("\nThank you for choosing The Suite Spot! We appreciate your business.");
             invoiceBuilder.AppendLine($"For any inquiries, please contact us at {CurrentUser.Instance.User.Email}");
 
