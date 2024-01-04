@@ -23,10 +23,8 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
         private readonly TimeSpan _bookingStart = new TimeSpan(8, 0, 0); // business rule
         private Dictionary<int, string> _modelProperties = new Dictionary<int, string>()
         {
-            {1, "Start Date"},
-            {2, "End Date"},
-            {3, "Room"},
-            {4, "Number of extra beds"},
+            {1, "Change booking dates"},
+            {2, "Change room"},
         };
         public void Create(HotelContext ctx)
         {
@@ -434,8 +432,52 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
         public void Update(HotelContext ctx)
         {
             Console.Clear();
-            Console.WriteLine("Search for a user to update his/her future booking.");
-            Console.WriteLine("Can only update number of beds and start stop date within the time window, ie move start date forward or end date back");
+            PrintNotification("These are all current active bookings that can be changed: ");
+
+            var allBookings = DbContext.Booking
+                    .Where(b => b.StartDate > DateTime.Today)
+                    .OrderBy(b => b.StartDate)
+                    .Include(u => u.User)
+                    .Include(r => r.Room)
+                    .ToList();
+
+            List<int> bookingIds = new List<int>();
+            foreach (var booking in allBookings)
+            {
+                bookingIds.Add(booking.Id);
+                var info = BookingTemplate(booking);
+                Console.WriteLine(info);
+            }
+            PrintNotification("\nThese are the booking ids you can update: \n");
+            var choice = UserInputValidation.MenuValidation(bookingIds, "\nChoose and id to update.");
+            var chosenBooking = allBookings[choice - 1];
+            Console.Clear();
+            PrintNotification("You chose this booking:\n");
+            var bookingInfo = BookingTemplate(chosenBooking);
+            Console.WriteLine(bookingInfo);
+
+            var propertyToUpdate = UserInputValidation.MenuValidation(_modelProperties, "CHOOSE BAJS BAJS\n\n");
+            if (propertyToUpdate == -1) { return; }
+            if (propertyToUpdate == 1)
+            {
+                PrintNotification("Enter new booking dates: ");
+                var startDate = UserInputValidation.AskForValidDate(DateTime.Today);
+                if (startDate == null) { return; }
+                var endDate = UserInputValidation.AskForValidEndDate((DateTime)startDate, startDate.Value.AddDays(10));
+                if (endDate == null) { return; }
+
+                CheckForValidDates((DateTime)startDate, (DateTime)endDate, chosenBooking, DbContext);
+
+                PrintSuccessMessage("Your booking had no date conflicts for the chosen room, do you want to change the booking dates?\n");
+                if (UserInputValidation.PromptYesOrNo("Press y to confirm, anything else to decline: "))
+                {
+                    chosenBooking.StartDate = (DateTime)startDate;
+                    chosenBooking.EndDate = (DateTime)endDate;
+
+                    DbContext.SaveChanges();
+                    PrintSuccessMessage("Booking dates has been changed."); // This works, need to update invoice.
+                }
+            }
 
             PressAnyKeyToContinue();
         }
