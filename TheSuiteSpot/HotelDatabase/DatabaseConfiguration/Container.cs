@@ -12,7 +12,6 @@ using TheSuiteSpot.HotelDatabase.Menus;
 using System.Reflection;
 using TheSuiteSpot.HotelDatabase.Menus.UserMenus;
 using TheSuiteSpot.HotelDatabase.Services.CRUD;
-using TheSuiteSpot.HotelDatabase.Menus.EmployeeMenus;
 
 namespace TheSuiteSpot.HotelDatabase.DatabaseConfiguration
 {
