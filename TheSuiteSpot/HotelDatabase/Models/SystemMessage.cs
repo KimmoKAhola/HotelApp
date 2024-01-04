@@ -22,6 +22,8 @@ namespace TheSuiteSpot.HotelDatabase.Models
         public bool IsRead { get; set; } = false;
         public SystemMessageType MessageType { get; set; } = null!;
 
+        public UserInbox UserInbox { get; set; } = null!;
+
         //Move all this to a service class
         public static void SendRewardMessage(HotelContext ctx, decimal discountPercentage, User receiver)
         {

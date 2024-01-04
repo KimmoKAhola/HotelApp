@@ -81,9 +81,23 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             }
             PressAnyKeyToContinue();
         }
-        private bool CheckForVoucher(User user)
+        private bool CheckForVoucher(User guest)
         {
+            var result = from message in DbContext.Message
+                         where message.Voucher != null
+                         join voucher in DbContext.Voucher on message.Voucher.Id equals voucher.Id
+                         join userInbox in DbContext.UserInbox on message.UserInbox.Id equals userInbox.Id
+                         join user in DbContext.User on userInbox.Id equals user.UserInbox.Id
+                         where user.Id == guest.Id
+                         select new
+                         {
+                             Message = message,
+                             Voucher = voucher,
+                             UserInbox = userInbox,
+                             User = user
+                         };
 
+            var resultList = result.ToList();
 
             return true;
         }
@@ -293,7 +307,8 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         }
         public void ExactSearch(HotelContext ctx)
         {
-
+            var user = ctx.User.Where(u => !u.IsAdmin && u.Id == 29).First();
+            CheckForVoucher(user);
         }
 
         public void CreateManually()
