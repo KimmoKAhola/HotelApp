@@ -440,6 +440,7 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
                     .Include(u => u.User)
                     .ThenInclude(u => u.UserInbox)
                     .Include(r => r.Room)
+                    .ThenInclude(rt => rt.RoomType)
                     .ToList();
 
             List<int> bookingIds = new List<int>();
@@ -501,7 +502,10 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
             if (propertyToUpdate == 2)
             {
                 PrintNotification("Choose another room");
-                var bookingsForRoom =
+                var test = GetSuitableRoomType(DbContext, chosenBooking.NumberOfExtraBeds);
+                Console.WriteLine(test);
+                Console.WriteLine(chosenBooking.Room.RoomType.ToString());
+                Console.WriteLine(chosenBooking.NumberOfExtraBeds);
             }
 
             PressAnyKeyToContinue();
