@@ -20,8 +20,8 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
     {
         public HotelContext DbContext { get; set; } = dbContext;
         private List<IMenu> _menus;
-        private readonly int _maximumBookingDuration = 10; // Business rule
-        private readonly TimeSpan _bookingStart = new TimeSpan(8, 0, 0); // business rule
+        private readonly int _maximumBookingDuration = 10;
+        private readonly TimeSpan _bookingStart = new TimeSpan(8, 0, 0);
         private Dictionary<int, string> _modelProperties = new Dictionary<int, string>()
         {
             {1, "Change booking dates"},
@@ -151,7 +151,6 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
                 }
             }
         }
-
         private void Create(HotelContext ctx, DateTime startDate, Room chosenRoom, User user, int numberOfExtraBeds)
         {
             PrintNotification($"You chose {numberOfExtraBeds} extra beds.\n");
@@ -632,8 +631,6 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
             }
             PressAnyKeyToContinue();
         }
-
-
         public static bool CheckIfUserHasBookings(User user, HotelContext ctx)
         {
             var userResult = ctx.User
