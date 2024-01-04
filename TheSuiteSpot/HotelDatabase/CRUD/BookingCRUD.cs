@@ -213,6 +213,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                     else
                     {
                         PrintNotification("You chose no.");
+
                     }
                 }
                 ctx.SaveChanges();
