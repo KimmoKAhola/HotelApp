@@ -20,10 +20,8 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         {
             {1, "Description."},
             {2, "Room Number."},
-            {3, "Room Size."},
-            {4, "Room Price."},
-            {5, "Room Type" },
-            {6, "Room booking availability."},
+            {3, "Room Price."},
+            {4, "Room booking availability."},
         };
         public void Create(HotelContext ctx)
         {
@@ -52,25 +50,33 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 RoomNumber = roomNumber,
                 RoomSize = (int)roomSize
             };
-            var roomDescription = UserInputValidation.AskForValidInputString("description (optional) ");
+            var roomDescription = UserInputValidation.AskForValidInputString("description");
             if (roomDescription == null) { return; }
+            if (roomDescription.Length > 500)
+            {
+                roomDescription = roomDescription.Substring(0, 499);
+            }
             room.Description = roomDescription;
             Console.WriteLine();
             var pricePerDay = UserInputValidation.AskForValidNumber(1000, 20000, "Enter a price per day for the room in SEK");
             if (pricePerDay == null) { return; }
-            if (room.RoomType.SuiteName == "Deluxe" || room.RoomType.SuiteName == "Royal")
+            if (room.RoomType.SuiteName.Contains("Deluxe") || room.RoomType.SuiteName.Contains("Royal"))
             {
                 var pricePerExtraBed = UserInputValidation.AskForValidNumber(200, 3000, "Enter a price per day per each extra bed. ");
                 room.PricePerExtraBed = pricePerExtraBed;
             }
             room.PricePerDay = (decimal)pricePerDay;
-            ctx.Add(room);
-            ctx.SaveChanges();
-
-            PrintSuccessMessage("Room has been added successfully.");
+            Console.Clear();
+            PrintSuccessMessage("Your room: ");
             var header = new string('-', 10);
             var info = RoomTemplate(room, header);
             Console.WriteLine(info);
+            if (UserInputValidation.PromptYesOrNo("Press y to save this room, anything else to discard: "))
+            {
+                ctx.Add(room);
+                ctx.SaveChanges();
+                PrintSuccessMessage("Room has been added successfully.");
+            }
             PressAnyKeyToContinue();
         }
         public void ExactSearch(HotelContext ctx)
@@ -128,10 +134,72 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             var chosenRoom = GetRoom(roomNumber, ctx);
             if (chosenRoom != null)
             {
+                string? updatedValue;
+                bool isRunning = true;
+                while (isRunning)
+                {
+                    var choice = UserInputValidation.MenuValidation(_modelProperties, "\nChoose an option to update. ");
+                    if (choice != _modelProperties.Count)
+                    {
+                        PrintNotification($"You chose to update {_modelProperties[choice]}\n");
+                    }
+                    switch (choice)
+                    {
+                        case 1:
+                            updatedValue = UserInputValidation.AskForValidInputString("description");
+                            if (updatedValue == null) { return; }
+                            chosenRoom.Description = updatedValue;
+                            break;
+                        case 2:
+                            updatedValue = UserInputValidation.AskForValidRoomNumber("room number", 4, 6);
+                            if (updatedValue == null) { return; }
+                            if (ctx.Room.Any(r => r.RoomNumber == updatedValue))
+                            {
+                                PrintErrorMessage("That room number is already taken. Changes has not been applied.");
+                            }
+                            else
+                            {
+                                chosenRoom.RoomNumber = updatedValue;
+                            }
+                            break;
+                        case 3:
+                            decimal? value = UserInputValidation.AskForValidNumber(1000m, 10000m, "Update the price per day.");
+                            if (value == null) { return; }
+                            PrintNotification($"You chose {value:C2}");
+                            chosenRoom.PricePerDay = (decimal)value;
+                            break;
+                        case 4:
+                            Console.Clear();
+                            PrintNotification($"The current booking availability is: {chosenRoom.IsActive}");
+                            PrintErrorMessage("Please be warned that you are about to commit a destructive action!");
+                            if (UserInputValidation.PromptYesOrNo("You wish to change a room's availability. Please note that if this is changed to false, it will not be available for any new bookings." +
+                                "\nPress y to confirm, anything else to discard: "))
+                            {
+                                chosenRoom.IsActive = !chosenRoom.IsActive;
+                                PrintNotification($"Availability has been changed to: {chosenRoom.IsActive}\n");
+                            }
+                            break;
+                    }
+                    if (!UserInputValidation.PromptYesOrNo("Change another property? (y/n): \n"))
+                    {
+                        isRunning = false;
+                        break;
+                    }
+                }
                 Console.Clear();
-                Console.WriteLine($"You wish to update this room: {chosenRoom}\n");
-                Console.WriteLine("These are the properties you can change: ");
-                UserInputValidation.MenuValidation(_modelProperties, "Choose an option: ");
+                PrintSuccessMessage("Your room has been changed to: ");
+                var newHeader = new string('-', chosenRoom.Description.Length);
+                var newInfo = RoomTemplate(chosenRoom, newHeader);
+                Console.WriteLine(newInfo);
+                if (UserInputValidation.PromptYesOrNo("Press y to confirm changes, anything else to discard: "))
+                {
+                    PrintSuccessMessage("Your changes has been applied.");
+                    ctx.SaveChanges();
+                }
+                else
+                {
+                    PrintNotification("Changes has been discarded");
+                }
             }
             else
             {
@@ -168,30 +236,43 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             Console.Clear();
             PrintNotification("You can only delete rooms without any future bookings.");
             var roomsWithoutFutureBookings = ctx.Room
+                .Where(r => r.IsActive)
                 .Include(rt => rt.RoomType)
                 .Include(b => b.Bookings)
                 .Where(b => b.Bookings.All(b => b.EndDate <= DateTime.Today) || !b.Bookings.Any());
-            PrintNotification($"Your result yielded {roomsWithoutFutureBookings.Count()} results. One result will be shown at a time");
-            Console.Write("These are the current rooms without any future bookings: \n");
-            foreach (var room in roomsWithoutFutureBookings)
+            if (roomsWithoutFutureBookings.Any())
             {
-                var header = new string('-', 40);
-                var info = RoomTemplate(room, header);
-                Console.WriteLine(info);
-                Console.WriteLine(header);
-                Console.WriteLine("Would you like to (soft) delete it?");
-                if (UserInputValidation.PromptYesOrNo("Press y to confirm, anything else to deny: "))
+                PrintNotification($"Your result yielded {roomsWithoutFutureBookings.Count()} results. One result will be shown at a time");
+                Console.Write("These are the current rooms without any future bookings: \n");
+                foreach (var room in roomsWithoutFutureBookings)
                 {
-                    room.IsActive = !room.IsActive;
+                    var header = new string('-', 40);
+                    var info = RoomTemplate(room, header);
+                    Console.WriteLine(info);
+                    Console.WriteLine(header);
+                    Console.WriteLine("Would you like to (soft) delete it?");
+                    if (UserInputValidation.PromptYesOrNo("Press y to confirm, anything else to deny:"))
+                    {
+                        PrintNotification($"Status has been changed to deleted\n");
+                        room.IsActive = !room.IsActive;
+                    }
+                    else
+                    {
+                        PrintNotification("Room has not been deleted.\n");
+                    }
+                    ctx.SaveChanges();
                 }
-                PrintNotification($"Status has been changed to deleted");
-                ctx.SaveChanges();
+            }
+            else
+            {
+                PrintNotification("No rooms can be deleted.");
             }
             PressAnyKeyToContinue();
         }
         public void GeneralSearch(HotelContext ctx)
         {
             Console.Clear();
+            PrintNotification("You can search for a general search term to find all rooms containing that term. Try to be specific.\n");
             Console.Write("Enter a room number sequence to search for: ");
             var roomNumber = UserInputValidation.AskForValidInputString();
             if (roomNumber == null)

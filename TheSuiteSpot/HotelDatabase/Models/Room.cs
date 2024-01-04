@@ -12,6 +12,7 @@ namespace TheSuiteSpot.HotelDatabase.Models
     public class Room : IEntity
     {
         public int Id { get; set; }
+        [Required]
         [StringLength(500)]
         public string? Description { get; set; }
 

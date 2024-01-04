@@ -71,15 +71,19 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 UserRole = ctx.UserRole.Where(r => r.RoleName.Contains("Guest")).First(),
                 UserInbox = new UserInbox { },
             };
-            ctx.User.Add(user);
-            ctx.SaveChanges();
             string header = new string('-', user.Email.Length + 7);
-            SystemMessage.SendCreatedUserMessage(user, ctx);
             var info = FormatUserTable(user, header);
-            Console.Clear();
-            PrintSuccessMessage($"The user below was created successfully and has been added to the system.");
+            PrintNotification("You have created this user: ");
             Console.WriteLine(info);
             Console.WriteLine(header);
+            if (UserInputValidation.PromptYesOrNo("Press y to add this user to the system: "))
+            {
+                ctx.User.Add(user);
+                ctx.SaveChanges();
+                SystemMessage.SendCreatedUserMessage(user, ctx);
+                Console.Clear();
+                PrintSuccessMessage($"The user has been added to the system.");
+            }
             PressAnyKeyToContinue();
         }
 
@@ -124,12 +128,15 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         public void ReadAll(HotelContext ctx)
         {
             Console.Clear();
-            Console.WriteLine("All active users: ");
+            PrintSuccessMessage("All active users: ");
             var users = ctx.User
                 .Include(ur => ur.UserRole)
                 .Where(u => u.IsActive && u.UserRole.RoleName != UserRoles.System.ToString())
-                .OrderBy(u => u.Id);
+                .OrderBy(u => u.Id)
+                .ToList();
+
             var maxStringLength = new string('-', users.Max(c => c.Email.Length) + 7);
+
             foreach (var user in users)
             {
                 string info = FormatUserTable(user, maxStringLength);
@@ -162,7 +169,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         public void ExactSearch(HotelContext ctx)
         {
             Console.Clear();
-            Console.Write("Enter the username you want to search for: ");
+            Console.Write("Enter the exact username you want to search for: ");
             var input = UserInputValidation.AskForValidInputString();
             if (input == null) { return; }
             var user = ExactSearch(input);
@@ -170,12 +177,13 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             {
                 string header = new string('-', user.Email.Length + 7);
                 var info = FormatUserTable(user, header);
+                PrintSuccessMessage("Your search yielded this user: ");
                 Console.WriteLine(info);
                 Console.WriteLine(header);
             }
             else
             {
-                Console.WriteLine("No user with that phrase exists.");
+                PrintErrorMessage("No user with that phrase exists.");
             }
             PressAnyKeyToContinue();
         }
@@ -229,7 +237,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 {
                     searchResult = searchQuery.ToList();
                 }
-                Console.WriteLine($"Result of your search: ");
+                PrintSuccessMessage($"Result of your search: ");
                 string header = new string('-', searchQuery.Max(u => u.Email.Length) + 7);
                 foreach (var user in searchResult)
                 {
@@ -296,47 +304,62 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 var info = FormatUserTable(user, header);
                 Console.Write(info);
                 Console.WriteLine("\n" + header + "\n");
-                var choice = UserInputValidation.MenuValidation(_modelProperties, "Choose an option to update. ");
-                if (choice != _modelProperties.Count)
-                {
-                    Console.WriteLine($"You chose to update {_modelProperties[choice]}");
-                    Console.Write("Enter the new value: ");
-                }
                 string? updatedValue;
-                switch (choice)
+                bool isRunning = true;
+                while (isRunning)
                 {
-                    case 1:
-                        updatedValue = UserInputValidation.AskForValidName("first name", 2, 30);
-                        if (updatedValue == null) { return; }
-                        user.FirstName = updatedValue;
+                    var choice = UserInputValidation.MenuValidation(_modelProperties, "\nChoose an option to update. ");
+                    if (choice != _modelProperties.Count)
+                    {
+                        PrintNotification($"You chose to update {_modelProperties[choice]}\n");
+                        Console.Write("Enter the new value: ");
+                    }
+                    switch (choice)
+                    {
+                        case 1:
+                            updatedValue = UserInputValidation.AskForValidName("first name", 2, 30);
+                            if (updatedValue == null) { return; }
+                            user.FirstName = updatedValue;
+                            break;
+                        case 2:
+                            updatedValue = UserInputValidation.AskForValidName("last name", 2, 30);
+                            if (updatedValue == null) { return; }
+                            user.LastName = updatedValue;
+                            break;
+                        case 3:
+                            updatedValue = UserInputValidation.AskForValidEmail("email name", 6, 100);
+                            if (updatedValue == null) { return; }
+                            user.Email = updatedValue;
+                            break;
+                        case 4:
+                            updatedValue = UserInputValidation.AskForValidPassword("password", 6, 30);
+                            if (updatedValue == null) { return; }
+                            user.Password = updatedValue;
+                            break;
+                        case 5:
+                            user.IsSubscriber = !user.IsSubscriber;
+                            PrintNotification($"Subscription status has been changed to {user.IsSubscriber}");
+                            break;
+                    }
+                    if (!UserInputValidation.PromptYesOrNo("Change another property? (y/n): \n"))
+                    {
+                        isRunning = false;
                         break;
-                    case 2:
-                        updatedValue = UserInputValidation.AskForValidName("last name", 2, 30);
-                        if (updatedValue == null) { return; }
-                        user.LastName = updatedValue;
-                        break;
-                    case 3:
-                        updatedValue = UserInputValidation.AskForValidEmail("email name", 6, 100);
-                        if (updatedValue == null) { return; }
-                        user.Email = updatedValue;
-                        break;
-                    case 4:
-                        updatedValue = UserInputValidation.AskForValidPassword("password", 6, 30);
-                        if (updatedValue == null) { return; }
-                        user.Password = updatedValue;
-                        break;
-                        //case 5:
-                        //    Console.WriteLine($"Current subscription status is {user.IsSubscribed}");
-                        //    user.IsSubscribed = !user.IsSubscribed;
-                        //    break;
+                    }
                 }
-                DbContext.SaveChanges();
-                Console.Clear();
-                PrintSuccessMessage("Update was successful.");
                 header = new string('-', user.Email.Length + 7);
                 var userInfo = FormatUserTable(user, header);
                 Console.Write(userInfo);
                 Console.WriteLine("\n" + header);
+                if (UserInputValidation.PromptYesOrNo("Press y to confirm the changes, anything else to discard: "))
+                {
+                    DbContext.SaveChanges();
+                    PrintSuccessMessage("Update was successful.");
+                }
+                else
+                {
+                    PrintNotification("Changes were not saved.");
+                }
             }
             else
             {
@@ -357,21 +380,5 @@ Password: {user.Password}
 Subscribed: {user.IsSubscriber}";
             return info;
         }
-
-        //private static string FormatUserTable(User user)
-        //{
-
-        //    //            string info = $@"
-        //    //{header}
-        //    //Name: {user.FirstName} {user.LastName}
-        //    //Username: {user.UserName}
-        //    //Email: {user.Email}
-        //    //{header}";
-
-        //    //            return string.Join(Environment.NewLine,
-        //    //    info.Split(Environment.NewLine)
-        //    //           .Select(line => line.PadRight(header.Length)));
-        //    return "";
-        //}
     }
 }
