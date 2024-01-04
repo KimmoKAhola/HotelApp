@@ -151,6 +151,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             var unpaidInvoices = ctx.Invoice
                 .Include(b => b.Booking)
                 .ThenInclude(u => u.User)
+                .ThenInclude(u => u.UserInbox)
                 .Include(r => r.Booking.Room)
                 .Where(i => !i.IsPaid)
                 .OrderBy(i => i.Id).ToList();
@@ -187,34 +188,46 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
 
         private void ChangeInvoiceProperty(Invoice invoice, HotelContext ctx)
         {
-            var choice = UserInputValidation.MenuValidation(_modelProperties, "Choose which property you want to change. ");
-
-            switch (choice)
+            bool isRunning = true;
+            while (isRunning)
             {
-                case 1:
-                    int? days = (int?)UserInputValidation.AskForValidNumber(1, 30, "You can add additional payment days to the invoice.");
-                    if (days == null) { return; }
-                    invoice.DueDate = invoice.DueDate.AddDays((double)days);
+                var choice = UserInputValidation.MenuValidation(_modelProperties, "Choose which property you want to change. ");
+
+                switch (choice)
+                {
+                    case 1:
+                        int? days = (int?)UserInputValidation.AskForValidNumber(1, 30, "You can add additional payment days to the invoice.");
+                        if (days == null) { return; }
+                        invoice.DueDate = invoice.DueDate.AddDays((double)days);
+                        break;
+                    case 2:
+                        decimal? amount = UserInputValidation.AskForValidNumber(1, Convert.ToDecimal(1E9), "You can change the invoice amount.");
+                        if (amount == null) { return; }
+                        invoice.Amount = (decimal)amount;
+                        break;
+                    case 3:
+                        if (UserInputValidation.PromptYesOrNo("Press y to flip the payment status, anything else to skip: "))
+                        {
+                            invoice.IsPaid = true;
+                            PrintSuccessMessage("Invoice is now paid.");
+                        }
+                        break;
+                }
+                if (!UserInputValidation.PromptYesOrNo("Do you wish to change another property, Y/N: "))
+                {
+                    isRunning = false;
                     break;
-                case 2:
-                    decimal? amount = UserInputValidation.AskForValidNumber(0, Convert.ToDecimal(1E9), "You can change the invoice amount.");
-                    if (amount == null) { return; }
-                    invoice.Amount = (decimal)amount;
-                    break;
-                case 3:
-                    if (UserInputValidation.PromptYesOrNo("Press y to flip the payment status, anything else to skip: "))
-                    {
-                        invoice.IsPaid = true;
-                        PrintSuccessMessage("Invoice is now paid.");
-                    }
-                    break;
+                }
             }
+            Console.WriteLine();
             var info = InvoiceTemplate(invoice, invoice.Booking.User, invoice.Booking);
             Console.WriteLine(info);
             if (UserInputValidation.PromptYesOrNo("Press y to confirm the changes, anything else to discard: "))
             {
                 ctx.SaveChanges();
                 PrintSuccessMessage("Your changes has been applied.");
+                string content = "Dear sir/mam, your invoice has been changed. Please review the changes made\n";
+                SystemMessage.SendSystemMessage(ctx, invoice.Booking.User, "Changes to your invoice", content + info);
             }
             else
             {
