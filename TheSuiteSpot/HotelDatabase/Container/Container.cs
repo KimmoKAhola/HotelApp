@@ -13,6 +13,7 @@ using System.Reflection;
 using TheSuiteSpot.HotelDatabase.Menus.UserMenus;
 using TheSuiteSpot.HotelDatabase.Services.CRUD;
 using DatabaseLibrary;
+using DatabaseLibrary.DatabaseConfig;
 
 namespace TheSuiteSpot.HotelDatabase.DatabaseConfiguration
 {

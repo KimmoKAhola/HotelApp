@@ -1,6 +1,6 @@
 ﻿using Autofac;
 using Microsoft.EntityFrameworkCore;
-namespace DatabaseLibrary
+namespace DatabaseLibrary.DatabaseConfig
 {
     public class DatabaseModule : Module
     {

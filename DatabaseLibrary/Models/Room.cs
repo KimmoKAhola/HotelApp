@@ -35,8 +35,7 @@ namespace TheSuiteSpot.HotelDatabase.Models
 
         public override string ToString()
         {
-            //return "\n" + RoomCRUD.RoomTemplate(this, new string('-', this.Description.Length));
-            return "";
+            return "\n" + RoomTemplateUtility.RoomTemplate(this, new string('-', this.Description.Length));
         }
     }
 }
