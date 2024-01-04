@@ -569,19 +569,25 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
             }
             if (propertyToUpdate == 2)
             {
-                PrintNotification("Choose another room");
+                PrintNotification("\nPlease enter how many guests are staying.");
+                var numberOfGuests = UserInputValidation.AskForValidNumber(1, 6, "");
+                if (numberOfGuests == null) { return; }
+                var rServices = new RoomServices(DbContext);
+                var roomTypes = rServices.GetSuitableRoomType((int)numberOfGuests);
                 var listOfRooms = DbContext.Room.ToList();
+
+                var filteredListOfRooms = listOfRooms.Where(r => roomTypes.Any(rt => rt.Id == r.RoomType.Id)).ToList();
                 while (true)
                 {
-                    var chosenRoomIndex = UserInputValidation.MenuValidation(listOfRooms, "BAJS BAJS\n");
+                    var chosenRoomIndex = UserInputValidation.MenuValidation(filteredListOfRooms, "Based on the number of guests, these are the available rooms:\n");
                     if (chosenBooking.Room.Id != listOfRooms[chosenRoomIndex - 1].Id)
                     {
-                        chosenBooking.Room = listOfRooms[chosenRoomIndex - 1];
+                        chosenBooking.Room = filteredListOfRooms[chosenRoomIndex - 1];
                         if (CheckForValidDates(chosenBooking.StartDate, chosenBooking.EndDate, chosenBooking, DbContext))
                         {
                             Console.Clear();
-                            var header = new string('-', listOfRooms[chosenRoomIndex - 1].Description.Length);
-                            var info = RoomCRUD.RoomTemplate(listOfRooms[chosenRoomIndex - 1], header);
+                            var header = new string('-', filteredListOfRooms[chosenRoomIndex - 1].Description.Length);
+                            var info = RoomCRUD.RoomTemplate(filteredListOfRooms[chosenRoomIndex - 1], header);
                             PrintNotification($"Your chosen room is available at your previous booking dates {chosenBooking.StartDate} - {chosenBooking.EndDate}");
                             PrintNotification($"\nPlease note that your invoice will be changed if you change to another room.");
                             Console.WriteLine(info);

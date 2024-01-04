@@ -17,15 +17,15 @@ namespace TheSuiteSpot.HotelDatabase.Services
                 .RoomType
                 .OrderBy(rt => rt.NumberOfExtraBeds)
                 .ToList();
-            if (numberOfGuests > 0 && numberOfGuests < 1)
+            if (numberOfGuests > 0 && numberOfGuests <= 1)
             {
                 return roomTypes; // all room types are suitable
             }
-            else if (numberOfGuests > 1 && numberOfGuests < 2)
+            else if (numberOfGuests > 1 && numberOfGuests <= 2)
             {
-                return roomTypes.Take(2).ToList(); // the last 3 are suitable
+                return roomTypes.TakeLast(3).ToList(); // the last 3 are suitable
             }
-            else if (numberOfGuests > 2 && numberOfGuests < 4)
+            else if (numberOfGuests > 2 && numberOfGuests <= 4)
             {
                 return roomTypes.TakeLast(2).ToList(); // the last 2 are suitable
             }
