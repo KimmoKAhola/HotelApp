@@ -518,15 +518,15 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
                 var info = BookingTemplate(booking);
                 Console.WriteLine(info);
             }
-            PrintNotification("\nThese are the booking ids you can update: \n");
-            var choice = UserInputValidation.MenuValidation(bookingIds, "\nChoose and id to update.");
+            PrintNotification("\nThese are the booking ids you can update. Please check the list above to find which booking you want to update.\n");
+            var choice = UserInputValidation.MenuValidation(bookingIds, "\nChoose a booking id to update the booking. ");
             var chosenBooking = allBookings[choice - 1];
             Console.Clear();
             PrintNotification("You chose this booking:\n");
             var bookingInfo = BookingTemplate(chosenBooking);
             Console.WriteLine(bookingInfo);
 
-            var propertyToUpdate = UserInputValidation.MenuValidation(_modelProperties, "CHOOSE BAJS BAJS\n\n");
+            var propertyToUpdate = UserInputValidation.MenuValidation(_modelProperties, "\nPick the option you wish to change. ");
 
             if (propertyToUpdate == -1) { return; }
             if (propertyToUpdate == 1)
@@ -572,6 +572,7 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
                 PrintNotification("\nPlease enter how many guests are staying.");
                 var numberOfGuests = UserInputValidation.AskForValidNumber(1, 6, "");
                 if (numberOfGuests == null) { return; }
+                PrintNotification($"\nYou chose {numberOfGuests} guests.");
                 var rServices = new RoomServices(DbContext);
                 var roomTypes = rServices.GetSuitableRoomType((int)numberOfGuests);
                 var listOfRooms = DbContext.Room.ToList();
@@ -588,8 +589,9 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
                             Console.Clear();
                             var header = new string('-', filteredListOfRooms[chosenRoomIndex - 1].Description.Length);
                             var info = RoomCRUD.RoomTemplate(filteredListOfRooms[chosenRoomIndex - 1], header);
-                            PrintNotification($"Your chosen room is available at your previous booking dates {chosenBooking.StartDate} - {chosenBooking.EndDate}");
-                            PrintNotification($"\nPlease note that your invoice will be changed if you change to another room.");
+                            PrintNotification($"Your chosen room is available at your previous booking dates [{chosenBooking.StartDate} - {chosenBooking.EndDate}]");
+                            PrintNotification($"\nPlease note that your invoice will be changed if you change to another room.\n" +
+                                $"This might result in a higher price.");
                             Console.WriteLine(info);
                             if (UserInputValidation.PromptYesOrNo("Press y to confirm the room change, anything else to decline: "))
                             {
@@ -598,7 +600,9 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
                             }
                             else
                             {
-                                PrintErrorMessage("You declined a room change. Exiting...");
+                                PrintErrorMessage("You declined a room change. Exiting back to the main menu.");
+                                PressAnyKeyToContinue();
+                                return;
                             }
                         }
                         else

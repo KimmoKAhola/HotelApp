@@ -112,6 +112,8 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
         public void ViewMostPopularRooms(HotelContext ctx)
         {
             Console.Clear();
+            Console.WriteLine("Crunching numbers, this might take a few seconds...");
+
             var roomsByPopularity = ctx.Booking
                 .Include(r => r.Room)
                 .ThenInclude(r => r.Reviews)
@@ -123,12 +125,17 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
                     ReviewScore = c.Key.Reviews,
                     NumberOfBookings = c.Count(),
                 }).OrderByDescending(c => c.NumberOfBookings).ToList();
+
+            Console.Clear();
             PrintNotification("These are our most popular rooms: ");
             foreach (var room in roomsByPopularity)
             {
                 double averageScore = Math.Round(room.ReviewScore.Average(r => (double)r.StarsGiven), 1);
-                Console.WriteLine($"Number of bookings: {room.NumberOfBookings} - Room: {room.Number} - score: {averageScore}");
+                var header = new string('-', $"Number of bookings: {room.NumberOfBookings} - Room: {room.Number} - average review score: {averageScore}".Length);
+                Console.WriteLine(header);
+                PrintNotification($"Room: {room.Number} - Number of bookings: {room.NumberOfBookings} - average review score: {averageScore}");
             }
+            Console.WriteLine();
         }
         public void ViewHighestSpenders(HotelContext ctx)
         {
