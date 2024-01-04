@@ -43,7 +43,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
             Console.WriteLine("3. Delete an invoice.");
             Console.WriteLine("4. Search for an invoice by general phrase.");
             Console.WriteLine("0. Return to main menu.");
-
+            Console.Write("Choose an option: ");
         }
         public void ReturnToMainMenu()
         {

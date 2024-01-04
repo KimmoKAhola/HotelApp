@@ -59,7 +59,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
             Console.WriteLine("5. Delete a room.");
             Console.WriteLine("6. Search for a room.");
             Console.WriteLine("0. Return to main menu.");
-            Console.Write("Choose: ");
+            Console.Write("Choose an option: ");
         }
 
         public void ReturnToMainMenu()

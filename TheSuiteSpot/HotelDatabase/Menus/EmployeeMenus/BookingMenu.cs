@@ -54,6 +54,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
             Console.WriteLine("5. Delete a booking.");
             Console.WriteLine("6. Search for a booking.");
             Console.WriteLine("7. Return to main menu.");
+            Console.Write("Choose an option: ");
         }
 
         public void ReturnToMainMenu()

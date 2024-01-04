@@ -74,6 +74,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
             Console.WriteLine("3. View all received messages.");
             Console.WriteLine("4. Send a message to a user.");
             Console.WriteLine("0. Return to main menu.");
+            Console.Write("Choose an option: ");
         }
 
         public void ReturnToMainMenu()

@@ -47,6 +47,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
             Console.WriteLine("2. Send a system-wide message to all users.");
             Console.WriteLine("3. View our most popular rooms.");
             Console.WriteLine("4. View our highest spenders");
+            Console.Write("Choose an option: ");
         }
 
         public void ReturnToMainMenu()

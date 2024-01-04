@@ -116,7 +116,7 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
                         }
                         else if (!(chosenDate >= booking.StartDate && chosenDate <= booking.EndDate))
                         {
-                            PrintNotification($"\nYour chosen date was not available. The first available booking is at {chosenDate}\n");
+                            PrintNotification($"\nThe first available booking is at {chosenDate}\n");
                             var availableDates = _maximumBookingDuration;
                             if (i != allBookingsForRoom.Count)
                             {
@@ -142,7 +142,7 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
                         {
                             if (chosenDate != originalDate)
                             {
-                                PrintNotification($"Your chosen date was not available. The first available time is at {chosenDate}");
+                                PrintNotification($"The first available time is at {chosenDate}");
                             }
                             CreateBooking((DateTime)chosenDate, chosenRoom, user, _maximumBookingDuration, numberOfExtraBeds, ctx);
                             break;
