@@ -19,7 +19,7 @@ namespace TheSuiteSpot.HotelDatabase.UserMenus
         public void Display()
         {
             MainMenu.PrintBanner();
-
+            PrintOptions();
             var choice = Convert.ToInt32(Console.ReadLine());
             switch (choice)
             {
