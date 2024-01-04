@@ -216,7 +216,9 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         {
             string length = "Thank you for choosing The Suite Spot! We appreciate your business.";
             var header = new string('-', length.Length);
-            return $@"{header}
+            if (booking.VoucherCode != null)
+            {
+                return $@"{header}
 [The Suite spot] - {invoice.DateCreated}
 
 Invoice Due Date: {invoice.DueDate}
@@ -236,6 +238,30 @@ Total Amount: {invoice.Amount:C2}
 Thank you for choosing The Suite Spot! We appreciate your business.
 For any inquiries, please contact us at {CurrentUser.Instance.User.Email}.
 {header}";
+            }
+            else
+            {
+                return $@"{header}
+[The Suite spot] - {invoice.DateCreated}
+
+Invoice Due Date: {invoice.DueDate}
+
+Bill To:
+{user.FirstName} {user.LastName}
+
+Description:
+Room Reservation: {booking.Room.RoomNumber}
+Check-in Date: {booking.StartDate}
+Check-out Date: {booking.EndDate}
+Number of Nights: {(booking.EndDate - booking.StartDate).Days}
+Rate per Night: {booking.Room.PricePerDay:C2}
+
+Total Amount: {invoice.Amount:C2} - Discounted!
+
+Thank you for choosing The Suite Spot! We appreciate your business.
+For any inquiries, please contact us at {CurrentUser.Instance.User.Email}.
+{header}";
+            }
         }
     }
 }

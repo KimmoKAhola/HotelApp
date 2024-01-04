@@ -201,10 +201,10 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 };
                 if (userVouchers != null && userVouchers.Count > 0)
                 {
-                    PrintNotification("This user has an active voucher§, do you want to use it?");
+                    PrintNotification($"This user has an active voucher of {userVouchers.First().DiscountPercentage} %, do you want to use it?");
                     if (UserInputValidation.PromptYesOrNo("Y to confirm: "))
                     {
-                        PrintNotification("You chose to use it. Using the discount with the highest discount");
+                        PrintNotification("You chose to use it. Voucher has been applied.");
                         var maximumDiscountVoucher = userVouchers.First();
                         booking.VoucherCode = maximumDiscountVoucher.VoucherCode;
                         maximumDiscountVoucher.IsExpired = true;
@@ -212,8 +212,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                     }
                     else
                     {
-                        PrintNotification("You chose no.");
-
+                        PrintNotification("You chose no. Voucher has not been applied.");
                     }
                 }
                 ctx.SaveChanges();

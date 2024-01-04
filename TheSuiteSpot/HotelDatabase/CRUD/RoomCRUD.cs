@@ -145,52 +145,6 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             }
             PressAnyKeyToContinue();
         }
-        public void UpdateRoomType(HotelContext ctx)
-        {
-            Console.Clear();
-            var allRoomTypes = ctx.RoomType.ToList();
-            Console.WriteLine("A list of all room types available: ");
-            foreach (var roomType in allRoomTypes)
-            {
-                Console.WriteLine(roomType);
-            }
-            PrintNotification("Be advised that this is a highly discouraged action.\nJust because you can, does not mean you should!");
-            PrintNotification("Any changes here will only affect future bookings");
-            PrintNotification("These are the available properties you can change: ");
-            var choice = UserInputValidation.MenuValidation(_roomTypeProperties, "Choose an option: ");
-            if (choice == -1) { return; }
-            else
-            {
-                if (choice != _roomTypeProperties.Count)
-                {
-                    Console.WriteLine($"You chose to update {_roomTypeProperties[choice]}");
-                    Console.Write("Enter the new value: ");
-                }
-                string? updatedValue;
-                int? updatedBedValue;
-                var roomType = allRoomTypes[choice - 1];
-                switch (choice)
-                {
-                    case 1:
-                        updatedValue = UserInputValidation.AskForValidName("suite name", 10, 30);
-                        if (updatedValue == null) { return; }
-                        roomType.SuiteName = updatedValue;
-                        break;
-                    case 2:
-                        updatedBedValue = (int?)UserInputValidation.AskForValidNumber(0, 2, "test");
-                        if (updatedBedValue == null) { return; }
-                        roomType.NumberOfExtraBeds = (int)updatedBedValue;
-                        break;
-                    case 3:
-                        Console.WriteLine($"Is double room: {roomType.IsDoubleRoom}. Be warned that changing this to false will set the number of extra beds to 0.");
-                        roomType.IsDoubleRoom = !roomType.IsDoubleRoom;
-                        if (roomType.IsDoubleRoom) { roomType.NumberOfExtraBeds = 0; }
-                        break;
-                }
-                DbContext.SaveChanges();
-            }
-            PressAnyKeyToContinue();
-        }
         private static void PrintAllAvailableRooms(HotelContext ctx)
         {
             var roomsByCategory = ctx.Room.Where(r => r.IsActive)

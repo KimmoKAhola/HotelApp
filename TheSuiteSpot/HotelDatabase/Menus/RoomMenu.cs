@@ -39,12 +39,9 @@ namespace TheSuiteSpot.HotelDatabase.Menus
                     room.Update(DbContext);
                     break;
                 case 5:
-                    room.UpdateRoomType(DbContext);
-                    break;
-                case 6:
                     room.SoftDelete(DbContext);
                     break;
-                case 7:
+                case 6:
                     room.GeneralSearch(DbContext);
                     break;
                 case 0:
@@ -59,9 +56,8 @@ namespace TheSuiteSpot.HotelDatabase.Menus
             Console.WriteLine("2. Read a single rooms.");
             Console.WriteLine("3. Read all rooms.");
             Console.WriteLine("4. Update a room.");
-            Console.WriteLine("5. Update a room type.");
-            Console.WriteLine("6. Delete a room.");
-            Console.WriteLine("7. Search for a room.");
+            Console.WriteLine("5. Delete a room.");
+            Console.WriteLine("6. Search for a room.");
             Console.WriteLine("0. Return to main menu.");
             Console.Write("Choose: ");
         }
