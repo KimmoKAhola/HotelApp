@@ -45,10 +45,9 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                         SystemMessage.SendBookingConfirmationMessage(DbContext, booking.User, booking);
                     }
                 }
-                for (int i = 0; i < 20; i++)
+                for (int i = 0; i < DbContext.Room.Count(); i++)
                 {
                     var randomUser = random.Next(0, allUsers.Count);
-                    var randomRoom = random.Next(0, rooms.Count);
                     var randomDuration = random.Next(1, 10);
                     var startDate = DateTime.Today.Date.AddDays(randomDuration);
                     var booking = new Booking
@@ -56,25 +55,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                         StartDate = startDate + new TimeSpan(8, 0, 0),
                         EndDate = startDate.AddDays(randomDuration).Date + new TimeSpan(16, 0, 0),
                         User = allUsers[randomUser],
-                        Room = rooms[randomRoom],
-                        NumberOfExtraBeds = 0
-                    };
-                    DbContext.Booking.Add(booking);
-                    DbContext.SaveChanges();
-                    SystemMessage.SendBookingConfirmationMessage(DbContext, booking.User, booking);
-                }
-                for (int i = 0; i < 2; i++)
-                {
-                    var randomUser = random.Next(0, allUsers.Count);
-                    var randomRoom = random.Next(0, rooms.Count);
-                    var randomDuration = random.Next(1, 10);
-                    var startDate = DateTime.Today.Date.AddDays(-11);
-                    var booking = new Booking
-                    {
-                        StartDate = startDate + new TimeSpan(8, 0, 0),
-                        EndDate = startDate.AddDays(randomDuration).Date + new TimeSpan(16, 0, 0),
-                        User = allUsers[randomUser],
-                        Room = rooms[randomRoom],
+                        Room = rooms[i],
                         NumberOfExtraBeds = 0
                     };
                     DbContext.Booking.Add(booking);

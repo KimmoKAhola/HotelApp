@@ -158,7 +158,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
                 .ThenInclude(v => v.Voucher)
                 .Select(c => new
                 {
-                    msg = c.UserInbox.Messages.ToList(),
+                    msg = c.UserInbox.Messages.Where(m => !m.IsRead).ToList(),
                 });
 
             foreach (var message in unreadMessages)

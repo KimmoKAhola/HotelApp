@@ -19,7 +19,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
 
         public void Seed()
         {
-            DbContext.Database.EnsureDeleted();
+            //DbContext.Database.EnsureDeleted();
 
             if (!(DbContext.Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator).Exists())
             {
@@ -45,29 +45,29 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                 Console.WriteLine("No seeding done!!");
                 Console.ReadKey();
             }
-            var canceledBookings = DbContext.Invoice
-                .OrderBy(i => i.DueDate)
-                .Include(b => b.Booking)
-                .ThenInclude(u => u.User)
-                .ThenInclude(u => u.UserInbox)
-                .Where(i => !i.IsPaid && i.DueDate < DateTime.Now);
+            //var canceledBookings = DbContext.Invoice
+            //    .OrderBy(i => i.DueDate)
+            //    .Include(b => b.Booking)
+            //    .ThenInclude(u => u.User)
+            //    .ThenInclude(u => u.UserInbox)
+            //    .Where(i => !i.IsPaid && i.DueDate < DateTime.Now);
 
-            foreach (var invoice in canceledBookings)
-            {
-                if (invoice.Booking.User.UserName != "Richard")
-                {
-                    invoice.IsActive = false;
-                    invoice.IsPaid = false;
-                    invoice.Booking.IsActive = false;
-                    var content = "Dear sir/mam, since we have not yet received payment before the due date your booking has been canceled.";
-                    SystemMessage.SendSystemMessage(DbContext, invoice.Booking.User, "Your booking has been canceled", content);
-                }
-                else
-                {
-                    var content = "Dear sir. We have not yet received payments for your booking. Due to your status as a big spender we have made exceptions, but please pay as soon as possible.";
-                    SystemMessage.SendSystemMessage(DbContext, invoice.Booking.User, "Unpaid invoice", content);
-                }
-            }
+            //foreach (var invoice in canceledBookings)
+            //{
+            //    if (invoice.Booking.User.UserName != "Richard")
+            //    {
+            //        invoice.IsActive = false;
+            //        invoice.IsPaid = false;
+            //        invoice.Booking.IsActive = false;
+            //        var content = "Dear sir/mam, since we have not yet received payment before the due date your booking has been canceled.";
+            //        SystemMessage.SendSystemMessage(DbContext, invoice.Booking.User, "Your booking has been canceled", content);
+            //    }
+            //    else
+            //    {
+            //        var content = "Dear sir. We have not yet received payments for your booking. Due to your status as a big spender we have made exceptions, but please pay as soon as possible.";
+            //        SystemMessage.SendSystemMessage(DbContext, invoice.Booking.User, "Unpaid invoice", content);
+            //    }
+            //}
         }
     }
 }

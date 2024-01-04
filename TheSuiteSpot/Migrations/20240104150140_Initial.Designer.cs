@@ -12,8 +12,8 @@ using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
 namespace TheSuiteSpot.Migrations
 {
     [DbContext(typeof(HotelContext))]
-    [Migration("20240104132900_initial")]
-    partial class initial
+    [Migration("20240104150140_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

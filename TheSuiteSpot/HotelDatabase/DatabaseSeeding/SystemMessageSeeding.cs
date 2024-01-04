@@ -57,16 +57,8 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                 var allIssues = DbContext.Message.Where(v => v.Voucher != null);
                 foreach (var issue in allIssues)
                 {
+                    //Send some vouchers here
                     //UserInbox.SendNewsLetterWithVoucher(issue.User, DbContext, issue);
-                }
-                DbContext.SaveChanges();
-
-                var twoUsers = DbContext.User.Include(u => u.UserInbox).Include(ur => ur.UserRole).Where(u => !u.IsAdmin).OrderBy(u => u.Id).Take(2);
-
-                for (int i = 0; i < 10; i++)
-                {
-                    SystemMessage.SendMessageBetweenUsers(DbContext, twoUsers.First(), twoUsers.Last(), "Oi mate", "Oi mate");
-
                 }
 
 
