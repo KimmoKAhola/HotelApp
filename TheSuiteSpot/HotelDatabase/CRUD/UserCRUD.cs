@@ -180,7 +180,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             PressAnyKeyToContinue();
         }
 
-        public User GetUser()
+        public User? GetUser()
         {
             PrintNotification("\nEnter the exact username you want to fetch: ");
             var input = Console.ReadLine();
@@ -196,7 +196,8 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             }
             else
             {
-                Console.WriteLine("No user with that username exists.");
+                PrintErrorMessage("No user with that username exists.");
+                return null;
             }
             return user;
         }

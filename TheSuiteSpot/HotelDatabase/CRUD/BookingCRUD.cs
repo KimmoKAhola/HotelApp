@@ -37,6 +37,12 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 UserCRUD.ReadAllUserNames(ctx);
                 var tempU = new UserCRUD(ctx);
                 user = tempU.GetUser();
+                if (user == null)
+                {
+                    PrintErrorMessage("Returning to the main menu.");
+                    PressAnyKeyToContinue();
+                    return;
+                }
             }
 
             PrintNotification("Do you want a single room?");
@@ -52,6 +58,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 Console.WriteLine();
                 var choice = UserInputValidation.MenuValidation(availableRooms, "These are the available rooms\n");
                 var chosenRoom = availableRooms[choice - 1];
+                Console.Clear();
                 PrintNotification($"You chose this room: ");
                 Console.WriteLine(chosenRoom);
                 Create(ctx, chosenRoom, user, 0);
@@ -80,16 +87,11 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         }
         private void Create(HotelContext ctx, Room chosenRoom, User user, int numberOfExtraBeds)
         {
-            Console.Write($"Enter a start date, later than {DateTime.Today.ToShortDateString()}: ");
-            var chosenDate = DateTime.Parse(Console.ReadLine()).Date + _bookingStart;
-            if (chosenDate < DateTime.Now.Date)
-            {
-                Console.WriteLine($"Pick a date that is later than {DateTime.Now.ToShortDateString()}");
-                PressAnyKeyToContinue();
-            }
+            var chosenDate = UserInputValidation.AskForValidDate(DateTime.Now);
+            if (chosenDate == null) { return; }
             else
             {
-
+                chosenDate = (DateTime)chosenDate;
                 Console.Clear();
                 var allBookingsForRoom = ctx.Booking
                                             .Where(b => b.Room.Id == chosenRoom.Id)
@@ -98,7 +100,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                                             .ToList();
                 if (allBookingsForRoom.Count == 0)
                 {
-                    CreateBooking(chosenDate, chosenRoom, user, _maximumBookingDuration, numberOfExtraBeds, ctx);
+                    CreateBooking((DateTime)chosenDate, chosenRoom, user, _maximumBookingDuration, numberOfExtraBeds, ctx);
                 }
                 else
                 {
@@ -110,32 +112,38 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                         if (chosenDate >= booking.StartDate && chosenDate <= booking.EndDate)
                         {
                             chosenDate = booking.EndDate.Date.AddDays(1) + _bookingStart;
-                            Console.WriteLine($"Not available at this date. Changing date to: {chosenDate}");
                         }
                         else if (!(chosenDate >= booking.StartDate && chosenDate <= booking.EndDate))
                         {
-                            Console.WriteLine($"Available booking at {chosenDate}");
+                            PrintNotification($"\nYour chosen date was not available. The first available booking is at {chosenDate}\n");
                             var availableDates = _maximumBookingDuration;
                             if (i != allBookingsForRoom.Count)
                             {
                                 var nextBookingDate = allBookingsForRoom[i].StartDate;
-                                availableDates = (nextBookingDate - chosenDate).Days;
+                                availableDates = (nextBookingDate - (DateTime)chosenDate).Days;
                             }
                             if (availableDates > 10)
                             {
                                 availableDates = _maximumBookingDuration;
                             }
-                            Console.WriteLine($"You can book for a maximum of {availableDates} days. (Y/N)");
-                            var input = Console.ReadLine();
-                            if (input.ToLower() == "y")
+                            if (UserInputValidation.PromptYesOrNo($"You can book for a maximum of {availableDates} days. Y/N?"))
                             {
-                                CreateBooking(chosenDate, chosenRoom, user, availableDates, numberOfExtraBeds, ctx);
+                                CreateBooking((DateTime)chosenDate, chosenRoom, user, availableDates, numberOfExtraBeds, ctx);
+                                break;
+                            }
+                            else
+                            {
+                                PrintNotification($"You declined this booking");
                                 break;
                             }
                         }
                         if (i == allBookingsForRoom.Count - 1)
                         {
-                            CreateBooking(chosenDate, chosenRoom, user, _maximumBookingDuration, numberOfExtraBeds, ctx);
+                            if (chosenDate != originalDate)
+                            {
+                                PrintNotification($"Your chosen date was not available. The first available time is at {chosenDate}");
+                            }
+                            CreateBooking((DateTime)chosenDate, chosenRoom, user, _maximumBookingDuration, numberOfExtraBeds, ctx);
                             break;
                         }
                     }
@@ -144,10 +152,11 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         }
         private void CreateBooking(DateTime newDate, Room chosenRoom, User chosenUser, int maxNumberOfDays, int numberOfExtraBeds, HotelContext ctx)
         {
+
             Console.WriteLine($"The maximum amount of days you can book in a row is: {maxNumberOfDays}");
             Console.Write("Enter the amount of days you want to book: ");
             var numberOfDays = UserInputValidation.ReturnNumberChoice(maxNumberOfDays);
-            if (numberOfDays < 0)
+            if (numberOfDays == -1)
             {
                 PrintErrorMessage("User chose to exit. Returning to main menu");
                 PressAnyKeyToContinue();
@@ -185,11 +194,12 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 ctx.SaveChanges();
                 SystemMessage.SendBookingConfirmationMessage(ctx, chosenUser, booking);
                 SystemMessage.SendInvoiceMessage(ctx, chosenUser, invoice, booking);
-
-                PrintSuccessMessage("A booking has been created with the following information:");
-                Console.WriteLine(booking);
+                Console.Clear();
+                PrintSuccessMessage("A booking has been created with the following information: ");
+                var info = BookingTemplate(booking);
+                Console.WriteLine(info + "\n");
+                PrintSuccessMessage("An invoice has been created and sent to the chosen guest: ");
                 Console.WriteLine(Invoice.GenerateInvoice(invoice));
-                PressAnyKeyToContinue();
             }
         }
         public void SoftDelete(HotelContext ctx)
