@@ -286,13 +286,26 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         {
             Console.Clear();
             Console.WriteLine("These are all active (current and future) bookings: ");
-
-            var allBookings = ctx.Booking
-                .Where(b => b.StartDate < DateTime.Today || b.EndDate > DateTime.Today)
-                .OrderBy(b => b.StartDate)
-                .Include(u => u.User)
-                .Include(r => r.Room);
-
+            List<Booking> allBookings;
+            if (CurrentUser.Instance.User.IsAdmin)
+            {
+                allBookings = ctx.Booking
+                    .Where(b => b.StartDate < DateTime.Today || b.EndDate > DateTime.Today)
+                    .OrderBy(b => b.StartDate)
+                    .Include(u => u.User)
+                    .Include(r => r.Room)
+                    .ToList();
+            }
+            else
+            {
+                allBookings = ctx.Booking
+                   .Where(b => b.StartDate < DateTime.Today || b.EndDate > DateTime.Today)
+                   .OrderBy(b => b.StartDate)
+                   .Include(u => u.User)
+                   .Where(u => u.User.UserName == CurrentUser.Instance.User.UserName)
+                   .Include(r => r.Room)
+                   .ToList();
+            }
             if (allBookings.Count() > 10)
             {
                 PrintNotification("Too many active bookings. The result has been limited to 10.");
@@ -305,7 +318,6 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             }
             else
             {
-
                 foreach (var booking in allBookings)
                 {
                     var info = BookingTemplate(booking);
