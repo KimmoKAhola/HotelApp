@@ -293,10 +293,19 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
         public void Update(HotelContext ctx)
         {
             Console.Clear();
-            Console.Write("Enter a username you want to search for (case insensitive search): ");
-            var input = UserInputValidation.AskForValidInputString();
-            if (input == null) { return; }
-            var user = ExactSearch(input);
+            string? input;
+            User user;
+            if (CurrentUser.Instance.User.IsAdmin)
+            {
+                Console.Write("Enter a username you want to search for (case insensitive search): ");
+                input = UserInputValidation.AskForValidInputString();
+                if (input == null) { return; }
+                user = ExactSearch(input);
+            }
+            else
+            {
+                user = CurrentUser.Instance.User;
+            }
             if (user != null && !user.IsAdmin)
             {
                 PrintNotification("Your result yielded this user:");
@@ -360,10 +369,6 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 {
                     PrintNotification("Changes were not saved.");
                 }
-            }
-            else
-            {
-                PrintErrorMessage($"No user with the username {input} exists.");
             }
             PressAnyKeyToContinue();
         }

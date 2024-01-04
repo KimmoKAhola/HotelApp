@@ -48,7 +48,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
 ********************************************************************************************";
 
             Console.WriteLine(banner);
-            PrintMessages.PrintNotification($"Currently logged in as: {CurrentUser.Instance.User.UserName}");
+            PrintMessages.PrintNotification($"Currently logged in as user with username: {CurrentUser.Instance.User.UserName}");
         }
     }
 }
