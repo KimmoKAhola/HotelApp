@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TheSuiteSpot.HotelDatabase.CRUD;
+using TheSuiteSpot.HotelDatabase.Services.CRUD;
 using TheSuiteSpot.Interfaces;
 
 namespace TheSuiteSpot.HotelDatabase.Models

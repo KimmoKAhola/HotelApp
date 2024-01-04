@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TheSuiteSpot.HotelDatabase.CRUD;
 using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
+using TheSuiteSpot.HotelDatabase.Services.CRUD;
 using TheSuiteSpot.Interfaces;
 
 namespace TheSuiteSpot.HotelDatabase.Menus

@@ -10,8 +10,8 @@ using TheSuiteSpot.HotelDatabase.DatabaseSeeding;
 using TheSuiteSpot.Interfaces;
 using TheSuiteSpot.HotelDatabase.Menus;
 using System.Reflection;
-using TheSuiteSpot.HotelDatabase.CRUD;
 using TheSuiteSpot.HotelDatabase.Menus.UserMenus;
+using TheSuiteSpot.HotelDatabase.Services.CRUD;
 
 namespace TheSuiteSpot.HotelDatabase.DatabaseConfiguration
 {

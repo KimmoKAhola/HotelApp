@@ -11,7 +11,7 @@ using InputValidationLibrary;
 using static InputValidationLibrary.PrintMessages;
 using TheSuiteSpot.HotelDatabase.Services;
 
-namespace TheSuiteSpot.HotelDatabase.CRUD
+namespace TheSuiteSpot.HotelDatabase.Services.CRUD
 {
     public class AdminCRUD(HotelContext dbContext)
     {

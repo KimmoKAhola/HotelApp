@@ -23,6 +23,5 @@ namespace TheSuiteSpot.HotelDatabase.Models
         [Required]
         [MaxLength(50)]
         public string Name { get; set; } = null!;
-        //public List<SystemMessage>? SystemMessage { get; set; }
     }
 }

@@ -12,7 +12,8 @@ using System.Diagnostics;
 using InputValidationLibrary;
 using static InputValidationLibrary.PrintMessages;
 using TheSuiteSpot.HotelDatabase.Services;
-namespace TheSuiteSpot.HotelDatabase.CRUD
+
+namespace TheSuiteSpot.HotelDatabase.Services.CRUD
 {
     public class BookingCRUD(HotelContext dbContext) : ICRUD
     {
@@ -194,7 +195,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 }
                 ctx.SaveChanges();
                 ctx.Booking.Add(booking);
-                var totalDays = (int)(booking.EndDate - booking.StartDate).Days;
+                var totalDays = (booking.EndDate - booking.StartDate).Days;
 
                 var invoice = new Invoice
                 {
@@ -205,10 +206,10 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 };
                 if (booking.NumberOfExtraBeds > 0)
                 {
-                    invoice.Amount = Invoice.CalculateAdditionalCost(invoice);
+                    invoice.Amount = InvoiceServices.CalculateAdditionalCost(invoice);
                     if (userVouchers != null && userVouchers.Count > 0)
                     {
-                        var discount = (1 - userVouchers.First().DiscountPercentage / 100);
+                        var discount = 1 - userVouchers.First().DiscountPercentage / 100;
                         invoice.Amount *= discount;
                     }
                 }
@@ -216,7 +217,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 {
                     if (userVouchers != null && userVouchers.Count > 0)
                     {
-                        var discount = (1 - userVouchers.First().DiscountPercentage / 100);
+                        var discount = 1 - userVouchers.First().DiscountPercentage / 100;
                         invoice.Amount *= discount;
                     }
                 }
@@ -229,7 +230,7 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                 var info = BookingTemplate(booking);
                 Console.WriteLine(info + "\n");
                 PrintSuccessMessage("An invoice has been created and sent to the chosen guest: ");
-                Console.WriteLine(Invoice.GenerateInvoice(invoice, userVouchers.FirstOrDefault()));
+                Console.WriteLine(InvoiceServices.GenerateInvoice(invoice, userVouchers.FirstOrDefault()));
             }
         }
         public void SoftDelete(HotelContext ctx)
@@ -357,9 +358,9 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
             var availableRooms = DbContext.Room
                     .Where(room => !room.Bookings
                     .Any(b =>
-        ((chosenStartDate >= b.StartDate && chosenStartDate <= b.EndDate)
-                    || (chosenEndDate >= b.StartDate && chosenEndDate <= b.EndDate)
-                    || (chosenStartDate <= b.StartDate && chosenEndDate >= b.EndDate))))
+        chosenStartDate >= b.StartDate && chosenStartDate <= b.EndDate
+                    || chosenEndDate >= b.StartDate && chosenEndDate <= b.EndDate
+                    || chosenStartDate <= b.StartDate && chosenEndDate >= b.EndDate))
                     .ToList();
 
             if (availableRooms.Count > 0)
@@ -484,9 +485,9 @@ namespace TheSuiteSpot.HotelDatabase.CRUD
                     .Include(b => b.Room)
                     .Where(b => b.Room.Id == booking.Room.Id
                     && b.Id != booking.Id
-                    && ((startDate >= b.StartDate && startDate <= b.EndDate)
-                    || (endDate >= b.StartDate && endDate <= b.EndDate)
-                    || (startDate <= b.StartDate && endDate >= b.EndDate)))
+                    && (startDate >= b.StartDate && startDate <= b.EndDate
+                    || endDate >= b.StartDate && endDate <= b.EndDate
+                    || startDate <= b.StartDate && endDate >= b.EndDate))
                     .ToList();
 
             return conflictingBookings.Count == 0;

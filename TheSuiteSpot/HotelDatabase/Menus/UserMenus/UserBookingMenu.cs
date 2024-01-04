@@ -1,5 +1,5 @@
-﻿using TheSuiteSpot.HotelDatabase.CRUD;
-using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
+﻿using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
+using TheSuiteSpot.HotelDatabase.Services.CRUD;
 using TheSuiteSpot.Interfaces;
 
 namespace TheSuiteSpot.HotelDatabase.Menus.UserMenus

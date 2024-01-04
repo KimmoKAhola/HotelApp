@@ -17,7 +17,7 @@ using System.Reflection.Metadata;
 using System.ComponentModel.DataAnnotations;
 using TheSuiteSpot.HotelDatabase.Services;
 
-namespace TheSuiteSpot.HotelDatabase.CRUD
+namespace TheSuiteSpot.HotelDatabase.Services.CRUD
 {
     public class UserCRUD(HotelContext dbContext) : ICRUD
     {

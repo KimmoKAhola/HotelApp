@@ -11,7 +11,7 @@ using TheSuiteSpot.Interfaces;
 using InputValidationLibrary;
 using static InputValidationLibrary.PrintMessages;
 
-namespace TheSuiteSpot.HotelDatabase.CRUD
+namespace TheSuiteSpot.HotelDatabase.Services.CRUD
 {
     public class RoomCRUD(HotelContext dbContext) : ICRUD
     {

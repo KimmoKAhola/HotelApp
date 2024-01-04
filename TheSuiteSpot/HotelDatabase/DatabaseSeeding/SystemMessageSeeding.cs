@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
 using TheSuiteSpot.HotelDatabase.Models;
+using TheSuiteSpot.HotelDatabase.Services;
 using TheSuiteSpot.Interfaces;
 
 namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
@@ -40,7 +41,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                 allSubscribers = DbContext.User.Include(u => u.UserInbox).Where(u => u.IsSubscriber && u.IsActive && !u.IsAdmin);
                 foreach (var subscriber in allSubscribers)
                 {
-                    var voucher = Voucher.GenerateVoucherCode(20m);
+                    var voucher = VoucherServices.GenerateVoucherCode(20m);
                     DbContext.Add(voucher);
                     var subscriptionLetter = new SystemMessage
                     {

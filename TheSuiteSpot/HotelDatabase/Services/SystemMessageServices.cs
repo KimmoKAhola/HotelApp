@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TheSuiteSpot.HotelDatabase.CRUD;
 using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
 using TheSuiteSpot.HotelDatabase.Models;
 using Microsoft.EntityFrameworkCore;
+using TheSuiteSpot.HotelDatabase.Services.CRUD;
 
 namespace TheSuiteSpot.HotelDatabase.Services
 {
@@ -14,7 +14,7 @@ namespace TheSuiteSpot.HotelDatabase.Services
     {
         public static void SendRewardMessage(HotelContext ctx, decimal discountPercentage, User receiver)
         {
-            var randomString = Voucher.GenerateVoucherCode(discountPercentage);
+            var randomString = VoucherServices.GenerateVoucherCode(discountPercentage);
             var voucher = new Voucher
             {
                 VoucherCode = $"CODE-{randomString.VoucherCode}",
