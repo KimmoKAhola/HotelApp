@@ -120,11 +120,15 @@ namespace TheSuiteSpot
             {
                 var currentuser = user.Where(u => u.UserName == username && u.Password == password).First();
                 CurrentUser.SetCurrentUser(currentuser);
+                currentuser.LastLogin = DateTime.Now;
+                DbContext.SaveChanges();
                 return true;
             }
             else
             {
                 CurrentUser.SetCurrentUser(DbContext.User.Where(u => u.IsAdmin && u.UserName == "admin").First());
+                CurrentUser.Instance.User.LastLogin = DateTime.Now;
+                DbContext.SaveChanges();
                 return false;
             }
         }
