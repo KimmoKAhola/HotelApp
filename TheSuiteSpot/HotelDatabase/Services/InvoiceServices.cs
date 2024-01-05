@@ -9,28 +9,11 @@ namespace TheSuiteSpot.HotelDatabase.Services
 {
     public class InvoiceServices
     {
-        /// <summary>
-        /// Move me to a service class
-        /// </summary>
-        /// <param name="invoice"></param>
-        /// <returns></returns>
         public static decimal CalculateAdditionalCost(Invoice invoice)
         {
             invoice.Amount += invoice.Booking.NumberOfExtraBeds * (decimal)invoice.Booking.Room.PricePerExtraBed;
             return invoice.Amount;
         }
-
-        public static void CalculateNewInvoice(Booking oldBooking, Booking newBooking)
-        {
-
-        }
-
-
-        /// <summary>
-        /// Move me to a service class
-        /// </summary>
-        /// <param name="invoice"></param>
-        /// <returns></returns>
         public static string GenerateInvoice(Invoice invoice, Voucher? voucher)
         {
             StringBuilder invoiceBuilder = new StringBuilder();

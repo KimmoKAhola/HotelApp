@@ -10,7 +10,5 @@ namespace TheSuiteSpot.Interfaces
     {
         void Update();
         void Search();
-
-
     }
 }

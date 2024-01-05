@@ -92,7 +92,6 @@ namespace TheSuiteSpot.HotelDatabase.Menus
         public void ShowSentMessages(User loggedInUser)
         {
             Console.Clear();
-            PrintErrorMessage("FIX MY FORMATTING PLEASE!!!");
             var filter = FilterByTopic();
             if (filter != null)
             {

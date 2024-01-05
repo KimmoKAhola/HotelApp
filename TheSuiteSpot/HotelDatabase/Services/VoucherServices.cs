@@ -9,11 +9,6 @@ namespace TheSuiteSpot.HotelDatabase.Services
 {
     public class VoucherServices
     {
-        /// <summary>
-        /// Move me to a service class
-        /// </summary>
-        /// <param name="discountPercentage"></param>
-        /// <returns></returns>
         public static Voucher GenerateVoucherCode(decimal discountPercentage)
         {
             Guid guid = Guid.NewGuid();

@@ -165,7 +165,7 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
 
         public void ExactSearch(HotelContext ctx)
         {
-            //Is it needed?
+            //it is not needed
         }
 
         public void GeneralSearch(HotelContext ctx)

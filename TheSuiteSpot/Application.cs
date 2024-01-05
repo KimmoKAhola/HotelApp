@@ -71,9 +71,9 @@ namespace TheSuiteSpot
                         {
                             mainMenu.Display();
                         }
-                        catch (Exception ex)
+                        catch
                         {
-                            Console.WriteLine(ex.InnerException);
+                            PrintErrorMessage("Inorrect menu choice.");
                             Console.WriteLine("Press any key to continue.");
                             Console.ReadKey();
                         }
@@ -88,9 +88,9 @@ namespace TheSuiteSpot
                         {
                             mainMenu.Display();
                         }
-                        catch (Exception ex)
+                        catch
                         {
-                            Console.WriteLine(ex.InnerException);
+                            PrintErrorMessage("Inorrect menu choice.");
                             Console.WriteLine("Press any key to continue.");
                             Console.ReadKey();
                         }
