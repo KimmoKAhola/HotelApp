@@ -21,14 +21,36 @@ namespace TheSuiteSpot
     {
         public HotelContext DbContext { get; set; } = dbContext;
 
-        public void CheckInvoices()
+        private void CheckInvoices()
         {
-            var invoices = DbContext.Invoice.ToList();
+            var invoices = DbContext.Invoice
+    .Include(i => i.Booking)
+        .ThenInclude(b => b.User)
+            .ThenInclude(u => u.UserInbox)
+    .Where(i => i.DueDate < DateTime.Today && !i.IsPaid && i.Booking.User.UserName != "Richard")
+    .ToList();
+
+            foreach (var invoice in invoices)
+            {
+                invoice.IsActive = false;
+                invoice.Booking.IsActive = false;
+                string topic = "Booking canceled";
+                string content = "Dear sir/mam, since we have not yet received a payment for your booking your booking has been canceled.";
+                SystemMessageServices.SendSystemMessage(DbContext, invoice.Booking.User, topic, content);
+            }
+            DbContext.SaveChanges();
         }
 
-        public void CheckVouchers()
+        private void CheckVouchers()
         {
-            var vouchers = DbContext.Voucher.ToList();
+            var allVouchers = DbContext.Voucher
+                .Where(v => v.ExpiryDate < DateTime.Today && !v.IsExpired);
+
+            foreach (var voucher in allVouchers)
+            {
+                voucher.IsExpired = true;
+            }
+            DbContext.SaveChanges();
         }
         public void Run(IContainer container)
         {
@@ -36,6 +58,8 @@ namespace TheSuiteSpot
             {
                 var initialize = scope.Resolve<Initialize>();
                 initialize.Seed();
+                CheckInvoices();
+                CheckVouchers();
                 Login();
                 if (CurrentUser.Instance.User.IsAdmin)
                 {
@@ -77,6 +101,7 @@ namespace TheSuiteSpot
 
         public void Login()
         {
+            PrintNotification("Welcome to the login page. Please enter username and password.\n(leave blank to login as admin, use username = Richard and password = 123456 to log in as Richard.");
             var allUsers = DbContext.User;
             Console.Write("Enter a username: ");
             var username = Console.ReadLine();

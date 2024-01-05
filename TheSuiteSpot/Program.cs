@@ -11,7 +11,6 @@ namespace TheSuiteSpot
             using (var scope = container.BeginLifetimeScope())
             {
                 var app = scope.Resolve<Application>();
-                app.CheckInvoices();
                 app.Run(container);
             }
         }
