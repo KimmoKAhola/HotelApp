@@ -26,6 +26,7 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
         {
             {1, "Change booking dates"},
             {2, "Change room"},
+            {3, "Cancel booking" }
         };
         public void Create(HotelContext ctx)
         {
@@ -44,7 +45,7 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
                     return;
                 }
             }
-
+            PrintNotification("A single room may contain 1 guest and a double room, depending on which room you choose,\nmay contain 2-6 guests.");
             PrintNotification("Do you want a single room?");
             if (UserInputValidation.PromptYesOrNo("Press y to confirm, anything else to pick a double room: "))
             {
@@ -66,6 +67,9 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
             else
             {
                 PrintNotification("You chose a double room.");
+                PrintNotification("\nFor 2 guests you need 0 extra beds." +
+                    "\nFor 3-4 guests you need 1 extra bed." +
+                    "\nFor 5-6 guests you need 2 extra beds.");
                 var numberOfExtraBeds = (int?)UserInputValidation.AskForValidNumber(0, 2, "How many extra beds do you want: ");
                 if (numberOfExtraBeds == null) { return; }
                 var roomType = GetSuitableRoomType(ctx, (int)numberOfExtraBeds);
@@ -127,7 +131,7 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
                             {
                                 availableDates = _maximumBookingDuration;
                             }
-                            if (UserInputValidation.PromptYesOrNo($"You can book for a maximum of {availableDates} days. Y/N?"))
+                            if (UserInputValidation.PromptYesOrNo($"Press y to continue, anything else to decline: "))
                             {
                                 CreateBooking((DateTime)chosenDate, chosenRoom, user, availableDates, numberOfExtraBeds, ctx);
                                 break;
@@ -220,7 +224,7 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
         private void CreateBooking(DateTime newDate, Room chosenRoom, User chosenUser, int maxNumberOfDays, int numberOfExtraBeds, HotelContext ctx)
         {
 
-            Console.WriteLine($"The maximum amount of days you can book in a row is: {maxNumberOfDays}");
+            Console.WriteLine($"\nThe maximum amount of days you can book in a row is: {maxNumberOfDays}");
             Console.Write("Enter the amount of days you want to book: ");
             var numberOfDays = UserInputValidation.ReturnNumberChoice(maxNumberOfDays);
             if (numberOfDays == -1)
@@ -474,16 +478,7 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
 
             return result;
         }
-        private static Booking ExactSearch(HotelContext ctx, int bookingId)
-        {
-            var exactBooking = ctx.Booking
-                .Where(b => b.Id == bookingId)
-                .Include(r => r.Room)
-                .Include(u => u.User)
-                .FirstOrDefault();
 
-            return exactBooking;
-        }
         public void Update(HotelContext ctx)
         {
             Console.Clear();
@@ -599,8 +594,13 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
                             Console.WriteLine(info);
                             if (UserInputValidation.PromptYesOrNo("Press y to confirm the room change, anything else to decline: "))
                             {
-                                PrintSuccessMessage("Your booking has changed.");
+                                PrintSuccessMessage("Your booking has been changed.");
                                 DbContext.SaveChanges();
+                                string topic = "Booking has been changed";
+                                string content = "Dear sir/mam, we have changed your booking to another date as requested";
+                                SystemMessageServices.SendSystemMessage(DbContext, chosenBooking.User, topic, content);
+                                SystemMessageServices.SendBookingConfirmationMessage(DbContext, chosenBooking.User, chosenBooking);
+                                break;
                             }
                             else
                             {
@@ -615,8 +615,12 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
                             PrintNotification("Your chosen room is taken at that date, would you like to auto-search for the closest available date?");
                             if (UserInputValidation.PromptYesOrNo("Press y to confirm, anything else to decline: "))
                             {
+                                var oldInvoice = DbContext.Invoice.Include(b => b.Booking).Where(i => i.Booking.Id == chosenBooking.Id).First();
+                                oldInvoice.IsActive = false;
+                                DbContext.SaveChanges();
                                 Create(DbContext, chosenBooking.StartDate, chosenBooking.Room, chosenBooking.User, chosenBooking.NumberOfExtraBeds);
                             }
+                            break;
                         }
 
                     }
@@ -628,6 +632,25 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
                     }
                 }
 
+            }
+            if (propertyToUpdate == 3)
+            {
+                Console.Clear();
+                PrintNotification("You are about to cancel this booking:");
+                Console.WriteLine(bookingInfo);
+                if (UserInputValidation.PromptYesOrNo("Press y to cancel, anything else to discard: "))
+                {
+                    chosenBooking.IsActive = false;
+                    PrintSuccessMessage("Booking has been canceled");
+                    DbContext.SaveChanges();
+                    string topic = "Booking has been canceled";
+                    string content = $"Dear sir/mam, we have canceled your booking with booking id {chosenBooking.Id} as per your request. ";
+                    SystemMessageServices.SendSystemMessage(DbContext, chosenBooking.User, topic, content);
+                }
+                else
+                {
+                    PrintNotification("Changes has not been saved.");
+                }
             }
             PressAnyKeyToContinue();
         }
