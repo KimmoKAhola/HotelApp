@@ -20,7 +20,7 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
         public void Create(HotelContext ctx)
         {
             Console.Clear();
-            var userAverageSpending = ctx.Invoice
+            var userAverageSpending = DbContext.Invoice
                 .Where(i => i.IsPaid)
                 .GroupBy(i => i.Booking.User.Id)
                 .Select(c => new
@@ -29,7 +29,7 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
                     AverageSpending = c.Average(i => i.Amount)
                 }).Average(u => u.AverageSpending);
 
-            var bigSpenders = ctx.Invoice
+            var bigSpenders = DbContext.Invoice
                             .Where(i => i.IsPaid)
                             .Include(b => b.Booking)
                             .ThenInclude(u => u.User)
@@ -41,7 +41,7 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
                                 AverageSpending = c.Average(i => i.Amount)
                             })
                             .Where(user => user.AverageSpending >=
-                                ctx.Invoice
+                                DbContext.Invoice
                                     .Where(i => i.IsPaid)
                                     .GroupBy(i => i.Booking.User)
                                     .Select(c => c.Average(i => i.Amount))
@@ -79,42 +79,25 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
         public void CreateSystemMessage(HotelContext ctx)
         {
             Console.Clear();
-            var allUsers = ctx.User.Include(u => u.UserInbox).Where(u => u.IsActive && !u.IsAdmin && u.UserName != CurrentUser.Instance.User.UserName);
+            var allUsers = DbContext.User
+                .Include(u => u.UserInbox)
+                .Where(u => u.IsActive && !u.IsAdmin && u.UserName != CurrentUser.Instance.User.UserName);
             string topic = UserInputValidation.AskForValidInputString("message topic");
             string content = UserInputValidation.AskForValidInputString("message content");
             foreach (var user in allUsers)
             {
-                SystemMessageServices.SendSystemMessage(ctx, user, topic, content);
+                SystemMessageServices.SendSystemMessage(DbContext, user, topic, content);
             }
             DbContext.SaveChanges();
             PrintNotification("A system message has been sent to all users.");
         }
 
-        public void GeneralSearch(HotelContext ctx)
-        {
-
-        }
-
-        public void ReadAll(HotelContext ctx)
-        {
-
-        }
-
-        public void SoftDelete(HotelContext ctx)
-        {
-
-        }
-
-        public void Update(HotelContext ctx)
-        {
-
-        }
         public void ViewMostPopularRooms(HotelContext ctx)
         {
             Console.Clear();
             Console.WriteLine("Crunching numbers, this might take a few seconds...");
 
-            var roomsByPopularity = ctx.Booking
+            var roomsByPopularity = DbContext.Booking
                 .Include(r => r.Room)
                 .ThenInclude(r => r.Reviews)
                 .AsEnumerable()
@@ -140,7 +123,8 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
         public void ViewHighestSpenders(HotelContext ctx)
         {
             Console.Clear();
-            var usersSortedBySpending = ctx.Invoice
+            PrintSuccessMessage("This displays the highest spenders at our hotel - ie the customers with paid invoices.");
+            var usersSortedBySpending = DbContext.Invoice
                 .Where(i => i.IsPaid)
                 .Include(b => b.Booking)
                 .ThenInclude(u => u.User)
@@ -153,7 +137,9 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
 
             foreach (var user in usersSortedBySpending)
             {
-                Console.WriteLine($"{user.User.UserName} - sum spent: {user.Sum:C2}");
+                var divider = new string('-', $"Username: {user.User.UserName} - sum spent: {user.Sum:C2}".Length);
+                PrintNotification($"Username: {user.User.UserName} - sum spent: {user.Sum:C2}");
+                Console.WriteLine(divider);
             }
         }
     }

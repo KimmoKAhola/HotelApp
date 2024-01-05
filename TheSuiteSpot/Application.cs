@@ -101,7 +101,7 @@ namespace TheSuiteSpot
 
         public void Login()
         {
-            PrintNotification("Welcome to the login page. Please enter username and password.\n(leave blank to login as admin, use username = Richard and password = 123456 to log in as Richard.");
+            PrintNotification("Welcome to the login page. Please enter username and password.\nLeave blank to login as admin\nuse username = Richard\npassword = 123456 to log in as Richard.");
             var allUsers = DbContext.User;
             Console.Write("Enter a username: ");
             var username = Console.ReadLine();
