@@ -12,7 +12,7 @@ using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
 namespace TheSuiteSpot.Migrations
 {
     [DbContext(typeof(HotelContext))]
-    [Migration("20240104150140_Initial")]
+    [Migration("20240105171501_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -39,8 +39,8 @@ namespace TheSuiteSpot.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<int>("NumberOfExtraBeds")
-                        .HasColumnType("int");
+                    b.Property<byte>("NumberOfExtraBeds")
+                        .HasColumnType("tinyint");
 
                     b.Property<int>("RoomId")
                         .HasColumnType("int");
@@ -52,7 +52,8 @@ namespace TheSuiteSpot.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("VoucherCode")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.HasKey("Id");
 
@@ -224,7 +225,8 @@ namespace TheSuiteSpot.Migrations
 
                     b.Property<string>("Sender")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("Topic")
                         .IsRequired()
@@ -245,7 +247,7 @@ namespace TheSuiteSpot.Migrations
 
                     b.HasIndex("VoucherId");
 
-                    b.ToTable("Message");
+                    b.ToTable("SystemMessage");
                 });
 
             modelBuilder.Entity("TheSuiteSpot.HotelDatabase.Models.SystemMessageType", b =>
@@ -263,7 +265,7 @@ namespace TheSuiteSpot.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MessageType");
+                    b.ToTable("SystemMessageType");
                 });
 
             modelBuilder.Entity("TheSuiteSpot.HotelDatabase.Models.User", b =>

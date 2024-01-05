@@ -29,7 +29,7 @@ namespace TheSuiteSpot.HotelDatabase.Services
                 Topic = "A reward to our most valued customer.",
                 Sender = ctx.User.Where(u => u.UserName == "System").First().UserName,
                 Content = "Thank you, dear customer, for your patronage. As a reward, we will award you with a voucher.",
-                MessageType = ctx.MessageType.Where(n => n.Name == SystemMessageTypes.Reward.ToString()).First(),
+                MessageType = ctx.SystemMessageType.Where(n => n.Name == SystemMessageTypes.Reward.ToString()).First(),
             };
             reward.Voucher = voucher;
             chosenUser.UserInbox.Messages.Add(reward);
@@ -43,7 +43,7 @@ namespace TheSuiteSpot.HotelDatabase.Services
                 Topic = topic,
                 Sender = ctx.User.Where(u => u.UserName == "System").First().UserName,
                 Content = content,
-                MessageType = ctx.MessageType.Where(n => n.Name == SystemMessageTypes.System.ToString()).First(),
+                MessageType = ctx.SystemMessageType.Where(n => n.Name == SystemMessageTypes.System.ToString()).First(),
             };
 
             receiver.UserInbox.Messages.Add(newsletter);
@@ -57,7 +57,7 @@ namespace TheSuiteSpot.HotelDatabase.Services
                 Topic = topic,
                 Sender = sender.UserName,
                 Content = content,
-                MessageType = ctx.MessageType.Where(n => n.Name == SystemMessageTypes.UserToUser.ToString()).First(),
+                MessageType = ctx.SystemMessageType.Where(n => n.Name == SystemMessageTypes.UserToUser.ToString()).First(),
             };
 
             receiver.UserInbox.Messages.Add(message);
@@ -72,7 +72,7 @@ namespace TheSuiteSpot.HotelDatabase.Services
                 Topic = "Booking confirmation",
                 Sender = ctx.User.Where(u => u.UserName == "System").First().UserName,
                 Content = BookingCRUD.FormatBooking(booking),
-                MessageType = ctx.MessageType.Where(n => n.Name == SystemMessageTypes.System.ToString()).First(),
+                MessageType = ctx.SystemMessageType.Where(n => n.Name == SystemMessageTypes.System.ToString()).First(),
             };
             receiver.UserInbox.Messages.Add(message);
             ctx.SaveChanges();
@@ -85,7 +85,7 @@ namespace TheSuiteSpot.HotelDatabase.Services
                 Topic = "Invoice",
                 Sender = ctx.User.Where(u => u.UserName == "System").First().UserName,
                 Content = InvoiceCRUD.InvoiceTemplate(invoice, receiver, booking),
-                MessageType = ctx.MessageType.Where(n => n.Name == SystemMessageTypes.System.ToString()).First(),
+                MessageType = ctx.SystemMessageType.Where(n => n.Name == SystemMessageTypes.System.ToString()).First(),
             };
             receiver.UserInbox.Messages.Add(message);
             ctx.SaveChanges();
@@ -101,7 +101,7 @@ namespace TheSuiteSpot.HotelDatabase.Services
                 $"\nUsername: {receiver.UserName}" +
                 $"\nEmail: {receiver.Email}" +
                 $"\nPassword: {receiver.Password}"),
-                MessageType = ctx.MessageType.Where(n => n.Name == SystemMessageTypes.System.ToString()).First(),
+                MessageType = ctx.SystemMessageType.Where(n => n.Name == SystemMessageTypes.System.ToString()).First(),
             };
             receiver.UserInbox.Messages.Add(message);
             ctx.SaveChanges();

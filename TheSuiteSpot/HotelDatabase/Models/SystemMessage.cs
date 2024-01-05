@@ -13,6 +13,7 @@ namespace TheSuiteSpot.HotelDatabase.Models
         [MaxLength(50)]
         public string Topic { get; set; } = null!;
         [Required]
+        [MaxLength(30)]
         public string Sender { get; set; } = null!;
         [MaxLength(5000)]
         public string Content { get; set; } = null!;

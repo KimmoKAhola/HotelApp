@@ -17,7 +17,10 @@ namespace TheSuiteSpot.HotelDatabase.Models
         public Room Room { get; set; } = null!;
         [Required]
         public bool IsActive { get; set; } = true;
-        public int NumberOfExtraBeds { get; set; }
+
+        [Range(0, 10)]
+        public byte NumberOfExtraBeds { get; set; }
+        [MaxLength(20)]
         public string? VoucherCode { get; set; }
     }
 }

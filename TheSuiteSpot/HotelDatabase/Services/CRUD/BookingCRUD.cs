@@ -244,7 +244,7 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
                     EndDate = newDate.AddDays(numberOfDays),
                     User = chosenUser,
                     Room = chosenRoom,
-                    NumberOfExtraBeds = numberOfExtraBeds
+                    NumberOfExtraBeds = (byte)numberOfExtraBeds
                 };
                 if (userVouchers != null && userVouchers.Count > 0)
                 {
@@ -352,8 +352,8 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
                         var content = "Dear sir/mam. Your booking has been canceled.";
                         SystemMessageServices.SendSystemMessage(ctx, chosenBooking.User.User, "Cancellation confirmed", content);
                     }
+                    PrintSuccessMessage("\nThe booking has been canceled and the customer has been notified.\nAny related invoice has been canceled.");
                 }
-                PrintSuccessMessage("\nThe booking has been canceled and the customer has been notified.\nAny related invoice has been canceled.");
             }
             PressAnyKeyToContinue();
         }
@@ -394,54 +394,7 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
         {
             //Not implemented
         }
-        public void CreateManually()
-        {
-            Console.Clear();
-            var chosenStartDate = UserInputValidation.AskForValidDate(DateTime.Now);
-            if (chosenStartDate == null) { return; }
-            DateTime? chosenEndDate = DateTime.MinValue;
-            while (true)
-            {
-                chosenEndDate = UserInputValidation.AskForValidDate(chosenStartDate.Value.AddDays(1));
-                if (chosenEndDate < chosenStartDate.Value.AddDays(10))
-                {
-                    Console.WriteLine(chosenStartDate);
-                    Console.WriteLine(chosenEndDate);
-                    break;
-                }
-                else
-                {
-                    PrintErrorMessage($"You need to enter an end date at most 10 days after {chosenStartDate.Value.ToShortDateString()}");
-                }
-                if (chosenEndDate == null) { return; }
-            }
 
-            var availableRooms = DbContext.Room
-                    .Where(room => !room.Bookings
-                    .Any(b =>
-        chosenStartDate >= b.StartDate && chosenStartDate <= b.EndDate
-                    || chosenEndDate >= b.StartDate && chosenEndDate <= b.EndDate
-                    || chosenStartDate <= b.StartDate && chosenEndDate >= b.EndDate))
-                    .ToList();
-
-            if (availableRooms.Count > 0)
-            {
-                List<int> roomIds = new List<int>();
-                PrintNotification("These are our available rooms at those given dates: ");
-                foreach (var item in availableRooms)
-                {
-                    roomIds.Add(item.Id);
-                    Console.WriteLine($"Room id: {item.Id} - Room number: {item.RoomNumber}");
-                }
-                UserInputValidation.MenuValidation(roomIds, "\n");
-            }
-            else
-            {
-                PrintErrorMessage("No rooms are available between your given dates.");
-            }
-
-            PressAnyKeyToContinue();
-        }
         public void GeneralSearch(HotelContext ctx)
         {
             Console.Clear();
@@ -682,7 +635,7 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
         }
         private List<Voucher>? CheckForVoucher(User guest)
         {
-            var result = from message in DbContext.Message
+            var result = from message in DbContext.SystemMessage
                          where message.Voucher != null
                          join voucher in DbContext.Voucher on message.Voucher.Id equals voucher.Id
                          orderby voucher.DiscountPercentage descending

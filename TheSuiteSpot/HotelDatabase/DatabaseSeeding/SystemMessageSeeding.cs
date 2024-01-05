@@ -17,10 +17,10 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
 
         public void SeedData()
         {
-            if (!DbContext.Message.Any())
+            if (!DbContext.SystemMessage.Any())
             {
-                var subscriptionNewsletter = DbContext.MessageType.Where(n => n.Name == SystemMessageTypes.Subscription.ToString()).First();
-                var systemNewsletter = DbContext.MessageType.Where(n => n.Name == SystemMessageTypes.System.ToString()).First();
+                var subscriptionNewsletter = DbContext.SystemMessageType.Where(n => n.Name == SystemMessageTypes.Subscription.ToString()).First();
+                var systemNewsletter = DbContext.SystemMessageType.Where(n => n.Name == SystemMessageTypes.System.ToString()).First();
                 var allSubscribers = DbContext.User.Include(u => u.UserInbox).Where(u => u.IsSubscriber && !u.IsAdmin);
                 foreach (var subscriber in allSubscribers)
                 {
@@ -33,7 +33,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                         "Your relaxation journey begins with us at The Suite Spot.",
                         MessageType = systemNewsletter,
                     };
-                    DbContext.Message.Add(userTerms);
+                    DbContext.SystemMessage.Add(userTerms);
                     subscriber.UserInbox.Messages.Add(userTerms);
                     DbContext.SaveChanges();
                 }
@@ -51,11 +51,11 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                         MessageType = subscriptionNewsletter,
                         Voucher = voucher
                     };
-                    DbContext.Message.Add(subscriptionLetter);
+                    DbContext.SystemMessage.Add(subscriptionLetter);
                     subscriber.UserInbox.Messages.Add(subscriptionLetter);
                 }
                 DbContext.SaveChanges();
-                var allIssues = DbContext.Message.Where(v => v.Voucher != null);
+                var allIssues = DbContext.SystemMessage.Where(v => v.Voucher != null);
                 foreach (var issue in allIssues)
                 {
                     //Send some vouchers here

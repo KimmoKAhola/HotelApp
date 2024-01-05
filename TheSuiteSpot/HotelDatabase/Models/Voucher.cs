@@ -20,27 +20,6 @@ namespace TheSuiteSpot.HotelDatabase.Models
         public bool IsExpired { get; set; } = false;
         [Required]
         public decimal DiscountPercentage { get; set; }
-
-        ///// <summary>
-        ///// Move me to a service class
-        ///// </summary>
-        ///// <param name="discountPercentage"></param>
-        ///// <returns></returns>
-        //public static Voucher GenerateVoucherCode(decimal discountPercentage)
-        //{
-        //    Guid guid = Guid.NewGuid();
-        //    string guidString = guid.ToString("N");
-
-        //    string randomString = guidString[..5];
-
-        //    var voucher = new Voucher
-        //    {
-        //        VoucherCode = randomString,
-        //        DiscountPercentage = discountPercentage
-        //    };
-        //    return voucher;
-        //}
-
         public override string ToString()
         {
             return $"Quick voucher summary:" +

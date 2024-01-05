@@ -12,19 +12,6 @@ namespace TheSuiteSpot.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "MessageType",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MessageType", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "RoomType",
                 columns: table => new
                 {
@@ -37,6 +24,19 @@ namespace TheSuiteSpot.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_RoomType", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SystemMessageType",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SystemMessageType", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -141,13 +141,13 @@ namespace TheSuiteSpot.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Message",
+                name: "SystemMessage",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Topic = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Sender = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Sender = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", maxLength: 5000, nullable: false),
                     DateSent = table.Column<DateTime>(type: "datetime2", nullable: false),
                     VoucherId = table.Column<int>(type: "int", nullable: true),
@@ -157,21 +157,21 @@ namespace TheSuiteSpot.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Message", x => x.Id);
+                    table.PrimaryKey("PK_SystemMessage", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Message_MessageType_MessageTypeId",
+                        name: "FK_SystemMessage_SystemMessageType_MessageTypeId",
                         column: x => x.MessageTypeId,
-                        principalTable: "MessageType",
+                        principalTable: "SystemMessageType",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Message_UserInbox_UserInboxId",
+                        name: "FK_SystemMessage_UserInbox_UserInboxId",
                         column: x => x.UserInboxId,
                         principalTable: "UserInbox",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Message_Voucher_VoucherId",
+                        name: "FK_SystemMessage_Voucher_VoucherId",
                         column: x => x.VoucherId,
                         principalTable: "Voucher",
                         principalColumn: "Id");
@@ -211,8 +211,8 @@ namespace TheSuiteSpot.Migrations
                     UserId = table.Column<int>(type: "int", nullable: false),
                     RoomId = table.Column<int>(type: "int", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    NumberOfExtraBeds = table.Column<int>(type: "int", nullable: false),
-                    VoucherCode = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    NumberOfExtraBeds = table.Column<byte>(type: "tinyint", nullable: false),
+                    VoucherCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -272,21 +272,6 @@ namespace TheSuiteSpot.Migrations
                 column: "BookingId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Message_MessageTypeId",
-                table: "Message",
-                column: "MessageTypeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Message_UserInboxId",
-                table: "Message",
-                column: "UserInboxId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Message_VoucherId",
-                table: "Message",
-                column: "VoucherId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Review_RoomId",
                 table: "Review",
                 column: "RoomId");
@@ -301,6 +286,21 @@ namespace TheSuiteSpot.Migrations
                 name: "IX_Room_RoomTypeId",
                 table: "Room",
                 column: "RoomTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SystemMessage_MessageTypeId",
+                table: "SystemMessage",
+                column: "MessageTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SystemMessage_UserInboxId",
+                table: "SystemMessage",
+                column: "UserInboxId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SystemMessage_VoucherId",
+                table: "SystemMessage",
+                column: "VoucherId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_User_Email",
@@ -338,16 +338,16 @@ namespace TheSuiteSpot.Migrations
                 name: "Invoice");
 
             migrationBuilder.DropTable(
-                name: "Message");
+                name: "Review");
 
             migrationBuilder.DropTable(
-                name: "Review");
+                name: "SystemMessage");
 
             migrationBuilder.DropTable(
                 name: "Booking");
 
             migrationBuilder.DropTable(
-                name: "MessageType");
+                name: "SystemMessageType");
 
             migrationBuilder.DropTable(
                 name: "Voucher");

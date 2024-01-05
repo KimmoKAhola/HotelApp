@@ -21,8 +21,8 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseConfiguration
         }
         public DbSet<Booking> Booking { get; set; }
         public DbSet<Invoice> Invoice { get; set; }
-        public DbSet<SystemMessageType> MessageType { get; set; }
-        public DbSet<SystemMessage> Message { get; set; }
+        public DbSet<SystemMessageType> SystemMessageType { get; set; }
+        public DbSet<SystemMessage> SystemMessage { get; set; }
         public DbSet<Review> Review { get; set; }
         public DbSet<Room> Room { get; set; }
         public DbSet<RoomType> RoomType { get; set; }

@@ -10,7 +10,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
 
         public void SeedData()
         {
-            if (!DbContext.MessageType.Any())
+            if (!DbContext.SystemMessageType.Any())
             {
                 var type = new SystemMessageType
                 {

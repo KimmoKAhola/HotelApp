@@ -31,15 +31,15 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                 var randomRoomIndex = random.Next(0, roomsToReview.Count);
                 if (_numberOfSeededReviews % 2 == 0)
                 {
-                    if (roomsToReview[randomRoomIndex].RoomType.SuiteName.Contains("Royal"))
+                    if (roomsToReview[randomRoomIndex].RoomType != null && roomsToReview[randomRoomIndex].RoomType.SuiteName.Contains("Royal"))
                     {
                         minRating += 25;
                     }
-                    else if (roomsToReview[randomRoomIndex].RoomType.SuiteName.Contains("Deluxe"))
+                    else if (roomsToReview[randomRoomIndex].RoomType != null && roomsToReview[randomRoomIndex].RoomType.SuiteName.Contains("Deluxe"))
                     {
                         minRating += 10;
                     }
-                    else if (roomsToReview[randomRoomIndex].RoomType.SuiteName.Contains("Executive"))
+                    else if (roomsToReview[randomRoomIndex].RoomType != null && roomsToReview[randomRoomIndex].RoomType.SuiteName.Contains("Executive"))
                     {
                         minRating += 5;
                     }
