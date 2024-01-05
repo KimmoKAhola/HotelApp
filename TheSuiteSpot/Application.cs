@@ -23,14 +23,12 @@ namespace TheSuiteSpot
 
         public void CheckInvoices()
         {
-            //var invoices = DbContext.Invoice.ToList();
-            //Console.WriteLine("I AM CHECKING THE INVOICES");
-            //Console.ReadKey();
+            var invoices = DbContext.Invoice.ToList();
         }
 
         public void CheckVouchers()
         {
-            //Check all vouchers at the start of the app
+            var vouchers = DbContext.Voucher.ToList();
         }
         public void Run(IContainer container)
         {

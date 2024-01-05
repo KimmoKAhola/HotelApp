@@ -45,7 +45,7 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                             Amount = totalAmount,
                             Booking = booking,
                         };
-                        if (invoice.DueDate < DateTime.Today.AddDays(10) && invoice.Booking.User.Id != 3)
+                        if (invoice.DueDate < DateTime.Today.AddDays(10) && invoice.Booking.User.UserName != "Richard")
                         {
                             invoice.IsPaid = true;
                         }

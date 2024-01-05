@@ -85,10 +85,10 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                 {
                     var specialGuest = new User
                     {
-                        FirstName = "Gustav",
-                        LastName = "Ivering",
-                        UserName = "Gustav",
-                        Email = "Gustav@example.com",
+                        FirstName = "Richard",
+                        LastName = "Chalk",
+                        UserName = "Richard",
+                        Email = "Richard@example.com",
                         Password = "123456",
                         UserRole = ctx.UserRole.Where(ur => ur.RoleName == UserRoles.Guest.ToString()).First(),
                         UserInbox = new UserInbox { }

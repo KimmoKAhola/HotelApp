@@ -19,8 +19,6 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
 
         public void Seed()
         {
-            DbContext.Database.EnsureDeleted();
-
             if (!(DbContext.Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator).Exists())
             {
                 DbContext.Database.Migrate();
@@ -30,8 +28,6 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                     seeding.SeedData();
                 }
                 DbContext.SaveChanges();
-                Console.WriteLine("Seeding done. Remove this later (INITIALIZE CLASS). Press any key to continue.");
-                Console.ReadKey();
             }
             else
             {
@@ -42,8 +38,6 @@ namespace TheSuiteSpot.HotelDatabase.DatabaseSeeding
                         seeding.SeedData();
                     }
                 }
-                Console.WriteLine("No seeding done!!");
-                Console.ReadKey();
             }
         }
     }
