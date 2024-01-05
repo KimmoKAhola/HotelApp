@@ -37,6 +37,12 @@ namespace TheSuiteSpot.HotelDatabase.Menus
                 case 4:
                     Crud.ViewHighestSpenders(DbContext);
                     break;
+                case 5:
+                    Crud.SendVouchers();
+                    break;
+                case 0:
+                    ReturnToMainMenu();
+                    break;
             }
             PrintMessages.PressAnyKeyToContinue();
         }
@@ -46,7 +52,9 @@ namespace TheSuiteSpot.HotelDatabase.Menus
             Console.WriteLine("1. Send vouchers to big spenders.");
             Console.WriteLine("2. Send a system-wide message to all users.");
             Console.WriteLine("3. View our most popular rooms.");
-            Console.WriteLine("4. View our highest spenders");
+            Console.WriteLine("4. View our highest spenders.");
+            Console.WriteLine("5. Send a voucher to our subscribers.");
+            Console.WriteLine("0. Return to main menu.");
             Console.Write("Choose an option: ");
         }
 

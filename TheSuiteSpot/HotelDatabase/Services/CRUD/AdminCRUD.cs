@@ -142,5 +142,25 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
                 Console.WriteLine(divider);
             }
         }
+
+        public void SendVouchers()
+        {
+            Console.Clear();
+            var allSubsribers = DbContext.User
+                .Include(ui => ui.UserInbox)
+                .Where(u => !u.IsAdmin && u.IsSubscriber && u.IsActive);
+
+            if (UserInputValidation.PromptYesOrNo("Press y to send vouchers, anything else to exit: "))
+            {
+                var discount = UserInputValidation.AskForValidNumber(1, 99, "Choose a discount percentage. ");
+                if (discount == null) { return; }
+                foreach (var subscriber in allSubsribers)
+                {
+                    SystemMessageServices.SendRewardMessage(DbContext, (decimal)discount, subscriber);
+                }
+                PrintSuccessMessage("Vouchers have been sent to our subsribers.");
+            }
+            PressAnyKeyToContinue();
+        }
     }
 }
