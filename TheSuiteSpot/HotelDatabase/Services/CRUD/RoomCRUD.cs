@@ -83,7 +83,7 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
         {
             Console.Clear();
             var allRooms = ctx.Room;
-            Console.Write("Enter a room number to search for: ");
+            Console.Write("Enter an exact room number to search for: ");
             var input = UserInputValidation.AskForValidInputString();
 
             var searchResult = ctx.Room.Include(rt => rt.RoomType).Where(r => r.RoomNumber.Equals(input)).FirstOrDefault();

@@ -22,21 +22,18 @@ namespace TheSuiteSpot.HotelDatabase.Menus
                     booking.Create(DbContext);
                     break;
                 case 2:
-                    booking.CreateManually();
-                    break;
-                case 3:
                     booking.ReadAll(DbContext);
                     break;
-                case 4:
+                case 3:
                     booking.Update(DbContext);
                     break;
-                case 5:
+                case 4:
                     booking.SoftDelete(DbContext);
                     break;
-                case 6:
+                case 5:
                     booking.GeneralSearch(DbContext);
                     break;
-                case 7:
+                case 6:
                     ReturnToMainMenu();
                     break;
                 case 0:
@@ -48,12 +45,11 @@ namespace TheSuiteSpot.HotelDatabase.Menus
         public void PrintOptions()
         {
             Console.WriteLine("1. Create booking (auto-booking).");
-            Console.WriteLine("2. Create a booking (manually).");
-            Console.WriteLine("3. Read all bookings.");
-            Console.WriteLine("4. Update a booking.");
-            Console.WriteLine("5. Delete a booking.");
-            Console.WriteLine("6. Search for a booking.");
-            Console.WriteLine("7. Return to main menu.");
+            Console.WriteLine("2. Read all bookings.");
+            Console.WriteLine("3. Update a booking.");
+            Console.WriteLine("4. Delete a booking.");
+            Console.WriteLine("5. Search for a booking.");
+            Console.WriteLine("6. Return to main menu.");
             Console.Write("Choose an option: ");
         }
 

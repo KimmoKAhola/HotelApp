@@ -307,10 +307,10 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
             Console.Clear();
 
             var futureBookings = ctx.Booking
-                .OrderBy(b => b.StartDate)
+                .OrderBy(b => b.Id)
                 .Where(b => b.StartDate > DateTime.Now && b.IsActive)
                 .Include(r => r.Room)
-                .Join(ctx.Invoice, b => b.Id, i => i.Id, (b, i) => new { Booking = b, Invoice = i })
+                .Join(ctx.Invoice, b => b.Id, i => i.Booking.Id, (b, i) => new { Booking = b, Invoice = i })
                 .Join(ctx.User, b => b.Booking.User.Id, u => u.Id, (b, u) => new { Booking = b, User = u })
                 .Join(ctx.UserInbox, u => u.User.UserInbox.Id, ui => ui.Id, (u, ui) => new { User = u, UserInbox = ui })
                 .ToList();
@@ -327,17 +327,21 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
                     var info = BookingTemplate(booking.User.Booking.Booking);
                     Console.WriteLine(info);
                 }
+                PrintNotification("A list of all active bookings are displayed above.\n");
                 var choice = UserInputValidation.MenuValidation(bookingIds, "\nPick one of the available booking Ids to delete it.\n");
                 if (choice == -1) { return; }
                 var chosenId = bookingIds[choice - 1];
                 var chosenBooking = futureBookings.Where(b => b.User.Booking.Booking.Id == chosenId).First();
+                Console.Clear();
                 PrintNotification($"You chose option {choice} with booking Id {bookingIds[choice - 1]}");
+                var binfo = BookingTemplate(chosenBooking.User.Booking.Booking);
+                Console.WriteLine(binfo);
                 if (UserInputValidation.PromptYesOrNo("Press y to delete it, anything else to skip: "))
                 {
                     PrintNotification("You chose to delete the booking");
                     chosenBooking.User.Booking.Booking.IsActive = false;
                     chosenBooking.User.Booking.Invoice.IsActive = false;
-                    ctx.SaveChanges();
+                    DbContext.SaveChanges();
                     if (chosenBooking.User.Booking.Invoice.IsPaid)
                     {
                         var content = "Dear sir/mam. Your booking has been canceled and your payment has been fully refunded.";
@@ -516,6 +520,12 @@ namespace TheSuiteSpot.HotelDatabase.Services.CRUD
                 bookingIds.Add(booking.Id);
                 var info = BookingTemplate(booking);
                 Console.WriteLine(info);
+            }
+            if (allBookings.Count <= 0)
+            {
+                PrintErrorMessage("No future bookings!");
+                PressAnyKeyToContinue();
+                return;
             }
             PrintNotification("\nThese are the booking ids you can update. Please check the list above to find which booking you want to update.\n");
             var choice = UserInputValidation.MenuValidation(bookingIds, "\nChoose a booking id to update the booking. ");

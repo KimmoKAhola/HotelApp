@@ -24,9 +24,6 @@ namespace TheSuiteSpot.HotelDatabase.Menus.UserMenus
                     booking.Update(DbContext);
                     break;
                 case 3:
-                    booking.Update(DbContext);
-                    break;
-                case 4:
                     booking.ReadAll(DbContext);
                     break;
                 case 0:
@@ -39,8 +36,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus.UserMenus
         {
             Console.WriteLine("1. Create a new booking.");
             Console.WriteLine("2. Update a booking.");
-            Console.WriteLine("3. Cancel a future booking.");
-            Console.WriteLine("4. View your bookings.");
+            Console.WriteLine("3. View your bookings.");
             Console.WriteLine("0. Return to the main menu.");
         }
 

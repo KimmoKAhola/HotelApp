@@ -53,7 +53,7 @@ namespace TheSuiteSpot.HotelDatabase.Menus
         public void PrintOptions()
         {
             Console.WriteLine("1. Create a new room.");
-            Console.WriteLine("2. Read a single rooms.");
+            Console.WriteLine("2. Read a single room.");
             Console.WriteLine("3. Read all rooms.");
             Console.WriteLine("4. Update a room.");
             Console.WriteLine("5. Delete a room.");
