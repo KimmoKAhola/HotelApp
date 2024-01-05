@@ -12,7 +12,7 @@ using TheSuiteSpot.HotelDatabase.DatabaseConfiguration;
 namespace TheSuiteSpot.Migrations
 {
     [DbContext(typeof(HotelContext))]
-    [Migration("20240105171501_Initial")]
+    [Migration("20240105171745_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
