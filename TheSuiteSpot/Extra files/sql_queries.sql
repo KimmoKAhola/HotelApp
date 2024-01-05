@@ -33,6 +33,7 @@ SELECT * FROM SystemMessage m
 JOIN UserInbox ui ON ui.Id = m.UserInboxId
 JOIN [User] u ON u.UserInboxId = ui.Id
 WHERE m.VoucherId is not null
+ORDER BY m.Id
 
 SELECT * FROM SystemMessage sm
 JOIN UserInbox ui ON ui.Id = sm.UserInboxId
